@@ -32,14 +32,28 @@ We will update the VM to reflect our progress soon.
 
 Notes for Reviewers
 ===========
-The loop (numeric) program benchmarks are included in ./tests/folprograms/ directory.
 
-The recursive (numeric) program benchmarks are included in ./tests/recursive/ directory and ./tests/dml/. 
+1. The loop (numeric) program benchmarks are included in ./tests/folprograms/ directory.
+
+        To try an example, run ./msolve.py -no_hoflag ./tests/folprograms/misc/popl07.ml
+
+
+2. The recursive (numeric) program benchmarks are included in ./tests/recursive/ directory and ./tests/dml/. 
 The latter directory contains benchmarks for learning numeric properties over data structure programs.
 
-The higher-order program benchmarks are included in ./tests/mochi/ ./tests/lists/ and ./tests/popl13/ directories.
+		To try an example, run ./msolve.py -no_hoflag ./tests/dml/bdd.ml
 
-The data structure program benchmarks, for DOrder implementation, are included in ./tests/reachability/ directory.
+
+3. The higher-order program benchmarks are included in ./tests/mochi/ ./tests/lists/ and ./tests/popl13/ directories.
+
+		To try an example, run ./msolve.py -hoflag ./tests/mochi/amax.ml
+
+
+4. The data structure program benchmarks, for DOrder implementation, are included in ./tests/reachability/ directory.
+
+		To try an example, run ./msolve.py -no_hoflag -reachability ./tests/reachability/avl2.ml or
+						 	   ./msolve.py -no_hoflag -reachability ./tests/reachability/redblackset.ml
+		
 
 At this stage, we are improving the algorithms for checking array programs.
 As a result, the evaluation on benchmarks under ./tests/array/ is not stable.
@@ -49,11 +63,12 @@ are also just for our own research purpose.
 Compiling SpecLearn
 ================
 
-SpecLearn requires OCaml 3.12 and Z3.
+SpecLearn requires OCaml 3.12 and Z3 4.3.
 
-Currently, the source code of SpecLearn can only be complied and run in Mac OS.
+Currently, the source code of SpecLearn can only be complied and run in Mac OS 
+(with a proper Z3 distribution, SpecLearn can run in Linux).
 
-The tool has some difficulties to be compatible with OCaml 4.0+. We will improve our code soon.
+The tool has some troubles to be compatible with OCaml 4.0+. We will improve our code soon.
 
 To compile SpecLearn, from the top directory:
 
