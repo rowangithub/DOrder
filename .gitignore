@@ -1,0 +1,9 @@
+*.annot
+*.cmi
+*.cmx
+*.o
+*.cmo
+*.svn-work
+*.svn-base
+*.quals
+*_instru.ml
