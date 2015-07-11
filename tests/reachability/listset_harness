@@ -1,0 +1,24 @@
+let main () =
+	let ns1 = [10;11;13;14;16;17;18;20;23;24;25] in
+	let ns2 = [5;7;10;12;13;15;16;17;20;21;24;25;27] in
+	let _ = fprintf outch "env:newtest\t\n" in
+	let _ = union ns1 ns2 in
+	let _ = fprintf outch "env:newtest\t\n" in
+	let _ = diff ns1 ns2 in
+	let _ = fprintf outch "env:newtest\t\n" in
+	let _ = inter ns1 ns2 in
+	
+	let _ = fprintf outch "env:newtest\t\n" in
+	let _ = union ns1 [] in
+	let _ = fprintf outch "env:newtest\t\n" in
+	let _ = union [] ns1 in
+	let _ = fprintf outch "env:newtest\t\n" in
+	let _ = diff ns1 [] in
+	let _ = fprintf outch "env:newtest\t\n" in
+	let _ = diff [] ns1 in
+	let _ = fprintf outch "env:newtest\t\n" in
+	let _ = inter ns1 [] in
+	let _ = fprintf outch "env:newtest\t\n" in
+	let _ = inter [] ns1 in
+	()
+let _ = main ()

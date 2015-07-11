@@ -1,0 +1,62 @@
+let main () =	
+	let ns1 = [|24;18;17;21;11;14;10;20;23;16;25;13|] in
+	let t1 = Empty in	
+	let t1 = Array.fold_left (fun t k -> 
+		let _ = fprintf outch "env:newtest\t\n" in
+		add k t
+		) t1 ns1 in
+	
+	let ns2 = [|24;18;17;21;11;14;10;|] in
+	let t2 = Empty in	
+	let t2 = Array.fold_left (fun t k -> 
+		let _ = fprintf outch "env:newtest\t\n" in
+		add k t
+		) t2 ns2 in
+		
+	let t' = Node (Node (Empty, 3, Empty), 5, t2) in
+	let _ = fprintf outch "env:newtest\t\n" in
+	let _ = add 8 t' in
+	let _ = fprintf outch "env:newtest\t\n" in
+	let _ = add 25 t' in
+	let _ = fprintf outch "env:newtest\t\n" in
+	let _ = add 15 t' in
+	let t'' = Node (t2, 30, Node (Empty, 50, Empty)) in
+	let _ = fprintf outch "env:newtest\t\n" in
+	let _ = add 25 t'' in
+	let _ = fprintf outch "env:newtest\t\n" in
+	let _ = add 8 t'' in
+	let _ = fprintf outch "env:newtest\t\n" in
+	let _ = add 15 t'' in
+	
+	let ns3 = [|3;5|] in
+	let t3 = Empty in	
+	let t3 = Array.fold_left (fun t k -> 
+		let _ = fprintf outch "env:newtest\t\n" in
+		add k t
+		) t3 ns3 in
+	let t''' = Node (t3, 9, t1) in
+	let _ = fprintf outch "env:newtest\t\n" in
+	let _ = remove 5 t''' in
+	let _ = fprintf outch "env:newtest\t\n" in
+	let _ = merge t3 t1 in
+	
+	let ns4 = [|30; 50|] in
+	let t4 = Empty in	
+	let t4 = Array.fold_left (fun t k -> 
+		let _ = fprintf outch "env:newtest\t\n" in
+		add k t
+		) t4 ns4 in
+	let t'''' = Node (t1, 28, t4) in
+	let _ = fprintf outch "env:newtest\t\n" in
+	let _ = remove 50 t'''' in
+	let _ = fprintf outch "env:newtest\t\n" in
+	let _ = remove 60 t'''' in
+	let _ = fprintf outch "env:newtest\t\n" in
+	let _ = merge t1 t4 in
+	
+	let _ = Array.fold_left (fun t k -> 
+		let _ = fprintf outch "env:newtest\t\n" in
+		remove k t
+		) t1 ns1 in
+	()
+let _ = main () 

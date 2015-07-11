@@ -1,0 +1,2 @@
+qpDiff.cmo: qpMisc.cmo qpDag.cmi qpArch.cmo
+qpDiff.cmx: qpMisc.cmx qpDag.cmx qpArch.cmx

@@ -1,0 +1,7 @@
+(*qualif Loop(v): flag < 1
+qualif Loop(v): y < 0
+qualif Loop(v): x < 50
+qualif Loop(v): y = (0-2)
+qualif Loop(v): x = 99
+qualif Loop(v): x = y
+qualif Loop(v): x + y = 98*)

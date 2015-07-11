@@ -1,0 +1,25 @@
+let main () =	
+	let ns1 = [|1;15;14;|] in
+	let ns2 = [|2;13;12;|] in	
+	let ns = [|1;15;14;2;13;12|] in
+	let t1 = [] in
+	let t2 = [] in	
+	let t1 = Array.fold_left (fun t k -> 
+		let _ = fprintf outch "env:newtest\t\n" in
+		cons k t
+		) t1 ns1 in
+	let t2 = Array.fold_left (fun t k -> 
+		let _ = fprintf outch "env:newtest\t\n" in
+		cons k t
+		) t2 ns2 in
+	let _ = fprintf outch "env:newtest\t\n" in
+	let t = merge t1 t2 in
+	let _ = fprintf outch "env:newtest\t\n" in
+	let t = update t 3 7 in
+	let _ = Array.fold_left (fun t _ -> 
+		let _ = fprintf outch "env:newtest\t\n" in
+		if (Random.bool ()) then (ignore (head t); t)
+		else (tail t)
+		) t ns in
+	()
+let _ = main () 

@@ -1,0 +1,30 @@
+#!/bin/bash
+
+FILES=`cat countlist`
+
+let "cnt = 0"
+echo ann tot siz %
+for i in $FILES
+do
+  echo $i
+  echo -n chars: 
+  jj="`grep \"\#\" $i`"
+  jj=`echo "$jj" | tr "\#" " " | tr "\n" " " | tr -s "\t" " " | tr -s " " " "`
+  jj=`echo -n "$jj" | wc -m`
+  echo -n "$jj "
+  j=`cat $i | tr "\#" " " | tr "\n" " " | tr -s "\t" " " | tr -s " " " " | wc -m`
+  echo -n "$j "
+  let "cnt = $j - $jj"
+  echo -n "$cnt "
+  let "cnt = 100 * $jj / $j"
+  echo  "$cnt%"
+  echo -n lines: 
+  jj=`grep "\#" $i | wc -l`
+  echo -n "$jj "
+  j=`cat $i | tr -s "\n" "\n" | wc -l`
+  echo -n "$j "
+  let "cnt = $j - $jj"
+  echo -n "$cnt "
+  let "cnt = 100 * $jj / $j"
+  echo "$cnt%"
+done

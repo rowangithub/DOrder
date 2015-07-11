@@ -1,0 +1,12 @@
+qualif L(x) : x.p1 <= x.p2
+qualif M(x) : x.q1 <= x.q2
+qualif P(x) : x.q4 >= x.q3
+qualif N(x) : x <= l + 1
+qualif O(x) : x <= pc + 1
+qualif LN(x) : x != a + n
+qualif LM(x) : x <= a + n
+qualif Q(x) : x <= a + n - 1
+qualif QM(x) : x < a + n - 1
+qualif R(x) : x.p2 <= l + 1
+qualif S(x) : x.p2 >= l
+qualif T(x) : x.q3 <= x.q2 + 1

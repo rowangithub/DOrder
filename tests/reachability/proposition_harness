@@ -1,0 +1,13 @@
+let main () = 
+	let f1 = And (Or (Not (Or (Lit (Var, 2), Lit (Neg, 7))), And (Lit (Neg, 5), Lit (Var, 6))), Or (Not (And (Lit (Neg, 3), Lit (Var, 8))), And (Lit (Var, 9), Lit (Neg, 4)))) in
+	let f2 = Or (And (Not (Or (Lit (Var, 7), Lit (Neg, 2))), Or (Lit (Neg, 6), Lit (Var, 5))), Or (Not (And (Lit (Neg, 8), Lit (Var, 3))), Or (Lit (Var, 4), Lit (Neg, 9)))) in
+	let _ = fprintf outch "env:newtest\t\n" in
+	let f1 = to_nnf f1 in 
+	let _ = fprintf outch "env:newtest\t\n" in
+	let f2 = to_nnf f2 in 
+	let _ = fprintf outch "env:newtest\t\n" in
+	let _ = to_cnf f1 in
+	let _ = fprintf outch "env:newtest\t\n" in
+	let _ = to_cnf f2 in
+	()
+let _ = main ()

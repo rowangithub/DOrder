@@ -1,0 +1,19 @@
+let rec makeBdd level = 
+	if (level >= 0) then Fand (makeBdd (level-1), makeBdd (level - 1))
+	else Fvar (Random.int max_var)
+
+let main () =
+	let ns = Array.init 5 (fun _ -> 
+		let level = Random.int 5 in
+		let _ = fprintf outch "env:newtest\t\n" in
+		build (makeBdd level)) in	
+	let t = One in	
+	let t = Array.fold_left (fun t k -> 
+		let _ = (fprintf outch "env:newtest\t\n"; mk_not t) in
+		let _ = (fprintf outch "env:newtest\t\n"; mk_not k) in
+		if (Random.bool ()) then let _ = fprintf outch "env:newtest\t\n" in mk_and t k
+		else let _ = fprintf outch "env:newtest\t\n" in mk_and k t
+		) t ns in 
+	()
+let _ =
+  	main ()

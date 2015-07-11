@@ -1,0 +1,30 @@
+let f x = Random.bool ()	
+	
+let main () = 
+	let xs = [3;5;4;8;1;6;2;7] in
+	let _ = fprintf outch "env:newtest\t\n" in
+	let _ = split xs 3 in
+	let _ = fprintf outch "env:newtest\t\n" in
+	let _ = delete_at 3 xs in
+	let _ = fprintf outch "env:newtest\t\n" in
+	let _ = alternate [3;2;1] [4;6;5] in
+	let _ = fprintf outch "env:newtest\t\n" in
+	let _ = concat [1;3;2] [4;5;9;6] in
+	let _ = fprintf outch "env:newtest\t\n" in
+	let _ = rand_select [3;5;4;8;1;6;2;7] 3 in
+	let _ = fprintf outch "env:newtest\t\n" in
+	let _ = random_subsequence [3;5;4;8;1;6;2;7] in 
+	let _ = fprintf outch "env:newtest\t\n" in
+	let _ = rotate [3;2;7;5;8;4;6;1;] 3 in
+	let _ = fprintf outch "env:newtest\t\n" in
+	let _ = shuffle [5; 3; 4; 6; 2; 9; 7] in
+	let _ = fprintf outch "env:newtest\t\n" in
+	let _ = mem 4 xs in
+	let _ = fprintf outch "env:newtest\t\n" in
+	let _ = mem 0 xs in
+	let _ = fprintf outch "env:newtest\t\n" in
+	let _ = filter f xs in
+	let _ = fprintf outch "env:newtest\t\n" in
+	partition f xs
+	
+let _ = main ()

@@ -1,0 +1,4 @@
+(*qualif L(v) : v >= 0
+qualif L(v) : v > i
+qualif L(v) : v > j
+qualif L(v) : v >= i*)

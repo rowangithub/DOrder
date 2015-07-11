@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wc-entries
+   xmlns="svn:">
+<entry
+   committed-rev="20704"
+   name=""
+   committed-date="2013-03-29T17:48:49.070568Z"
+   url="svn+ssh://zhu103@zed.cs.purdue.edu/p/sss/svn/MCPA/external/yices/bin"
+   last-author="zhu103"
+   kind="dir"
+   repos="svn+ssh://zhu103@zed.cs.purdue.edu/p/sss/svn"
+   revision="21258"/>
+<entry
+   committed-rev="20704"
+   name="yices"
+   text-time="2013-02-25T18:24:10.000000Z"
+   committed-date="2013-03-29T17:48:49.070568Z"
+   checksum="5353d44edb11a6c5610669c5642115e1"
+   last-author="zhu103"
+   kind="file"
+   prop-time="2013-03-29T17:48:25.000000Z"/>
+</wc-entries>

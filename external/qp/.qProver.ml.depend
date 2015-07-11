@@ -1,0 +1,2 @@
+qProver.cmo: qpMisc.cmo qpEquality.cmo qpDiff.cmo qpDag.cmi qProver.cmi
+qProver.cmx: qpMisc.cmx qpEquality.cmx qpDiff.cmx qpDag.cmx qProver.cmi

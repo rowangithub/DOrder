@@ -1,0 +1,8 @@
+(*qualif Loop(v) : m = 10
+qualif Loop(v) : i = x
+qualif Loop(v) : (i) % 2 = 0
+qualif Loop(v) : x = 2 * y
+qualif Loop(v) : 2 * y + 1 = i
+qualif Loop(v) : 2 * y = i
+qualif Loop(v) : i < n
+qualif Loop(v) : i = m*)

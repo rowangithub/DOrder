@@ -1,0 +1,11 @@
+(*qualif Loop(v): x < 100
+qualif Loop(v): x <= 50
+qualif Loop(v): x < 25
+qualif Loop(v): z = 400
+qualif Loop(v): y = 2
+qualif Loop(v): x = 100
+qualif Loop(v): x + y = 102
+qualif Loop(v): x = y
+qualif Loop(v): x = z
+qualif Loop(v): y = z
+qualif Loop(v): 5 * x - z = 100*)

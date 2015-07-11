@@ -1,0 +1,2 @@
+main.cmo: qpParse.cmi qpMisc.cmo qpErrormsg.cmo qpAst.cmi qProver.cmi
+main.cmx: qpParse.cmx qpMisc.cmx qpErrormsg.cmx qpAst.cmx qProver.cmx

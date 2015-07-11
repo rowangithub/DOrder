@@ -1,0 +1,5 @@
+qualif POS(_V): _V >= 0 
+(* qualif NEG(_V): _V <= 0 *) 
+qualif LEQ(_V)(A:int) : _V <= ~A 
+qualif GEQ(_V)(A:int) : ~A <= _V    
+qualif ITV(_V): _V.0 <= _V.1 

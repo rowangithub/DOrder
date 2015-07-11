@@ -1,0 +1,12 @@
+let main () =
+	let ns = Array.init 200 (fun _ -> 
+		let x = Random.int 200 in
+		if (Random.bool ()) then x
+		else (0 - x)) in	
+	let t = Black (70, Empty, Empty) in	
+	let t = Array.fold_left (fun t k -> 
+		let _ = fprintf outch "env:newtest\t\n" in
+		insert t k
+		) t ns in
+	()
+let _ = main ()

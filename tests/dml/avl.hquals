@@ -1,0 +1,2 @@
+(* Data structure invariant *)
+qualif Avltree(v): height1 v >= height2 v and height1 v <= height2 v + 1

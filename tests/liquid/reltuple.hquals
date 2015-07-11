@@ -1,0 +1,1 @@
+qualif TWO_BETTER_THAN_ONE(t): t.0 < t.1

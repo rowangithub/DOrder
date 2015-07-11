@@ -1,0 +1,115 @@
+(*qualif Inv1(res) : forall (u v). (-. (link (res, node, 0, u, v)) or link (t, node, 0, u, v))
+qualif Inv2(res) : forall (u v). (-. (link (res, node, 2, u, v)) or link (t, node, 2, u, v))
+qualif Inv3(res) : forall (u v). (-. (link (t, node, 0, u, v)) or link (res, node, 0, u, v))
+qualif Inv4(res) : forall (u v). (-. (link (t, node, 2, u, v)) or link (res, node, 2, u, v))
+
+qualif Inv1(res) : forall (u v). (-. (link (res.1, node, 0, u, v)) or link (t, node, 0, u, v))
+qualif Inv2(res) : forall (u v). (-. (link (res.1, node, 2, u, v)) or link (t, node, 2, u, v))
+qualif Inv3(res) : forall (u v). (-. (link (t, node, 0, u, v)) or link (res.1, node, 0, u, v))
+qualif Inv4(res) : forall (u v). (-. (link (t, node, 2, u, v)) or link (res.1, node, 2, u, v))
+
+qualif Inv5(res) : forall (u). (-. (reach (t, u) or u = x) or reach (res, u))
+qualif Inv6(res) : forall (u). (-. reach (res, u) or (reach (t, u) or u = x)) 
+
+qualif Inv7(res) : forall (u v). (-. (link (res, node, 0, u, v)) or u > v)
+qualif Inv8(res) : forall (u v). (-. (link (res, node, 2, u, v)) or u < v)
+
+qualif Inv9(res) : forall (u). (-. (reach (t, u)) or reach (res, u))
+qualif Inv10(res): forall (u). (-. (reach (res, u)) or reach (t, u)) 
+
+qualif Inv11(value)  : forall (u). (-. (reach (t, u)) or u >= value) 
+qualif Inv11(value)  : forall (u). (-. (reach (t, u)) or u >= value.0) 
+qualif Inv11(res)  : forall (u). (-. (reach (res.1, u)) or u > res.0)
+qualif Inv11(value)  : forall (u). (-. (reach (t, u)) or u <= value)
+
+qualif Inv12(res): forall (u). (-. reach (t, u) or (u = res.0 or reach (res.1, u)))
+qualif Inv13(res): forall (u). (-. (u = res.0 or reach (res.1, u)) or reach (t, u))
+qualif Inv14(res): forall (u). (-. (reach (l, u) or reach (n, u)) or reach (res, u))
+qualif Inv15(res): forall (u). (-. reach (res, u) or (reach (l, u) or reach (n, u)))
+qualif Inv14(res): forall (u). (-. (reach (l, u) or reach (n, u) or u = y) or reach (res, u))
+qualif Inv15(res): forall (u). (-. reach (res, u) or (reach (l ,u) or reach (n, u) or u = y))
+
+qualif Inv16(res): forall (u). (-. reach (res, u) or u < y)
+qualif Inv17(res): forall (u). (-. reach (res, u) or u > y) 
+
+qualif Inv18(v): reach (t, v)
+qualif Inv18(v): reach (t, v.0)
+
+qualif Inv19(n): forall (u v). (-. (reach (l, u) and reach (n, v)) or u < v)
+
+qualif Inv5(res) : forall (u). (-. reach (t, u) or (reach (res, u) or u = x))
+qualif Inv6(res) : forall (u). (-. (reach (res, u) or u = x) or reach (t, u)) 
+
+qualif Inv20(res) : forall (u). (-. reach (res, u) or u < z)
+qualif Inv21(res) : forall (u). (-. reach (res, u) or u > z)
+qualif Inv22(res) : forall (u). (-. (reach (res.0, u) or reach (res.2, u) or u = z) or reach (t, u))
+qualif Inv23(res) : forall (u). (-. (reach (res.0, u) or reach (res.2, u)) or reach (t, u))
+qualif Inv24(res) : forall (u). (-. reach (t, u) or (reach (res.0, u) or reach (res.2, u) or u = z))
+qualif Inv25(res) : forall (u). (-. reach (t, u) or (reach (res.0, u) or reach (res.2, u)))
+qualif Inv26(value) : (-. reach (t, z) or value > 0)
+qualif Inv26(value) : (reach (t, z) or value <= 0)
+
+qualif Inv27(res) : forall (u). (-. reach (res, u) or (reach (s1, u) and reach (s2, u)))
+qualif Inv27(res) : forall (u). (-. (reach (s1, u) and reach (s2, u)) or reach (res, u))
+qualif Inv27(res) : forall (u). (-. reach (res, u) or (reach (s1, u) and -. reach (s2, u)))
+qualif Inv27(res) : forall (u). (-. (reach (s1, u) and -.reach (s2, u)) or reach (res, u))
+qualif Inv27(res): forall (u). (-. (reach (s1, u) or reach (s2, u)) or reach (res, u))
+qualif Inv27(res): forall (u). (-. reach (res, u) or (reach (s1, u) or reach (s2, u)))
+
+
+(*qualif Inv28(value): -. (forall (u). (-. reach (s1, u) or reach(s2, u))) or value > 0
+qualif Inv28(value): -. (-. (forall (u). (-. reach (s1, u) or reach(s2, u)))) or value <= 0*)
+qualif Inv28(value): -. (value > 0) or (forall (u). (-. reach (s1, u) or reach (s2, u)))
+qualif Inv28(value): -. (forall (u). (-. reach (s1, u) or reach (s2, u))) or value > 0
+
+qualif Inv29(res): forall (u). (-. reach (t, u) or reach (res.0, u))
+qualif Inv29(res): forall (u). (-. reach (f, u) or reach (res.1, u))
+qualif Inv29(res): forall (u). (-. reach (s, u) or (reach (res.0, u) or reach (res.1, u)))
+qualif Inv29(res): forall (u). (-. (reach (res.0, u) or reach (res.1, u)) or (reach (t, u) or reach (f, u) or reach (s, u)))
+qualif Inv29(res): forall (u). (-. (reach (res.0, u) or reach (res.1, u)) or reach (s, u))
+qualif Inv29(res): forall (u). (-. reach (accu, u) or reach (res, u))
+qualif Inv29(res): forall (u). (-. reach (s, u) or reach (res, u))
+qualif Inv29(res): forall (u). (-. reach (res, u) or (reach (accu, u) or reach (s, u)))
+qualif Inv29(res): forall (u). (-. reach (res, u) or reach (s, u))
+
+qualif Inv30(res): forall (u v). (-. link (s, node, 0, u, v) or link (res, cons, 1, v, u))
+qualif Inv30(res): forall (u v). (-. link (s, node, 2, u, v) or link (res, cons, 1, u, v))	
+qualif Inv30(res): forall (u v). (-. link (accu, cons, 1, u, v) or link (res, cons, 1, u ,v))
+qualif Inv30(res): forall (u v). (-. (reach (accu, u) and reach (s, v)) or link (res, cons, 1, v, u))
+
+qualif Inv31(value) : (-. reach (s, x) or value > 0)
+qualif Inv31(value) : (reach (s, x) or value <= 0)    *)
+
+
+
+(*qualif Inv7(res) : forall (u v). (-. (link (res, node, 0, u, v)) or u > v)
+qualif Inv8(res) : forall (u v). (-. (link (res, node, 2, u, v)) or u < v)
+qualif Inv7(res) : forall (u v). (-. (link (res, node, 20, u, v)) or u > v) *)
+
+(*qualif Inv16(res): forall (u). (-. reach (res, u) or u < y)
+qualif Inv17(res): forall (u). (-. reach (res, u) or u > y) 
+qualif Inv11(res)  : forall (u). (-. (reach (res.1, u)) or u > res.0)
+qualif Inv11(res)  : forall (u). (-. (reach (res.1, u)) or -. u = res.0) 
+
+qualif Inv18(v): reach (t, v)
+qualif Inv18(v): reach (t, v.0) *)
+
+qualif Inv19(n): forall (u v). (-. (reach (l, u) and reach (n, v)) or u < v)
+
+
+(*qualif Inv(res): forall (u v ). ((-. link (res.1, node, 0, u, v)) or link (t, node, 0, u, v) or link (t, node, 2, v, u) or link (t, node, 20, u, v))
+
+qualif Inv(res): forall (u v ). ((-. link (res.1, node, 2, u, v)) or link (t, node, 2, u, v) or link (t, node, 20, v, u) or link (t, node, 0, v, u))
+ 
+qualif Inv(res): forall (u v ). ((-. link (res.1, node, 20, u, v)) or link (t, node, 0, u, v) or link (t, node, 2, v, u) or link (t, node, 20, u, v))
+
+qualif Inv(res): forall (u v ). (-. (reach (res.1, u) and v = res.0) or link (t, node, 0, u, v) or link (t, node, 2, v, u) or link (t, node, 20, u, v)) *)
+
+(*qualif Inv20(res) : forall (u). (-. reach (res, u) or u < z)
+qualif Inv21(res) : forall (u). (-. reach (res, u) or u > z) *)
+(*qualif Inv22(res) : forall (u). (-. (reach (res.0, u) or reach (res.2, u) or u = z) or reach (t, u))
+qualif Inv23(res) : forall (u). (-. (reach (res.0, u) or reach (res.2, u)) or reach (t, u))
+qualif Inv24(res) : forall (u). (-. reach (t, u) or (reach (res.0, u) or reach (res.2, u) or u = z))
+qualif Inv25(res) : forall (u). (-. reach (t, u) or (reach (res.0, u) or reach (res.2, u))) *)
+(*qualif Inv26(value) : (-. reach (t, z) or value > 0)
+qualif Inv26(value) : (reach (t, z) or value <= 0) *)

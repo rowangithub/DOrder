@@ -1,0 +1,4 @@
+qualif Inv(res) : reach (res, x)
+
+
+qualif Inv(res) : forall (u v ). ((-. link (res.1, node, 0, u, v)) or link (t, node, 0, u, v) or link (t, node, 20, u, v) or link (t, node, 20, v, u) or ((reach (t, v)) and  (u = x)) or ((reach (t, u)) and  (v = x)) or link (t, node, 2, u, v))

@@ -1,0 +1,96 @@
+head	1.2;
+access;
+symbols;
+locks; strict;
+comment	@# @;
+
+
+1.2
+date	2006.07.17.14.56.14;	author dyuret;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2006.07.17.14.20.30;	author dyuret;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.2
+log
+@*** empty log message ***
+@
+text
+@This is GPA version 5.1.13.
+
+1. Compilation
+
+The files gpa.c, foreach.h, msg.h are required to build the gpa
+executable.  The necessary compilation instructions are in the
+Makefile.  The code relies on glib-2.0 which is freely available for
+linux and windows/cygwin.
+
+2. Weka usage:
+
+Copy the gpa executable to the directory that has weka.jar and run
+weka.sh (linux) or weka.bat (windows).  GPA should appear under
+classifiers/rules/GPA.  
+
+Note that the java code under src/weka also includes fixes to:
+  filters/supervised/attribute/Discretize
+  filters/unsupervised/attribute/Discretize
+
+Which are necessary to run GPA with numeric attributes.  I tried
+getting these bug fixes into the weka distribution but the mailing
+list was not very responsive.
+
+3. Standalone usage:
+
+  gpa [-d maxdepth] [-v nvalidate] [-p pruning mode] [-w cutoff] [-r] [-q] < data > model
+
+Both data and model files have the same format (see data/vote.dat for
+an example):
+
+  class feat1 feat2 ... # comments
+  class feat1 feat2 ... # comments
+
+The class and features are interpreted as unique strings, their
+internals are not relevant.  The type and amount of white-space is
+unimportant, the class and feature tokens cannot have white-space.
+
+Options:
+  -d maxdepth: Determines the maximum search depth, 0 means no cutoff,
+	default is 0.
+  -v nvalidate: 1/nvalidate of data to be used for validation, 0 means
+	no validation, default is 5.
+  -p pruning-mode: 0 means no pruning of rules based on validation.  1
+	outputs the shortest list of rules that achieve the best
+	validation.  2 outputs the longest list of rules that achieve
+	the best validation.  Default is 2.
+  -w cutoff: How many rules to generate after the best validation
+	score has been observed.  0 means no cutoff and is the default. 
+  -r: If present, srand(time(NULL)) is called when the program
+	starts.  Deafult is false.
+  -q: If present, turns of all messages.  Useful option when the
+	program is used with weka.
+  
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@d28 2
+a29 1
+Both data and model files have the same format:
+d31 2
+a32 2
+  class feat1 feat2 ...
+  class feat1 feat2 ...
+@

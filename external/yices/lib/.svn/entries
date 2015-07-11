@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wc-entries
+   xmlns="svn:">
+<entry
+   committed-rev="20704"
+   name=""
+   committed-date="2013-03-29T17:48:49.070568Z"
+   url="svn+ssh://zhu103@zed.cs.purdue.edu/p/sss/svn/MCPA/external/yices/lib"
+   last-author="zhu103"
+   kind="dir"
+   repos="svn+ssh://zhu103@zed.cs.purdue.edu/p/sss/svn"
+   revision="21258"/>
+<entry
+   committed-rev="20704"
+   name="liboyices.a"
+   text-time="2013-03-26T20:40:29.000000Z"
+   committed-date="2013-03-29T17:48:49.070568Z"
+   checksum="2db21fe8bd80db0818f7a4fa8b0dabb0"
+   last-author="zhu103"
+   kind="file"
+   prop-time="2013-03-29T17:48:25.000000Z"/>
+<entry
+   committed-rev="20704"
+   name="oyices.cmx"
+   text-time="2013-03-26T20:40:28.000000Z"
+   committed-date="2013-03-29T17:48:49.070568Z"
+   checksum="ff1e788663ae32f68e50c7015e9b4555"
+   last-author="zhu103"
+   kind="file"
+   prop-time="2013-03-29T17:48:25.000000Z"/>
+<entry
+   committed-rev="20704"
+   name="libyices.a"
+   text-time="2013-02-25T18:24:10.000000Z"
+   committed-date="2013-03-29T17:48:49.070568Z"
+   checksum="b3366c7c92e6465161245c74f16a5123"
+   last-author="zhu103"
+   kind="file"
+   prop-time="2013-03-29T17:48:25.000000Z"/>
+<entry
+   committed-rev="20704"
+   name="oyices.cmi"
+   text-time="2013-03-26T20:40:27.000000Z"
+   committed-date="2013-03-29T17:48:49.070568Z"
+   checksum="2e98d62c7c457cf02a4c4e3d6ff8c4b3"
+   last-author="zhu103"
+   kind="file"
+   prop-time="2013-03-29T17:48:25.000000Z"/>
+<entry
+   committed-rev="20704"
+   name="oyices.cmxa"
+   text-time="2013-03-26T20:40:28.000000Z"
+   committed-date="2013-03-29T17:48:49.070568Z"
+   checksum="77a0b70ca54610625121fdc10b40e743"
+   last-author="zhu103"
+   kind="file"
+   prop-time="2013-03-29T17:48:25.000000Z"/>
+<entry
+   committed-rev="20704"
+   name="libyices.dylib"
+   text-time="2013-02-25T18:24:10.000000Z"
+   committed-date="2013-03-29T17:48:49.070568Z"
+   checksum="19be89c41542de503c0adf852126fc95"
+   last-author="zhu103"
+   kind="file"
+   prop-time="2013-03-29T17:48:25.000000Z"/>
+<entry
+   committed-rev="20704"
+   name="oyices.cmo"
+   text-time="2013-03-26T20:40:28.000000Z"
+   committed-date="2013-03-29T17:48:49.070568Z"
+   checksum="e8c93012981e42828a7cd22af2bfae32"
+   last-author="zhu103"
+   kind="file"
+   prop-time="2013-03-29T17:48:25.000000Z"/>
+<entry
+   committed-rev="20704"
+   name="oyices.a"
+   text-time="2013-03-26T20:40:28.000000Z"
+   committed-date="2013-03-29T17:48:49.070568Z"
+   checksum="e145cb30eb992027d07fa3ce6324b78b"
+   last-author="zhu103"
+   kind="file"
+   prop-time="2013-03-29T17:48:25.000000Z"/>
+<entry
+   committed-rev="20704"
+   name="oyices.cma"
+   text-time="2013-03-26T20:40:28.000000Z"
+   committed-date="2013-03-29T17:48:49.070568Z"
+   checksum="08b097e816968e4895c23f55635bbe32"
+   last-author="zhu103"
+   kind="file"
+   prop-time="2013-03-29T17:48:25.000000Z"/>
+</wc-entries>

@@ -1,0 +1,62 @@
+let extract list =
+	let k = 2 in
+    let rec aux k acc emit = function
+      | [] -> acc
+      | h :: t8 ->
+        if k = 1 then aux k (emit [h] acc) emit t8 else
+          let new_emit x = emit (h :: x) in
+          aux k (aux (k-1) acc new_emit t8) emit t8
+    in
+    let emit x acc = x :: acc in
+    let res = aux k [] emit list in
+    let _ = assert (res <> []) in
+    List.map (fun res -> (List.nth res 0, List.nth res 1)) res
+
+let insert number = 
+	let ns = Array.init number (fun _ -> Random.int number) in	
+	let t8 = Empty in	
+	let (t8, n') = Array.fold_left (fun (t8, number) k -> 
+		let index = Random.int (number+1) in
+		let _ = fprintf outch "env:newtest\t8\n" in
+		(insert index k t8, number+1)
+		) (t8, 0) ns in
+	(ns, t8)
+	
+let remove ns number t8 = 	
+	let (_, n') = Array.fold_left (fun (t8, number) k -> 
+		let index = Random.int number in
+		let _ = fprintf outch "env:newtest\t8\n" in
+		(remove index t8, number-1)
+		) (t8, number) ns in
+	t8
+
+let main () =
+	let number = 300 in
+	let (ns, t8) = insert number in
+	let _ = remove ns number t8 in
+	let t1 = Empty in
+	let (_,t2) = insert 5 in
+	let (_,t3) = insert 10 in
+	let (_,t4) = insert 20 in
+	let (_,t5) = insert 40 in
+	let (_,t6) = insert 80 in
+	let (_,t7) = insert 140 in	
+	let pairs = extract [t1; t2; t3; t4; t5; t6; t7; t8] in	
+	let _ = List.iter (fun (t1, t2) -> 
+		let _ = fprintf outch "env:newtest\t8\n" in	
+		ignore (concat t1 t2);
+		let _ = fprintf outch "env:newtest\t8\n" in
+		ignore (concat t2 t1)
+		) pairs in
+	
+	let _ = fprintf outch "env:newtest\t8\n" in	
+	let _ = append 100 t8 in
+	let _ = fprintf outch "env:newtest\t8\n" in	
+	let _ = pop 50 t8 in
+	let _ = fprintf outch "env:newtest\t8\n" in	
+	let _ = set 50 101 t8 in
+	let _ = fprintf outch "env:newtest\t8\n" in	
+	let _ = get 50 t8 in
+	()
+let _ =
+  main ()

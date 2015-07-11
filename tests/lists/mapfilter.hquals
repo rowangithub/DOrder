@@ -1,0 +1,3 @@
+(*qualif P(x) : List.length x > 0
+qualif Q(x) : (List.length xs = 0 and x = 0) or (List.length xs > 0 and x = 1)
+qualif Q(x) : (List.length ho_0 = 0 and x = 0) or (List.length ho_0 > 0 and x = 1)*)

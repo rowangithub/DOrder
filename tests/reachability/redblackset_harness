@@ -1,0 +1,13 @@
+let main () =		 
+	let ns = [|1;15;14;2;13;12;6;9;5;4;10;3;11;8|] in
+	let t = E in	
+	let t = Array.fold_left (fun t k -> 
+		let _ = fprintf outch "env:newtest\t\n" in
+		insert k t
+		) t ns in
+	let _ = fprintf outch "env:newtest\t\n" in	
+	let _ = member 1 t in
+	let _ = fprintf outch "env:newtest\t\n" in
+	let _ = member 0 t in
+	()
+let _ = main () 

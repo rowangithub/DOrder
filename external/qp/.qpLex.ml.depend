@@ -1,0 +1,2 @@
+qpLex.cmo: qpParse.cmi qpErrormsg.cmo
+qpLex.cmx: qpParse.cmx qpErrormsg.cmx

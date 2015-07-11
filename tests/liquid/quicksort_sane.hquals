@@ -1,0 +1,1 @@
+qualif STARTSIZE(k) : k + [start, i, j, a] <= Array.length arr

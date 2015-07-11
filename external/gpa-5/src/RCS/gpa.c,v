@@ -1,0 +1,1356 @@
+head	1.13;
+access;
+symbols;
+locks; strict;
+comment	@ * @;
+
+
+1.13
+date	2006.05.28.09.33.23;	author dyuret;	state Exp;
+branches;
+next	1.12;
+
+1.12
+date	2006.05.08.23.03.18;	author dyuret;	state Exp;
+branches;
+next	1.11;
+
+1.11
+date	2006.05.08.22.18.17;	author dyuret;	state Exp;
+branches;
+next	1.10;
+
+1.10
+date	2006.05.08.21.11.48;	author dyuret;	state Exp;
+branches;
+next	1.9;
+
+1.9
+date	2006.03.07.13.35.07;	author dyuret;	state Exp;
+branches;
+next	1.8;
+
+1.8
+date	2006.03.05.15.07.14;	author dyuret;	state Exp;
+branches;
+next	1.7;
+
+1.7
+date	2006.03.05.15.06.32;	author dyuret;	state Exp;
+branches;
+next	1.6;
+
+1.6
+date	2006.03.05.12.55.42;	author dyuret;	state Exp;
+branches;
+next	1.5;
+
+1.5
+date	2006.03.05.09.37.19;	author dyuret;	state Exp;
+branches;
+next	1.4;
+
+1.4
+date	2006.03.04.15.10.19;	author dyuret;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	2006.03.03.22.50.38;	author dyuret;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2006.03.03.21.39.02;	author dyuret;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2006.03.03.20.16.54;	author dyuret;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.13
+log
+@*** empty log message ***
+@
+text
+@/* GPA version 5 is based on gpa-4.1.14, but handles sparse data by using
+   integer arrays to represent attributes rather than bit fields. */
+
+#include <stdlib.h>
+#include <stdio.h>
+#include <strings.h>
+#include <getopt.h>
+#include <time.h>
+#include <glib.h>
+#include "foreach.h"
+/* #include "procinfo.h" */
+
+#define VERBOSE 1
+int msg_quiet = 0;
+#include "msg.h"
+
+/* #define G_DISABLE_ASSERT */
+
+typedef GPtrArray *Array;
+#define make_array() g_ptr_array_new()
+#define free_array(a) g_ptr_array_free((a),1)
+#define aref(a,i) ((a)->pdata[i])
+#define aput(a,x) g_ptr_array_add((a),(gpointer)(x))
+#define alen(a) ((a)->len)
+#define reset_array(a) g_ptr_array_set_size((a), 0)
+#define delete_last(a) g_ptr_array_set_size((a), alen(a)-1);
+
+/* This is from garray.c in glib - not quite portable */
+
+typedef struct _GRealPtrArray  GRealPtrArray;
+
+struct _GRealPtrArray
+{
+  gpointer *pdata;
+  guint     len;
+  guint     alloc;
+};
+
+Array make_array_sized(int n) {
+  GRealPtrArray *array = (GRealPtrArray *) make_array();
+  array->len = 0;
+  array->alloc = n;
+  array->pdata = g_malloc(sizeof (gpointer) * array->alloc);
+  return (Array) array;
+}
+
+Array copy_array(Array a, Array b) {
+  reset_array(a);
+  foreach(gpointer, x, b) {
+    aput(a, x);
+  }
+  return a;
+}
+
+int afind(Array a, int x) {
+  foreach(int, i, a) {
+    if (i == x) return 1;
+  }
+  return 0;
+}
+
+typedef GHashTable *Hash;
+#define make_hash() g_hash_table_new(g_str_hash, g_str_equal)
+#define free_hash(h) g_hash_table_destroy(h)
+#define hget(h,k) g_hash_table_lookup(h,k)
+#define hset(h,k,v) g_hash_table_insert(h,k,(gpointer)(v))
+#define hlen(h) g_hash_table_size(h)
+
+typedef gint32 Class;
+typedef gint32 Attr;
+
+typedef struct _Instance {
+  Array attr;			/* attr array */
+  Class class;			/* correct class of instance */
+  Class guess;			/* current guess by dlist */
+} *Instance;
+
+Instance make_instance() {
+  Instance x = g_new0(struct _Instance, 1);
+  x->attr = make_array();
+  x->class = 0;
+  x->guess = -1;
+  return x;
+}
+
+Instance make_instance_using (Class class, Array attr) {
+  Instance x = g_new0(struct _Instance, 1);
+  x->attr = make_array_sized(alen(attr));
+  copy_array(x->attr, attr);
+  x->class = class;
+  x->guess = -1;
+  return x;
+}
+
+void free_instance(Instance x) {
+  free_array(x->attr);
+  g_free(x);
+}
+
+typedef struct _Rule {
+  Array attr;			/* attribute array */
+  Class class;			/* predicted class */
+  int gain;			/* gain on training set */
+  int correct;			/* number of correct instances */
+  int domain;			/* number of instances in domain */
+  int vgain;			/* gain on validation set */
+  int vcorrect;			/* number of correct instances in validation*/
+  int vdomain;			/* number of instances in domain in validation */
+} *Rule;
+
+Rule make_rule() {
+  Rule x = g_new0(struct _Rule, 1);
+  x->attr = make_array();
+  return x;
+}
+
+void free_rule(Rule x) {
+  free_array(x->attr);
+  g_free(x);
+}
+
+int rmatch(Rule r, Instance x) {
+  foreach (Attr, ra, r->attr) {
+    int m = 0;
+    foreach (Attr, rx, x->attr) {
+      if (rx == ra) {
+	m = 1; break;
+      }
+    }
+    if (m == 0) return 0;
+  }
+  return 1;
+}
+
+typedef struct _Data {
+  Array instances;		/* array of instances */
+  Array attributes;		/* array of strings */
+  Array classes;		/* array of strings */
+  Array train;			/* training set (subset of instances) */
+  Array validate;		/* validation set (subset of instances) */
+} *Data;
+
+Data make_data() {
+  Data d = g_new0(struct _Data, 1);
+  d->instances = make_array();
+  d->attributes = make_array();
+  d->classes = make_array();
+  d->train = make_array();
+  d->validate = make_array();
+  return d;
+}
+
+void free_data(Data d) {
+  foreach(Instance, x, d->instances) free_instance(x);
+  foreach(gpointer, s, d->attributes) g_free(s);
+  foreach(gpointer, s, d->classes) g_free(s);
+  free_array(d->instances);
+  free_array(d->attributes);
+  free_array(d->classes);
+  free_array(d->train);
+  free_array(d->validate);
+  g_free(d);
+}
+
+Data read_data() {
+  Data d = make_data();		/* return value */
+  Hash attr_hash = make_hash();	/* index attr strings  */
+  Hash class_hash = make_hash(); /* index class strings */
+  Array raw = make_array();	/* read data in here first */
+
+  foreach_line (buf, NULL) {	/* convert all class/attr to uniq int */
+    Hash h = class_hash;	/* first token is class */
+    Array a = d->classes;
+    foreach_token (tok, buf) {
+      if (*tok == '#') break;
+      gint32 i = (gint32) hget(h, tok);
+      if (i == 0) {		/* not seen before */
+	gchar *str = g_strdup(tok);
+	i = hlen(h);
+	if (i == 0) i = -1;	/* swap 0 and -1, 0 means not seen */
+	hset(h, str, i);
+	aput(a, str);
+      }
+      if (i == -1) i = 0;	/* swap them back */
+      aput(raw, i);
+      if (h == class_hash) {	/* the rest are attributes */
+	h = attr_hash;
+	a = d->attributes;
+      }
+    }
+    aput(raw, -1);		/* mark the end of instance */
+  }
+  /* create instances */
+  Class class = -1;
+  Array attr_array = make_array();
+  foreach (gint32, i, raw) {	
+    if (i == -1) {		/* end of instance */
+      Instance x = make_instance_using(class, attr_array);
+      aput(d->instances, x);
+      reset_array(attr_array);
+      class = -1;
+    } else if (class == -1) {	/* new instance, class */
+      class = i;
+    } else if (!afind(attr_array, i)) {	/* attribute */
+      aput(attr_array, i);
+    }
+  }
+  free_hash(attr_hash);
+  free_hash(class_hash);
+  free_array(raw);
+  free_array(attr_array);
+  return d;
+}
+
+void write_data(Data d) {
+  foreach(Instance, x, d->instances) {
+    fputs(aref(d->classes, x->class), stdout);
+    foreach (Attr, i, x->attr) {
+      putchar(' ');
+      fputs(aref(d->attributes, i), stdout);
+    }
+    putchar('\n');
+  }
+}
+
+typedef struct _SearchContext {
+  Data data;			/* data */
+  int nattr;			/* total number of attributes */
+  int nclass;			/* total number of classes */
+  Array attr;			/* currently searching this */
+  Array best_attr;		/* best rule so far */
+  int best_gain;		/* gain of best rule */
+  Class best_class;		/* class of best rule */
+  int *class_cnt;		/* utility array to count classes in domain */
+  int *class_mistakes;		/* utility array to count mistakes in domain */
+  guint memsize;		/* size of memory buffer */
+  void **mem;			/* allocated memory buffer */
+  void **free;			/* free pointer for memory buffer */
+  guint memusage;		/* track the max mem usage */
+  Array index;			/* attr -> instances array */
+} *SearchContext;
+
+SearchContext make_search_context(Data d) {
+  SearchContext s = g_new0(struct _SearchContext, 1);
+  s->data = d;
+  s->nattr = alen(d->attributes);
+  s->nclass = alen(d->classes);
+  s->attr = make_array();
+  s->best_attr = make_array();
+  s->best_gain = 0;
+  s->best_class = 0;
+  s->class_cnt = g_new0(int, s->nclass);
+  s->class_mistakes = g_new0(int, s->nclass);
+  s->memsize = 16 * s->nattr + 4 * alen(d->train);
+  msg1("Allocating %u kB of memory", (s->memsize >> 8));
+  s->mem = g_malloc(s->memsize * sizeof(gpointer));
+  s->free = s->mem;
+  s->memusage = 0;
+  s->index = make_array();
+
+  /* Index optimization */
+  msg1("Indexing training instances");
+  foreach (gpointer, a, d->attributes) {
+    aput(s->index, make_array());
+  }
+  foreach (Instance, x, d->train) {
+    foreach (Attr, a, x->attr) {
+      aput(aref(s->index, a), x);
+    }
+  }
+  msg1("Indexing done");
+  return s;
+}
+
+void free_search_context(SearchContext s) {
+  free_array(s->attr);
+  free_array(s->best_attr);
+  g_free(s->class_cnt);
+  g_free(s->class_mistakes);
+  g_free(s->mem);
+  foreach(Array, a, s->index) free_array(a);
+  free_array(s->index);
+  g_free(s);
+}
+
+void reset_search_context(SearchContext s) {
+  reset_array(s->attr);
+  reset_array(s->best_attr);
+  s->best_gain = 0;
+  s->best_class = 0;
+  for (int i = 0; i < s->nclass; i++) {
+    s->class_cnt[i] = 0;
+    s->class_mistakes[i] = 0;
+  }
+  s->free = s->mem;
+  s->memusage = 0;
+  /* Note: does not touch the index! */
+}
+
+static GString *gstr;
+
+char *attr2str(Array attr, Data d) {
+  if (gstr == NULL) gstr = g_string_new("");
+  g_string_assign(gstr, "");
+  foreach (Attr, j, attr) {
+    g_string_append(gstr, aref(d->attributes, j));
+    g_string_append_c(gstr, ' ');
+  }
+  return gstr->str;
+}
+
+
+/* search: implements opus search for the best rule.  Returns 0 on
+   success and -1 on "Out of Memory" error, in which case the memory
+   buffer in SearchContext should be increased.  
+
+   s: The answer is returned in the SearchContext structure which also
+   contains temporary space and information for the search.  In
+   particular the current rule in the search is represented in
+   s->attr.
+   
+   inst, ninst: The instances covered by the current rule (initially
+   set to the full data set.)
+   
+   try, ntry: The attributes to be added to the current rule.
+*/
+int brk(int x) { return x; }
+#define checkmem(n) if(fptr + (n) >= s->mem + s->memsize){return brk(-1);} 
+
+int search(SearchContext s, Instance *inst, int ninst, Attr *try, int ntry, int depth) {
+  void **fptr = s->free;	/* free pointer for efficiency */
+  msg2("Entering search [%s] ninst=%d ntry=%d", 
+       attr2str(s->attr, s->data), ninst, ntry);
+
+  /* Compute maxgain and intersection for each attribute in try */
+  checkmem(3 * s->nattr);
+  /* inst_ptr[a]: Pointer to the instance domain of attribute a */
+  Instance **inst_ptr = (Instance **) fptr; 
+  fptr += s->nattr;
+  /* inst_len[a]: The length of the instance domain of attribute a */
+  int *inst_len = (int *) fptr; 
+  fptr += s->nattr;
+  /* maxgain[a]: The maxgain for attribute a */
+  int *maxgain = (int *) fptr; 
+  fptr += s->nattr;
+
+  for (int i = 0; i < ntry; i++) {
+    Attr a = try[i];
+    maxgain[a] = 0;
+    msg2("Trying attribute [%s]", (char*)aref(s->data->attributes, a));
+    g_assert(afind(s->attr, a) == 0);
+
+    /* Compute intersection */
+    if (alen(s->attr) > 0) {
+      checkmem(ninst);
+      inst_ptr[a] = (Instance *) fptr;
+      for (int j = 0; j < ninst; j++) {
+	Instance x = inst[j];
+	if (afind(x->attr, a)) {
+	  *fptr++ = x;
+	}
+      }
+      inst_len[a] = (Instance *) fptr - inst_ptr[a];
+    } else {
+      Array z = (Array) aref(s->index, a);
+      inst_ptr[a] = (Instance *) z->pdata;
+      inst_len[a] = alen(z);
+    }
+    msg2("Domain has [%d] elements", inst_len[a]);
+
+    /* If the new attribute has no effect, skip it */
+    if (inst_len[a] == ninst) {
+      msg2("Attribute has no effect, skipping");
+      continue;
+    }
+
+    /* If num elements < best gain skip it */
+    if ((inst_len[a] < s->best_gain) ||
+	((inst_len[a] == s->best_gain) &&
+	 (alen(s->attr) + 1 >= alen(s->best_attr)))) {
+      msg2("Domain smaller than best gain, skipping");
+      continue;
+    }
+    
+    /* Count classes and mistakes for gain calculation */
+    int nmistakes = 0;
+    memset(s->class_cnt, 0, s->nclass * sizeof(int));
+    memset(s->class_mistakes, 0, s->nclass * sizeof(int));
+    for (int j = 0; j < inst_len[a]; j++) {
+      Instance x = inst_ptr[a][j];
+      s->class_cnt[x->class]++;
+      if (x->class != x->guess) {
+	nmistakes++;
+	s->class_mistakes[x->class]++;
+      }
+    }
+    msg2("Mistakes in domain [%d]", nmistakes);
+
+    /* Compute best class, gain, maxgain */
+    int class = 0;
+    int class_cnt = s->class_cnt[0];
+    int maxg = s->class_mistakes[0];
+    for (int j = 1; j < s->nclass; j++) {
+      if (s->class_cnt[j] > class_cnt) {
+	class_cnt = s->class_cnt[j];
+	class = j;
+      }
+      if (s->class_mistakes[j] > maxg) {
+	maxg = s->class_mistakes[j];
+      }
+    }
+
+    msg2("Best class is [%s] with [%d] instances",
+	(char*)aref(s->data->classes, class), s->class_cnt[class]);
+    msg2("Maxgain is [%d]", maxg);
+
+    /* Skip if maxgain is less than best gain */
+    if ((maxg < s->best_gain)||
+	((maxg == s->best_gain) &&
+	 (alen(s->attr) + 1 >= alen(s->best_attr)))) {
+      msg2("Maxgain less than best gain, skipping");
+      continue;
+    }
+
+    /* We have a keeper */
+    maxgain[a] = maxg;
+
+    /* Update best if new gain is higher */
+    int gain = class_cnt + nmistakes - inst_len[a];
+    msg2("Gain is [%d]", gain);
+
+    if ((gain > s->best_gain) ||
+	((gain == s->best_gain) &&
+	 (alen(s->attr) + 1 < alen(s->best_attr)))) {
+      msg2("Updating [%s %s] gain=%d best_gain=%d",
+	   (char*)aref(s->data->classes, class),
+	   attr2str(s->attr, s->data), gain, s->best_gain);
+      s->best_gain = gain;
+      s->best_class = class;
+      copy_array(s->best_attr, s->attr);
+      aput(s->best_attr, a);
+    }
+  }
+  /* If this is the maxdepth, we are done */
+  if (depth == 1)
+    return 0;
+
+  /* Sort attributes in try based on their maxgain */
+  int compar(const void *p1, const void *p2) {
+    return (maxgain[*(int*)p2] - maxgain[*(int*)p1]);
+  }
+  qsort(try, ntry, sizeof(int), compar);
+
+  /* Allocate next try */
+  checkmem(ntry);
+  Attr *try_next = (Attr *) fptr; 
+  fptr += ntry;
+  int ntry_next = 0;
+
+  /* Prepare memory for recursive calls */
+  g_assert(fptr < s->mem + s->memsize);
+  if (fptr - s->mem > s->memusage)
+    s->memusage = fptr - s->mem;
+  void **fsave = s->free;
+  s->free = fptr;
+
+  /* Do the recursive calls */
+  for (int i = 0; i < ntry; i++) {
+    Attr a = try[i];
+    if ((maxgain[a] < s->best_gain) ||
+	(maxgain[a] == 0))
+      break;
+    msg2("Recursing on attribute [%s]", (char*)aref(s->data->attributes, a));
+    if (ntry_next > 0) {
+      aput(s->attr, a);
+      int rval = search(s, inst_ptr[a], inst_len[a], try_next, ntry_next, depth - 1);
+      if (rval != 0) return rval;
+      delete_last(s->attr);
+    } else {
+      msg2("Nothing to try, no recursive call.");
+    }
+    try_next[ntry_next++] = a;
+  }
+
+  /* Restore memory buffer */
+  s->free = fsave;
+  return 0;
+}
+
+Class init_class(SearchContext s, Instance *inst, int ninst) {
+  msg2("Computing initial class");
+  /* Count classes and mistakes */
+  int nmistakes = 0;
+  for (int j = 0; j < s->nclass; j++) {
+    s->class_cnt[j] = 0;
+    s->class_mistakes[j] = 0;
+  }
+  for (int j = 0; j < ninst; j++) {
+    Instance x = inst[j];
+    s->class_cnt[x->class]++;
+    if (x->class != x->guess) {
+      nmistakes++;
+      s->class_mistakes[x->class]++;
+    }
+  }
+  msg2("Mistakes in domain [%d]", nmistakes);
+
+  /* Compute best class, gain, maxgain */
+  int class = 0;
+  int nclass = s->class_cnt[0];
+  int maxgain = s->class_mistakes[0];
+  for (int j = 1; j < s->nclass; j++) {
+    if (s->class_cnt[j] > nclass) {
+      nclass = s->class_cnt[j];
+      class = j;
+    }
+    if (s->class_mistakes[j] > maxgain) {
+      maxgain = s->class_mistakes[j];
+    }
+  }
+  msg2("Best class is [%s] with [%d] instances",
+	    (char*)aref(s->data->classes, class), s->class_cnt[class]);
+  msg2("Maxgain is [%d]", maxgain);
+  msg2("Gain is [%d]", nclass + nmistakes - ninst);
+  return class;
+}
+
+/* Command line options */
+void usage(char *cmd) {
+  g_error("Usage: %s [-d maxdepth] [-v nvalidate] [-p pruning mode] [-w cutoff] [-r] [-q] < data > model", cmd);
+}
+
+void rule_apply(Rule r, Data d) {
+  /* updates inst->guess, rule stats */
+  r->gain = r->domain = r->correct = 0;
+  r->vgain = r->vdomain = r->vcorrect = 0;
+  foreach(Instance, x, d->train) {
+    if (rmatch(r, x)) {
+      r->domain++;
+      if (r->class == x->class) {
+	r->correct++;
+	if (x->guess != x->class) {
+	  r->gain++;
+	}
+      } else if (x->guess == x->class) {
+	r->gain--;
+      }
+      x->guess = r->class;
+    }
+  }
+  foreach(Instance, x, d->validate) {
+    if (rmatch(r, x)) {
+      r->vdomain++;
+      if (r->class == x->class) {
+	r->vcorrect++;
+	if (x->guess != x->class) {
+	  r->vgain++;
+	}
+      } else if (x->guess == x->class) {
+	r->vgain--;
+      }
+      x->guess = r->class;
+    }
+  }
+}
+
+int main(int argc, char **argv) {
+  /* g_log_set_handler(NULL, G_LOG_LEVEL_MESSAGE, my_log_func, NULL); */
+  /* g_mem_set_vtable(glib_mem_profiler_table); */
+  int o;
+  int maxdepth = 0;
+  int nvalidate = 5;
+  int nwait = 0;
+  int prune = 2;
+  int rand_opt = 0;
+  gstr = g_string_new("");
+
+  while ((o = getopt(argc, argv, "d:m:v:p:w:rq")) != -1) {
+    switch(o) {
+    case 'd': maxdepth = atoi(optarg); break;
+    case 'v': nvalidate = atoi(optarg); break;
+    case 'w': nwait = atoi(optarg); break;
+    case 'p': prune = atoi(optarg); break;
+    case 'r': rand_opt = 1; srand(time(NULL)); break;
+    case 'q': msg_quiet = 1; break;
+    default: usage(argv[0]); break;
+    }
+  }
+
+  if (maxdepth <= 0) maxdepth = G_MAXINT;
+  if ((nwait <= 0) || (prune == 0)) nwait = G_MAXINT;
+  if ((prune < 0) || (prune > 2)) usage(argv[0]);
+  if (nvalidate < 2) prune = 0;
+  msg1("$Id: gpa.c,v 1.12 2006/05/08 23:03:18 dyuret Exp dyuret $\n");
+  msg1("maxdepth=%d nvalidate=%d nwait=%d prune=%d rand=%d",
+       maxdepth, nvalidate, nwait, prune, rand_opt);
+
+  Array dlist = make_array();
+  Data d = read_data();
+  msg1("Read %d instances, %d classes, %d attributes",
+       alen(d->instances), alen(d->classes), alen(d->attributes));
+  if (maxdepth > alen(d->attributes)) {
+    maxdepth = alen(d->attributes);
+    msg1("Reset maxdepth=%d", maxdepth);
+  }
+
+  /* Split the training and validation sets */
+  if (nvalidate > 1) {
+    foreach (Instance, x, d->instances) {
+      if (0 == ((rand()>>10)%nvalidate)) {
+	aput(d->validate, x);
+      } else {
+	aput(d->train, x);
+      }
+    }
+  } else {
+    free_array(d->train);
+    d->train = d->instances;
+  }
+  msg1("Split data into %d training and %d validation instances",
+       alen(d->train), alen(d->validate));
+
+  SearchContext s = make_search_context(d);
+  int nattr = alen(d->attributes);
+  Attr *attrlist = g_new0(Attr, nattr);
+  for (int j = 0; j < nattr; j++) attrlist[j] = j;
+
+  Class c = init_class(s, (Instance *) d->train->pdata, alen(d->train));
+  Rule r = make_rule();
+  r->class = c;
+  rule_apply(r, d);
+  aput(dlist, r);
+
+  int total = r->gain;
+  int vtotal = r->vgain;
+  printf("%s  # gain=%d correct=%d/%d total=%d/%d vgain=%d vcorrect=%d/%d vtotal=%d/%d\n", 
+	 (char*)aref(d->classes, r->class), 
+	 r->gain, r->correct, r->domain, total, alen(d->train),
+	 r->vgain, r->vcorrect, r->vdomain, vtotal, alen(d->validate));
+  msg1  ("%s  # gain=%d correct=%d/%d total=%d/%d vgain=%d vcorrect=%d/%d vtotal=%d/%d", 
+	 (char*)aref(d->classes, r->class), 
+	 r->gain, r->correct, r->domain, total, alen(d->train),
+	 r->vgain, r->vcorrect, r->vdomain, vtotal, alen(d->validate));
+  fflush(NULL);
+
+  int vmax = vtotal;
+  int nprint = 1;		/* num rules printed */
+
+  for (;;) {
+    reset_search_context(s);
+    int rval = search(s, (Instance *) d->train->pdata, 
+		      alen(d->train), attrlist, nattr, maxdepth);
+    if (rval == -1) {		/* out of memory */
+      s->memsize *= 2;
+      msg1("Doubling memory to %u kB", (s->memsize >> 8));
+      s->mem = g_realloc(s->mem, s->memsize * sizeof(gpointer));
+      continue;
+    }
+    if (s->best_gain <= 0) break;
+
+    Rule r = make_rule();
+    copy_array(r->attr, s->best_attr);
+    r->class = s->best_class;
+    rule_apply(r, d);
+    aput(dlist, r);
+    g_assert(r->gain == s->best_gain);
+
+    total += r->gain;
+    vtotal += r->vgain;
+
+    msg1("[%d kB %d rules] %s %s # gain=%d correct=%d/%d total=%d/%d vgain=%d vcorrect=%d/%d vtotal=%d/%d", 
+	 (s->memusage >> 8), alen(dlist),
+	 (char*)aref(d->classes, r->class), attr2str(r->attr, d), 
+	 r->gain, r->correct, r->domain, total, alen(d->train),
+	 r->vgain, r->vcorrect, r->vdomain, vtotal, alen(d->validate));
+
+    if ((prune == 0) ||
+	((prune == 1) && (vtotal > vmax)) ||
+	((prune == 2) && (vtotal >= vmax))) {
+      for ( ; nprint < alen(dlist); nprint++) {
+	r = aref(dlist, nprint);
+	printf("%s %s # gain=%d correct=%d/%d total=%d/%d vgain=%d vcorrect=%d/%d vtotal=%d/%d\n", 
+	       (char*)aref(d->classes, r->class), attr2str(r->attr, d),
+	       r->gain, r->correct, r->domain, total, alen(d->train),
+	       r->vgain, r->vcorrect, r->vdomain, vtotal, alen(d->validate));
+      }
+      fflush(NULL);
+    }
+    if (vtotal > vmax) {
+      vmax = vtotal;
+    }
+    if ((prune != 0) && (alen(dlist) - nprint >= nwait)) {
+      break;
+    }
+  }
+  
+  /* Clean up */
+  free_search_context(s);
+  free_data(d);
+  g_free(attrlist);
+  foreach (Rule, r, dlist) { free_rule(r); }
+  free_array(dlist);
+  g_string_free(gstr, TRUE);
+  /* g_mem_profile(); */
+}
+
+@
+
+
+1.12
+log
+@*** empty log message ***
+@
+text
+@d13 2
+a14 1
+#define VERBOSE 0
+d530 1
+a530 1
+  g_error("Usage: %s [-d maxdepth] [-v nvalidate] [-p pruning mode] [-w cutoff] [-r] < data > model", cmd);
+a569 1
+  fprintf(stderr, "$Id: gpa.c,v 1.11 2006/05/08 22:18:17 dyuret Exp dyuret $\n");
+d578 1
+a578 1
+  while ((o = getopt(argc, argv, "d:m:v:p:w:r")) != -1) {
+d585 1
+d594 1
+@
+
+
+1.11
+log
+@*** empty log message ***
+@
+text
+@d386 2
+a387 2
+    bzero(s->class_cnt, s->nclass * sizeof(int));
+    bzero(s->class_mistakes, s->nclass * sizeof(int));
+d569 1
+a569 1
+  fprintf(stderr, "$Id: gpa.c,v 1.10 2006/05/08 21:11:48 dyuret Exp dyuret $\n");
+@
+
+
+1.10
+log
+@Got rid of procinfo for compatibility.
+@
+text
+@d13 1
+a13 1
+#define VERBOSE 1
+d569 1
+a569 1
+  fprintf(stderr, "$Id: gpa.c,v 1.9 2006/03/07 13:35:07 dyuret Exp dyuret $\n");
+@
+
+
+1.9
+log
+@*** empty log message ***
+@
+text
+@d11 1
+a11 1
+#include "procinfo.h"
+d567 1
+a567 2
+  g_log_set_handler(NULL, G_LOG_LEVEL_MESSAGE, my_log_func, NULL);
+  msg0("$Id: gpa.c,v 1.8 2006/03/05 15:07:14 dyuret Exp dyuret $");
+d569 1
+@
+
+
+1.8
+log
+@*** empty log message ***
+@
+text
+@d568 1
+a568 1
+  msg0("$Id: gpa.c,v 1.7 2006/03/05 15:06:32 dyuret Exp dyuret $");
+d669 3
+a671 2
+    msg1("[%d kB used] %s %s # gain=%d correct=%d/%d total=%d/%d vgain=%d vcorrect=%d/%d vtotal=%d/%d", 
+	 (s->memusage >> 8), (char*)aref(d->classes, r->class), attr2str(r->attr, d), 
+@
+
+
+1.7
+log
+@Fixed bug related to duplicate attributes in data file.
+@
+text
+@d568 1
+a568 1
+  msg0("$Id: gpa.c,v 1.6 2006/03/05 12:55:42 dyuret Exp dyuret $");
+a663 8
+    if (r->gain != s->best_gain) { 
+      msg1("ERROR: [%d kB used] %s %s # gain=%d correct=%d/%d total=%d/%d vgain=%d vcorrect=%d/%d vtotal=%d/%d", 
+	   (s->memusage >> 8), (char*)aref(d->classes, r->class), attr2str(r->attr, d), 
+	   r->gain, r->correct, r->domain, total, alen(d->train),
+	   r->vgain, r->vcorrect, r->vdomain, vtotal, alen(d->validate));
+
+      brk(-1); 
+    }
+@
+
+
+1.6
+log
+@Fixed memory bug.
+@
+text
+@d99 35
+d203 1
+a203 1
+    } else {			/* attribute */
+d430 1
+a531 35
+typedef struct _Rule {
+  Array attr;			/* attribute array */
+  Class class;			/* predicted class */
+  int gain;			/* gain on training set */
+  int correct;			/* number of correct instances */
+  int domain;			/* number of instances in domain */
+  int vgain;			/* gain on validation set */
+  int vcorrect;			/* number of correct instances in validation*/
+  int vdomain;			/* number of instances in domain in validation */
+} *Rule;
+
+Rule make_rule() {
+  Rule x = g_new0(struct _Rule, 1);
+  x->attr = make_array();
+  return x;
+}
+
+void free_rule(Rule x) {
+  free_array(x->attr);
+  g_free(x);
+}
+
+int rmatch(Rule r, Instance x) {
+  foreach (Attr, ra, r->attr) {
+    int m = 0;
+    foreach (Attr, rx, x->attr) {
+      if (rx == ra) {
+	m = 1; break;
+      }
+    }
+    if (m == 0) return 0;
+  }
+  return 1;
+}
+
+d568 1
+a568 1
+  msg0("$Id: gpa.c,v 1.5 2006/03/05 09:37:19 dyuret Exp dyuret $");
+d614 3
+d664 8
+@
+
+
+1.5
+log
+@Added indexing optimization.
+@
+text
+@d218 1
+a218 1
+  s->memsize = 32 * s->nattr;
+d220 1
+a220 1
+  s->mem = g_new0(gpointer, s->memsize);
+d291 2
+a292 1
+#define checkmem(n) if(fptr + (n) >= s->mem + s->memsize){return -1;} 
+d319 1
+a319 1
+      checkmem(s->nattr);
+d567 1
+a567 1
+  msg0("$Id: gpa.c,v 1.4 2006/03/04 15:10:19 dyuret Exp dyuret $");
+d649 1
+a650 1
+      msg1("Doubling memory to %u kB", (s->memsize >> 8));
+@
+
+
+1.4
+log
+@Added better memory management.
+@
+text
+@d157 1
+d160 1
+a160 1
+  foreach (gint32, i, raw) {	/* create instances */
+d162 2
+a163 1
+      aput(d->instances, make_instance_using(class, attr_array));
+a199 1
+  guint maxdepth;	        /* max depth for iterative deepening */
+d204 1
+d207 1
+a207 1
+SearchContext make_search_context(Data d, guint maxdepth) {
+a217 2
+  s->maxdepth = (((maxdepth == 0)||(maxdepth > s->nattr)) 
+		 ? s->nattr : maxdepth);
+d223 13
+d245 2
+a258 1
+  s->maxdepth = 0;
+d261 1
+d276 15
+d293 2
+a294 2
+int search(SearchContext s, Instance *inst, int ninst, Attr *try, int ntry) {
+  void **fptr = s->free;
+d300 1
+d303 1
+d306 1
+d317 8
+a324 8
+    checkmem(s->nattr);
+    inst_ptr[a] = (Instance *) fptr;
+    Instance *inst_next = (Instance *) fptr;
+    Instance *p = (Instance *) fptr;
+    for (int j = 0; j < ninst; j++) {
+      Instance x = inst[j];
+      if (afind(x->attr, a)) {
+	*p++ = x;
+d326 5
+a331 3
+    int ninst_next = p - (Instance *) fptr;
+    inst_len[a] = ninst_next;
+    fptr = (void **) p;
+d335 1
+a335 1
+    if (ninst_next == ninst) {
+d341 2
+a342 2
+    if ((ninst_next < s->best_gain) ||
+	((ninst_next == s->best_gain) &&
+d352 2
+a353 2
+    for (int j = 0; j < ninst_next; j++) {
+      Instance x = inst_next[j];
+d392 1
+a392 1
+    int gain = class_cnt + nmistakes - ninst_next;
+d407 1
+a407 1
+  if (alen(s->attr) + 1 >= s->maxdepth)
+d438 1
+a438 1
+      int rval = search(s, inst_ptr[a], inst_len[a], try_next, ntry_next);
+d566 1
+a566 1
+  msg0("$Id: gpa.c,v 1.3 2006/03/03 22:50:38 dyuret Exp dyuret $");
+d616 1
+a616 1
+  SearchContext s = make_search_context(d, maxdepth);
+a643 1
+    s->maxdepth = maxdepth;
+d645 1
+a645 1
+		      alen(d->train), attrlist, nattr);
+@
+
+
+1.3
+log
+@*** empty log message ***
+@
+text
+@d198 2
+a199 2
+  unsigned maxdepth;	       /* max depth for iterative deepening */
+  unsigned memsize;		/* size of memory buffer */
+d202 1
+d205 1
+a205 1
+SearchContext make_search_context(Data d, int maxdepth, int maxmem) {
+d218 2
+a219 7
+  s->memsize = (s->maxdepth *	/* for each call */
+		  (3 * s->nattr /* maxgain, inst_ptr, inst_len */
+		   + s->nattr * alen(s->data->train) /* intersections */
+		   + s->nattr));	/* try_next */
+  if (s->memsize > (maxmem << 18))
+    s->memsize = (maxmem << 18);
+  msg1("Allocating %u MB of memory", s->memsize >> 18);
+d222 1
+d246 1
+d261 3
+a263 1
+void search(SearchContext s, Instance *inst, int ninst, Attr *try, int ntry) {
+d269 1
+d284 1
+d373 1
+a373 1
+    return;
+d382 1
+d388 3
+a390 1
+  g_assert(fptr - s->mem < s->memsize);
+d403 2
+a404 1
+      search(s, inst_ptr[a], inst_len[a], try_next, ntry_next);
+d414 1
+d457 1
+a457 1
+  g_error("Usage: %s [-d maxdepth] [-m maxmem(mb)] [-v nvalidate] [-p pruning mode] [-w cutoff] [-r] < data > model", cmd);
+d531 1
+a531 1
+  msg0("$Id$");
+a538 1
+  int maxmem = 0;
+a547 1
+    case 'm': maxmem = atoi(optarg); break;
+a552 1
+  if (maxmem <= 0) maxmem = G_MAXINT;
+d556 2
+a557 2
+  msg1("maxdepth=%d maxmem=%d nvalidate=%d nwait=%d prune=%d rand=%d",
+       maxdepth, maxmem, nvalidate, nwait, prune, rand_opt);
+d581 1
+a581 1
+  SearchContext s = make_search_context(d, maxdepth, maxmem);
+d610 8
+a617 2
+    search(s, (Instance *) d->train->pdata, 
+	   alen(d->train), attrlist, nattr);
+d630 2
+a631 2
+    msg1("%s %s # gain=%d correct=%d/%d total=%d/%d vgain=%d vcorrect=%d/%d vtotal=%d/%d", 
+	 (char*)aref(d->classes, r->class), attr2str(r->attr, d),
+@
+
+
+1.2
+log
+@*** empty log message ***
+@
+text
+@a9 1
+#define G_DISABLE_ASSERT
+d11 3
+a13 1
+#define VERBOSE 0
+d16 2
+d198 2
+a199 2
+  int maxdepth;			/* max depth for iterative deepening */
+  int memsize;			/* size of memory buffer */
+d204 1
+a204 1
+SearchContext make_search_context(Data d, int maxdepth) {
+d217 1
+a217 1
+  s->memsize = (s->maxdepth * 	/* for each call */
+d221 3
+d450 1
+a450 1
+  g_error("Usage: %s [-d maxdepth] [-v nvalidate] [-p pruning mode] [-w cutoff] [-r] < data > model", cmd);
+d523 2
+d531 2
+d535 1
+a535 1
+  while ((o = getopt(argc, argv, "d:v:p:w:r")) != -1) {
+d541 2
+a542 1
+    case 'r': srand(time(NULL)); break;
+d548 1
+d552 2
+d557 3
+a559 1
+  if (maxdepth > alen(d->attributes))
+d561 2
+d577 1
+a577 1
+  SearchContext s = make_search_context(d, maxdepth);
+d594 4
+d620 5
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@d1 3
+d15 12
+d28 6
+a33 1
+/** Bit fields to store and compare attributes: assumes 32 bit words */
+d35 6
+a40 12
+typedef unsigned *BitField;
+#define bget(b,i) (((b)[(i)>>5])&(1<<((i)&31)))
+#define bflip(b,i) (((b)[(i)>>5])^=(1<<((i)&31)))
+#define bwords(n) (((n)>>5)+(((n)&31)!=0))
+#define breset(b,n) for(int i = bwords(n)-1; i >= 0; i--){ b[i]=0; }
+#define bcopy(b,a,n) for(int i = bwords(n)-1; i >= 0; i--){ b[i]=a[i]; }
+
+int bmatch(BitField x, BitField r, int n) {
+  for (int i = bwords(n) - 1; i >= 0; i--) {
+    if ((x[i] & r[i]) != r[i]) return 0;
+  }
+  return 1;
+d43 6
+a48 2
+BitField make_bit_field(int n) {
+  return g_new0(guint32, bwords(n));
+d51 5
+a55 2
+void free_bit_field(BitField b) {
+  g_free(b);
+d58 6
+d69 1
+a69 1
+  BitField attr;		/* attr bit field */
+d74 7
+a80 2
+#define xget(x,i) bget((x)->attr, i)
+#define xflip(x,i) bflip((x)->attr, i)
+d82 1
+a82 1
+Instance make_instance(int nattr) {
+d84 3
+a86 2
+  x->attr = make_bit_field(nattr);
+  x->class = 0;
+d92 1
+a92 1
+  free_bit_field(x->attr);
+a95 15
+typedef GPtrArray *Array;
+#define make_array() g_ptr_array_new()
+#define free_array(a) g_ptr_array_free((a),1)
+#define aref(a,i) ((a)->pdata[i])
+#define aput(a,x) g_ptr_array_add((a),(gpointer)(x))
+#define alen(a) ((a)->len)
+#define reset_array(a) g_ptr_array_set_size((a), 0)
+
+typedef GHashTable *Hash;
+#define make_hash() g_hash_table_new(g_str_hash, g_str_equal)
+#define free_hash(h) g_hash_table_destroy(h)
+#define hget(h,k) g_hash_table_lookup(h,k)
+#define hset(h,k,v) g_hash_table_insert(h,k,(gpointer)(v))
+#define hlen(h) g_hash_table_size(h)
+
+d154 2
+a155 1
+  Instance x = NULL;
+d158 5
+a162 5
+      aput(d->instances, x);
+      x = NULL;
+    } else if (x == NULL) {	/* new instance, class */
+      x = make_instance(alen(d->attributes));
+      x->class = i;
+d164 1
+a164 1
+      xflip(x, i);
+d170 1
+d177 3
+a179 5
+    foreach_int(i, 0, alen(d->attributes)-1) {
+      if (xget(x, i)) {
+	putchar(' ');
+	fputs(aref(d->attributes, i), stdout);
+      }
+d189 2
+a190 5
+  int nwords;			/* number of guint32 for attr bitfield */
+  BitField attr;		/* currently searching this */
+  int attr_bits;		/* number of bits set in attr */
+  BitField best_attr;		/* best rule so far */
+  int best_attr_bits;		/* number of bits set in best_attr */
+d206 2
+a207 5
+  s->nwords = bwords(s->nattr);
+  s->attr = make_bit_field(s->nattr);
+  s->attr_bits = 0;
+  s->best_attr = make_bit_field(s->nattr);
+  s->best_attr_bits = 0;
+d224 2
+a225 2
+  free_bit_field(s->attr);
+  free_bit_field(s->best_attr);
+d233 2
+a234 4
+  breset(s->attr, s->nattr);
+  breset(s->best_attr, s->nattr);
+  s->attr_bits = 0;
+  s->best_attr_bits = 0;
+d247 1
+a247 1
+char *attr2str(BitField attr, Data d) {
+d250 3
+a252 5
+  for (int j = 0; j < alen(d->attributes); j++) {
+    if (bget(attr, j)) {
+      g_string_append(gstr, aref(d->attributes, j));
+      g_string_append_c(gstr, ' ');
+    }
+d274 1
+a274 1
+    g_assert(bget(s->attr, a) == 0);
+d282 1
+a282 1
+      if (xget(x, a)) {
+d300 1
+a300 1
+	 (s->attr_bits + 1 >= s->best_attr_bits))) {
+d340 1
+a340 1
+	 (s->attr_bits + 1 >= s->best_attr_bits))) {
+d353 1
+a353 1
+	 (s->attr_bits + 1 < s->best_attr_bits))) {
+d359 2
+a360 3
+      bcopy(s->best_attr, s->attr, s->nattr);
+      bflip(s->best_attr, a);
+      s->best_attr_bits = s->attr_bits + 1;
+d364 1
+a364 1
+  if (s->attr_bits + 1 >= s->maxdepth)
+a383 1
+  s->attr_bits++;
+d391 1
+a391 1
+      bflip(s->attr, a);
+d393 1
+a393 1
+      bflip(s->attr, a);
+a398 1
+  s->attr_bits--;
+d448 1
+a448 1
+  BitField attr;		/* attribute bits */
+d458 1
+a458 1
+Rule make_rule(int nattr) {
+d460 1
+a460 1
+  x->attr = make_bit_field(nattr);
+d465 1
+a465 1
+  free_bit_field(x->attr);
+d469 13
+a485 1
+  int nattr = alen(d->attributes);
+d487 1
+a487 1
+    if (bmatch(x->attr, r->attr, nattr)) {
+d501 1
+a501 1
+    if (bmatch(x->attr, r->attr, nattr)) {
+d565 1
+a565 1
+  Rule r = make_rule(nattr);
+d588 2
+a589 2
+    Rule r = make_rule(nattr);
+    bcopy(r->attr, s->best_attr, s->nattr);
+d627 1
+@

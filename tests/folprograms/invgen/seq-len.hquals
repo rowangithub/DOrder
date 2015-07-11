@@ -1,0 +1,2 @@
+(*qualif L(v) : (n >= i and v = k + n - i) or (n < i and v = k)
+qualif L(v) : (n >= i and v = i + k - n) or (n < i and v = k)*)

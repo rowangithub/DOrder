@@ -1,0 +1,2 @@
+qpParse.cmo: qpMisc.cmo qpErrormsg.cmo qpDag.cmi qpParse.cmi
+qpParse.cmx: qpMisc.cmx qpErrormsg.cmx qpDag.cmx qpParse.cmi

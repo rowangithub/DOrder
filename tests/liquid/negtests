@@ -1,0 +1,11 @@
+tests/bcopy2.ml                  10    False
+tests/matmult-bad.ml             10    False
+tests/bcopy-bad.ml               10    False
+tests/bsearch-bad.ml             10    False
+tests/dotprod0-bad.ml            10    False
+tests/access-bad.ml              10    False
+tests/gauss-bad.ml               10    False
+tests/queen-bad.ml               10    False
+tests/reltuple-bad.ml            10    False
+tests/tup2c.ml                   10    False
+tests/tup2d.ml                   10    False

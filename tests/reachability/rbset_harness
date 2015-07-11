@@ -1,0 +1,24 @@
+let main () =		 
+	let ns = [|1;15;24;14;2;18;13;17;12;6;25;9;5;21;20;4;10;3;23;11;8;16|] in
+	(*let ns = [|19;13;12;16;6;9;22;5;25;4;15;18;24;11;20;8;1;14;21;2;7;10;3;17;23|] in*)	
+	
+	let t = Empty in	
+	let t = Array.fold_left (fun t k -> 
+		let _ = fprintf outch "env:newtest\t\n" in
+		add k t
+		) t ns in
+	
+	let _ = fprintf outch "env:newtest\t\n" in
+	let _ = elements t in
+	let _ = fprintf outch "env:newtest\t\n" in
+	let _ = mem 5 t in
+	let _ = fprintf outch "env:newtest\t\n" in
+	let _ = mem 30 t in
+	let _ = fprintf outch "env:newtest\t\n" in
+	let _ = enum t End in
+	let _ = Array.fold_left (fun t k -> 
+		let _ = fprintf outch "env:newtest\t\n" in
+		remove k t
+		) t ns in 
+	() 
+let _ = main () 

@@ -1,0 +1,4 @@
+let main () = 
+	let _ = fprintf outch "env:newtest\t\n" in
+	heapsort [19;13;12;16;6;9;22;5;25;4;15;18;24;11;]
+let _ = main ()

@@ -1,0 +1,1498 @@
+head	1.15;
+access;
+symbols;
+locks; strict;
+comment	@# @;
+
+
+1.15
+date	2006.05.28.09.34.06;	author dyuret;	state Exp;
+branches;
+next	1.14;
+
+1.14
+date	2006.05.08.22.39.16;	author dyuret;	state Exp;
+branches;
+next	1.13;
+
+1.13
+date	2006.05.08.22.30.15;	author dyuret;	state Exp;
+branches;
+next	1.12;
+
+1.12
+date	2006.05.08.22.25.21;	author dyuret;	state Exp;
+branches;
+next	1.11;
+
+1.11
+date	2006.05.08.21.12.08;	author dyuret;	state Exp;
+branches;
+next	1.10;
+
+1.10
+date	2006.02.06.19.06.38;	author dyuret;	state Exp;
+branches;
+next	1.9;
+
+1.9
+date	2006.02.06.19.04.11;	author dyuret;	state Exp;
+branches;
+next	1.8;
+
+1.8
+date	2006.02.06.18.57.18;	author dyuret;	state Exp;
+branches;
+next	1.7;
+
+1.7
+date	2006.01.16.02.46.10;	author dyuret;	state Exp;
+branches;
+next	1.6;
+
+1.6
+date	2006.01.16.02.13.12;	author dyuret;	state Exp;
+branches;
+next	1.5;
+
+1.5
+date	2006.01.15.16.17.46;	author dyuret;	state Exp;
+branches;
+next	1.4;
+
+1.4
+date	2006.01.14.02.26.59;	author dyuret;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	2006.01.14.02.01.17;	author dyuret;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2006.01.13.16.26.45;	author dyuret;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2006.01.13.11.33.14;	author dyuret;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.15
+log
+@Added the quiet option to gpa executable.
+@
+text
+@/*
+ *    This program is free software; you can redistribute it and/or modify
+ *    it under the terms of the GNU General Public License as published by
+ *    the Free Software Foundation; either version 2 of the License, or
+ *    (at your option) any later version.
+ *
+ *    This program is distributed in the hope that it will be useful,
+ *    but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *    GNU General Public License for more details.
+ *
+ *    You should have received a copy of the GNU General Public License
+ *    along with this program; if not, write to the Free Software
+ *    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ */
+
+/*
+ *    GPA.java (based on Prism.java)
+ *    Copyright (C) 2006 Deniz Yuret
+ *
+ */
+
+package weka.classifiers.rules;
+
+import weka.classifiers.Classifier;
+import weka.classifiers.Evaluation;
+import java.io.*;
+import java.util.*;
+import weka.core.*;
+
+/**
+ * Class for building and using a decision list for classification.  
+ * Uses the greedy prepend algorithm (GPA) for construction.  The
+ * actual model building is done by an external C program.
+ * For more information, see <p>
+ *
+ * D. Yuret and M. de la Maza (2006) Greedy Prepend Algorithm, 
+ * submitted to ICML
+ * 
+ * @@author Deniz Yuret (dyuret@@ku.edu.tr)
+ * @@version $Revision: 1.14 $ 
+*/
+public class GPA extends Classifier implements OptionHandler {
+
+  /** The number of folds to split data into Train and Validate for GPA */
+  private int m_Folds = 5;
+
+  /** Pruning mode: 0=none, 1=short, 2=long */
+  private int m_Prune = 2;
+
+  /** The maximum number of antecedents in a rule */
+  private int m_NumAntds = 5;
+
+  /** The number of rules to consider once validation starts dropping */
+  private int m_Wait = 0;
+
+  /** Whether to use srand(time(NULL)) in GPA */
+  private boolean m_Randomization = false;
+
+
+  /**
+   * Returns a string describing classifier
+   * @@return a description suitable for
+   * displaying in the explorer/experimenter gui
+   */
+  public String globalInfo() {
+    return "Class for building and using a decision list for classification.  "
+      + "Uses the greedy prepend algorithm (GPA) for construction.  "
+      + "Missing values are handled by ignoring them during rule construction.  "
+      + "For numeric attributes try the FilteredClassifier metalearner with "
+      + "supervised Discretize filter with -D (binary) option.  "
+      + "For more information, see <p>"
+      + "D. Yuret (2006) ISCIS"
+      + "<p>";
+  }    
+
+  /**
+   * Class for storing a GPA ruleset, i.e. a list of rules
+   */
+  private class GPARule implements Serializable {
+    
+    /** The classification */
+    private int m_classification;
+
+    /** The instance */
+    private Instances m_instances;
+
+    /** First test of this rule */
+    private Test m_test; 
+
+    /** Number of errors made by this rule (will end up 0) */
+    private int m_errors; 
+
+    /** The next rule in the list */
+    private GPARule m_next;
+
+    /**
+     * Constructor that takes string output from gpa executable.
+     *
+     * @@param d   instances
+     * @@param str the string
+     * @@exception Exception if something goes wrong
+     */
+
+    public GPARule(Instances d, String str) throws Exception {
+      m_instances = d;
+      String[] attr = str.split("\\s+");
+      String eqstr = new String(new char[]{eqChar});
+      if (attr.length == 0) {
+	throw new Exception("Empty line");
+      }
+
+      for (int i = 0; i < attr.length; i++) {
+	//System.out.println("Parsing: " + attr[i]);
+	if (attr[i].charAt(0) == '#') {
+	  break;
+	}
+	String[] nameval = attr[i].replace(spChar,' ').split(eqstr);
+	if (nameval.length != 2) {
+	  throw new Exception("Bad attr format: " + attr[i]);
+	}
+
+	Test t = new Test();
+	t.m_attr = d.attribute(nameval[0]).index();
+	if (t.m_attr == -1) {
+	  throw new Exception("Unknown attribute name: " + nameval[0]);
+	}
+	//System.out.println("Attr name: " + nameval[0]);
+	t.m_val = d.attribute(t.m_attr).indexOfValue(nameval[1]);
+	if (t.m_val == -1) {
+	  throw new Exception("Unknown attribute value: " + attr[i]);
+	}
+	//System.out.println("Attr value: " + nameval[1]);
+	
+	if (i == 0) {
+	  if (t.m_attr != d.classIndex()) {
+	    throw new Exception("First attribute is not the class: " 
+				+ attr[0] + " != " + d.classAttribute().name());
+	  }
+	  //System.out.println("Class name: " + nameval[0]);
+	  m_classification = t.m_val;
+	} else {
+	  t.m_next = m_test;
+	  m_test = t;
+	}
+      }
+    }      
+
+
+    /**
+     * Constructor that takes instances and the classification.
+     *
+     * @@param data the instances
+     * @@param cl the class
+     * @@exception Exception if something goes wrong
+     */
+    public GPARule(Instances data, int cl) throws Exception {
+
+      m_instances = data;
+      m_classification = cl;
+      m_test = null;
+      m_next = null;
+      m_errors = 0;
+      Enumeration enu = data.enumerateInstances();
+      while (enu.hasMoreElements()) {
+        if ((int) ((Instance) enu.nextElement()).classValue() != cl) {
+	  m_errors++;
+	}
+      }
+      m_instances = new Instances(m_instances, 0);
+    }  
+
+    /**
+     * Returns the result assigned by this rule to a given instance.
+     *
+     * @@param inst the instance to be classified
+     * @@return the classification
+     */
+    public int resultRule(Instance inst) {
+
+      if (m_test == null || m_test.satisfies(inst)) {
+	return m_classification;
+      } else {
+	return -1;
+      }
+    }
+
+    /**
+     * Returns the result assigned by these rules to a given instance.
+     *
+     * @@param inst the instance to be classified
+     * @@return the classification
+     */
+    public int resultRules(Instance inst) {
+
+      if (resultRule(inst) != -1) {
+	return m_classification;
+      } else if (m_next != null) {
+	return m_next.resultRules(inst);
+      } else {
+	return -1;
+      }
+    }
+
+    /**
+     * Returns the set of instances that are covered by this rule.
+     *
+     * @@param data the instances to be checked
+     * @@return the instances covered
+     */
+    public Instances coveredBy(Instances data) {
+
+      Instances r = new Instances(data, data.numInstances());
+      Enumeration enu = data.enumerateInstances();
+      while (enu.hasMoreElements()) {
+	Instance i = (Instance) enu.nextElement();
+	if (resultRule(i) != -1) {
+	  r.add(i);
+	}
+      }
+      r.compactify();
+      return r;
+    }
+
+    /**
+     * Returns the set of instances that are not covered by this rule.
+     *
+     * @@param data the instances to be checked
+     * @@return the instances not covered
+     */
+    public Instances notCoveredBy(Instances data) {
+
+      Instances r = new Instances(data, data.numInstances());
+      Enumeration enu = data.enumerateInstances();
+      while (enu.hasMoreElements()) {
+	Instance i = (Instance) enu.nextElement();
+	if (resultRule(i) == -1) {
+	  r.add(i);
+	}
+      }
+      r.compactify();
+      return r;
+    }
+
+    /**
+     * Prints the set of rules.
+     *
+     * @@return a description of the rules as a string
+     */
+    public String toString() {
+
+      try {
+	StringBuffer text = new StringBuffer();
+	if (m_test != null) {
+	  text.append("If ");
+	  for (Test t = m_test; t != null; t = t.m_next) {
+	    if (t.m_attr == -1) {
+	      text.append("?");
+	    } else if (t.m_val == -1) {
+	      text.append(m_instances.attribute(t.m_attr).name() + " = ?");
+	    } else {
+	      text.append(m_instances.attribute(t.m_attr).name() + " = " +
+			  m_instances.attribute(t.m_attr).value(t.m_val));
+	    }
+	    if (t.m_next != null) {
+	      text.append("\n   and ");
+	    }
+	  }
+	  text.append(" then ");
+	}
+	text.append(m_instances.classAttribute().value(m_classification) + "\n");
+	if (m_next != null) {
+	  text.append(m_next.toString());
+	}
+	return text.toString();
+      } catch (Exception e) {
+	return "Can't print GPA classifier!";
+      }
+    }
+  }
+  
+  /**
+   * Class for storing a list of attribute-value tests
+   */
+  private class Test implements Serializable { 
+
+    /** Attribute to test */
+    private int m_attr = -1; 
+
+    /** The attribute's value */
+    private int m_val; 
+
+    /** The next test in the rule */
+    private Test m_next = null; 
+
+    /**
+     * Returns whether a given instance satisfies this test.
+     *
+     * @@param inst the instance to be tested
+     * @@return true if the instance satisfies the test
+     */
+    private boolean satisfies(Instance inst) {
+
+      if ((inst.isMissing(m_attr) && (m_val == -1)) ||
+	  (!inst.isMissing(m_attr) &&
+	   ((int) inst.value(m_attr) == m_val))) {
+        if (m_next == null) {
+	  return true;
+	} else {
+	  return m_next.satisfies(inst);
+	}
+      }
+      return false;    
+    }
+  }
+
+  /** The first rule in the list of rules */
+  private GPARule m_rules;
+
+  /**
+   * Classifies a given instance.
+   *
+   * @@param inst the instance to be classified
+   * @@return the classification
+   */
+  public double classifyInstance(Instance inst) {
+
+    int result = m_rules.resultRules(inst);
+    if (result == -1) {
+      return Instance.missingValue();
+    } else {
+      return (double)result;
+    }
+  }
+
+  private char eqChar = '~';
+  private char spChar = '@@';
+
+  private String instanceToString(Instance x) throws Exception {
+    StringBuffer text = new StringBuffer();
+    int ci = x.classIndex();
+    if (x.isMissing(ci)) {
+      throw new Exception("Instance has no class");
+    }
+
+    // Need to use eqChar to separate name and value, and spChar to escape
+    // spaces.  If the actual attr contains these characters we have a 
+    // problem.  Ideally we should use safer characters.
+
+    for (int i = 0; i < x.numAttributes(); i++) {
+      // Just don't print the missing attributes
+      // GPA doesn't care how many attr each instance has
+      if (x.isMissing(i)) {
+	continue;
+      }
+      String name = x.attribute(i).name();
+      String value = x.stringValue(i);
+      if ((name.indexOf(eqChar) != -1) ||
+	  (name.indexOf(spChar) != -1) ||
+	  (value.indexOf(eqChar) != -1) ||
+	  (value.indexOf(spChar) != -1)) {
+	throw new Exception("Attribute has special characters");
+      }
+      String str = name + eqChar + value;
+      str = str.replace(' ', spChar);
+      if (i == ci) {
+	text.insert(0, str);
+      } else {
+	text.append(" " + str);
+      }
+    }
+    return text.toString();
+  }
+
+
+  private BufferedReader streamToReader(InputStream s) {
+    return new BufferedReader(new InputStreamReader(s));
+  }
+
+  /**
+   * Generates the classifier.
+   *
+   * @@param data the data to be used
+   * @@exception Exception if the classifier can't built successfully
+   */
+  public void buildClassifier(Instances data) throws Exception {
+
+    // Check the data
+    if (data.checkForStringAttributes()) {
+      throw new UnsupportedAttributeTypeException("Cannot handle string attributes!");
+    }
+    if (data.classAttribute().isNumeric()) {
+      throw new UnsupportedClassTypeException("GPA can't handle a numeric class!");
+    }
+    data = new Instances(data);
+    Enumeration enumAtt = data.enumerateAttributes();
+    while (enumAtt.hasMoreElements()) {
+      Attribute attr = (Attribute) enumAtt.nextElement();
+      if (!attr.isNominal()) {
+	throw new UnsupportedAttributeTypeException("GPA can only deal with nominal attributes!");
+      }
+
+      // Maybe we should consider treating missing values as a seperate value.
+      // data.deleteWithMissing(attr);
+    }
+    //System.out.println(data.numInstances() + " instances");
+    data.deleteWithMissingClass(); // delete all instances with a missing class
+    if (data.numInstances() == 0) {
+      throw new Exception("No instances with a class value!");
+    }
+
+
+    Runtime runtime = Runtime.getRuntime();
+    StringBuffer cmd = new StringBuffer("gpa -q");
+    cmd.append(" -d " + m_NumAntds);
+    cmd.append(" -v " + m_Folds);
+    cmd.append(" -p " + m_Prune);
+    cmd.append(" -w " + m_Wait);
+    if (m_Randomization) cmd.append(" -r");
+    //System.err.println("Running " + cmd);
+    Process p = runtime.exec(cmd.toString());
+    BufferedReader p_out = streamToReader(p.getInputStream());
+    BufferedReader p_err = streamToReader(p.getErrorStream());
+    PrintWriter p_in = new PrintWriter(p.getOutputStream());
+    Enumeration e = data.enumerateInstances();
+    //System.out.println("==> Printing instances");
+    while (e.hasMoreElements()) {
+      Instance x = (Instance) e.nextElement();
+      p_in.println(instanceToString(x));
+      //System.out.println(instanceToString(x));
+    }
+    p_in.close();
+    String line;
+    m_rules = null;
+    //while ((line = p_err.readLine()) != null) {
+    //System.out.println("ERR>" + line);
+    //}
+    //System.out.println("==> Reading rules");
+    while ((line = p_out.readLine()) != null) {
+      //System.out.println(line);
+      GPARule r = null;
+      try {
+	r = new GPARule(data, line);
+      } catch (Exception exc) {
+	System.err.println(exc);
+	System.exit(0);
+      }
+      r.m_next = m_rules;
+      m_rules = r;
+    }
+    if (p.waitFor() != 0) {
+      throw new Exception("GPA exit value = " + p.exitValue());
+    }
+    //System.out.println("==> Constructed model");
+    //System.out.println(toString());
+  }
+
+  /**
+   * Add a rule to the ruleset.
+   *
+   * @@param lastRule the last rule in the rule set
+   * @@param newRule the rule to be added
+   * @@return the new last rule in the rule set
+   */
+  private GPARule addRule(GPARule lastRule, GPARule newRule) {
+
+    if (lastRule == null) {
+      m_rules = newRule;
+    } else {
+      lastRule.m_next = newRule;
+    }
+    return newRule;
+  }
+
+  /**
+   * Add a test to this rule.
+   *
+   * @@param rule the rule to which test is to be added
+   * @@param lastTest the rule's last test
+   * @@param newTest the test to be added
+   * @@return the new last test of the rule
+   */
+  private Test addTest(GPARule rule, Test lastTest, Test newTest) {
+
+    if (rule.m_test == null) {
+      rule.m_test = newTest;
+    } else {
+      lastTest.m_next = newTest;
+    }
+    return newTest;
+  }
+
+  /**
+   * Does E contain any examples in the class C?
+   *
+   * @@param E the instances to be checked
+   * @@param C the class
+   * @@return true if there are any instances of class C
+   */
+  private static boolean contains(Instances E, int C) throws Exception {
+
+    Enumeration enu = E.enumerateInstances();
+    while (enu.hasMoreElements()) {
+      if ((int) ((Instance) enu.nextElement()).classValue() == C) {
+	return true;
+      }
+    }
+    return false;
+  }
+
+  /**
+   * Is this attribute mentioned in the rule?
+   *
+   * @@param attr the attribute to be checked for
+   * @@param t test contained by rule
+   */
+  private static boolean isMentionedIn(Attribute attr, Test t) {
+
+    if (t == null) { 
+      return false;
+    }
+    if (t.m_attr == attr.index()) {
+      return true;
+    }
+    return isMentionedIn(attr, t.m_next);
+  }    
+
+  /**
+   * Prints a description of the classifier.
+   *
+   * @@return a description of the classifier as a string
+   */
+  public String toString() {
+
+    if (m_rules == null) {
+      return "GPA: No model built yet.";
+    }
+    return "GPA rules\n----------\n" + m_rules.toString();
+  }
+
+  /**
+   * Returns an enumeration describing the available options
+   *
+   * @@return an enumeration of all the available options
+   */
+  public Enumeration listOptions() {
+    Vector<Option> newVector = new Vector<Option>(5);
+	
+    newVector.addElement
+      (new Option("\t" + numAntdsTipText().replace("\n", "\n\t"),
+		  "A", 1, "-A <number of antecedents>"));
+    
+    newVector.addElement
+      (new Option("\t" + foldsTipText().replace("\n", "\n\t"),
+		  "V", 1, "-V <number of folds>"));
+    
+    newVector.addElement
+      (new Option("\t" + pruneTipText().replace("\n", "\n\t"),
+		  "P", 1, "-P <pruning mode>"));
+
+    newVector.addElement
+      (new Option("\t" + waitTipText().replace("\n", "\n\t"),
+		  "W", 1, "-W <number of rules>"));
+
+    newVector.addElement
+      (new Option("\t" + randomizationTipText().replace("\n", "\n\t"),
+		  "R", 0, "-R"));
+
+    return newVector.elements();
+  }
+    
+  /**
+   * Parses a given list of options.
+   *
+   * @@param options the list of options as an array of strings
+   * @@exception Exception if an option is not supported
+   */
+  public void setOptions(String[] options) throws Exception {
+
+    String numAntdsString = Utils.getOption('A', options);
+    if (numAntdsString.length() != 0) 
+      m_NumAntds = Integer.parseInt(numAntdsString);
+    else 
+      m_NumAntds = 5;
+
+    String numFoldsString = Utils.getOption('V', options);
+    if (numFoldsString.length() != 0) 
+      m_Folds = Integer.parseInt(numFoldsString);
+    else 
+      m_Folds = 5;
+
+    String numPruneString = Utils.getOption('P', options);
+    if (numPruneString.length() != 0) 
+      m_Prune = Integer.parseInt(numPruneString);
+    else 
+      m_Prune = 2;
+
+    String numWaitString = Utils.getOption('W', options);
+    if (numWaitString.length() != 0) 
+      m_Wait = Integer.parseInt(numWaitString);
+    else 
+      m_Wait = 0;
+
+    m_Randomization = Utils.getFlag('R', options);
+  }
+    
+  /**
+   * Gets the current settings of the Classifier.
+   *
+   * @@return an array of strings suitable for passing to setOptions
+   */
+  public String [] getOptions() {
+	
+    String [] options = new String [9];
+    int current = 0;
+    options[current++] = "-A"; options[current++] = "" + m_NumAntds;
+    options[current++] = "-V"; options[current++] = "" + m_Folds;
+    options[current++] = "-P"; options[current++] = "" + m_Prune;
+    options[current++] = "-W"; options[current++] = "" + m_Wait;
+
+    if(m_Randomization)
+      options[current++] = "-R";
+	
+    while (current < options.length) 
+      options[current++] = "";
+    return options;
+  }
+    
+  /** The access functions for parameters */
+
+  /**
+   * Returns the tip text for this property
+   * @@return tip text for this property suitable for
+   * displaying in the explorer/experimenter gui
+   */
+  public String numAntdsTipText() {
+    return "The maximum number of antecedents allowed in a single rule.\n"
+      + "Set this higher if more antecedents might improve performance.\n"
+      + "Set this lower if the search is taking too much time.\n"
+      + "Default = 5.  Use 0 for unlimited search.";
+  }
+
+  public void setNumAntds(int n){  m_NumAntds = n; }
+  public int getNumAntds(){ return m_NumAntds; }
+    
+  /**
+   * Returns the tip text for this property
+   * @@return tip text for this property suitable for
+   * displaying in the explorer/experimenter gui
+   */
+  public String foldsTipText() {
+    return "Determines the amount of training data used for validation.\n"
+      + "One fold is used for validation, the rest for growing the rules.\n"
+      + "Default = 5.  Use 0 to turn off validation.";
+  }
+
+  public void setFolds(int folds){  m_Folds = folds; }
+  public int getFolds(){ return m_Folds; }
+
+  /**
+   * Returns the tip text for this property
+   * @@return tip text for this property suitable for
+   * displaying in the explorer/experimenter gui
+   */
+  public String pruneTipText() {
+    return "Determines when to stop adding rules to the decision list.\n"
+      + "If 0, rules are added as long as they improve the training set accuracy.\n"
+      + "If 1, stops adding rules when validation set accuracy stops improving.\n"
+      + "If 2, stops adding rules when validation set accuracy starts dropping.\n"
+      + "Default = 2.  Use 0 to ignore the validation set accuracy.";
+  }
+
+  public void setPrune(int prune){  m_Prune = prune; }
+  public int getPrune(){ return m_Prune; }
+
+  /**
+   * Returns the tip text for this property
+   * @@return tip text for this property suitable for
+   * displaying in the explorer/experimenter gui
+   */
+  public String waitTipText() {
+    return "The number of rules to consider after the validation set accuracy starts dropping.\n"
+      + "Set this higher if you think more rules may increase validation performance.\n"
+      + "Set this lower if you want the search to stop sooner.\n"
+      + "Default = 0.  Use 0 to consider all rules.";
+  }
+
+  public void setWait(int wait){  m_Wait = wait; }
+  public int getWait(){ return m_Wait; }
+
+  /**
+   * Returns the tip text for this property
+   * @@return tip text for this property suitable for
+   * displaying in the explorer/experimenter gui
+   */
+  public String randomizationTipText() {
+    return "Set if you wish to randomize the training vs. validation data split.\n"
+      + "Default = False.";
+  }
+
+  public boolean getRandomization(){ return m_Randomization;}
+  public void setRandomization(boolean e){ m_Randomization = e;}
+
+  /**
+   * Main method for testing this class
+   */
+  public static void main(String[] args) {
+    try {
+      System.out.println(Evaluation.evaluateModel(new GPA(), args));
+    } catch (Exception e) {
+      System.err.println(e.getMessage());
+    }
+  }
+}
+@
+
+
+1.14
+log
+@*** empty log message ***
+@
+text
+@d41 1
+a41 1
+ * @@version $Revision: 1.13 $ 
+d414 1
+a414 1
+    StringBuffer cmd = new StringBuffer("gpa");
+@
+
+
+1.13
+log
+@*** empty log message ***
+@
+text
+@d41 1
+a41 1
+ * @@version $Revision: 1.12 $ 
+d55 1
+a55 1
+  private int m_Wait = 5;
+@
+
+
+1.12
+log
+@*** empty log message ***
+@
+text
+@d41 1
+a41 1
+ * @@version $Revision: 1.11 $ 
+d685 1
+a685 1
+      + "Default = 10.  Use 0 to consider all rules.";
+@
+
+
+1.11
+log
+@Got rid of version information for gpa.c.
+@
+text
+@d41 1
+a41 1
+ * @@version $Revision: 1.10 $ 
+d602 1
+a602 1
+      m_Wait = 10;
+@
+
+
+1.10
+log
+@*** empty log message ***
+@
+text
+@d41 1
+a41 1
+ * @@version $Revision: 1.9 $ 
+a44 3
+  /** Version of gpa.c used - is part of the executable name */
+  private String gpa_c_version = "4-1-14";
+
+d73 1
+a73 3
+      + "D. Yuret (2006) ICML"
+      + "GPA.java version $Revision: 1.9 $"
+      + "gpa.c version " + gpa_c_version
+d414 1
+a414 1
+    StringBuffer cmd = new StringBuffer("gpa-" + gpa_c_version);
+d547 1
+a547 1
+    Vector newVector = new Vector(5);
+a707 1
+
+a714 4
+
+
+
+
+@
+
+
+1.9
+log
+@*** empty log message ***
+@
+text
+@d41 1
+a41 1
+ * @@version $Revision: 1.8 $ 
+d46 1
+a46 1
+  private String gpa_c_version = "4-1-15";
+d77 1
+a77 1
+      + "GPA.java version $Revision: 1.8 $"
+@
+
+
+1.8
+log
+@*** empty log message ***
+@
+text
+@d18 1
+a18 1
+ *    GDL.java (based on Prism.java)
+d33 2
+a34 1
+ * Uses the greedy decision list (GDL) algorithm for construction.
+d37 2
+a38 2
+ * D. Yuret (2006) ICML
+ * Vol.27, No.4, pp.349-370.<p>
+d41 1
+a41 1
+ * @@version $Revision: 1.7 $ 
+d43 1
+a43 1
+public class GDL extends Classifier implements OptionHandler {
+d45 2
+a46 2
+  /** Version of gdl.c used - is part of the executable name */
+  private String gdl_c_version = "4-1-14";
+d48 1
+a48 1
+  /** The number of folds to split data into Train and Validate for GDL */
+d60 1
+a60 1
+  /** Whether to use srand(time(NULL)) in GDL */
+d71 1
+a71 1
+      + "Uses the greedy decision list (GDL) algorithm for construction.  "
+d77 2
+a78 2
+      + "GDL.java version $Revision: 1.7 $"
+      + "gdl.c version " + gdl_c_version
+d83 1
+a83 1
+   * Class for storing a GDL ruleset, i.e. a list of rules
+d85 1
+a85 1
+  private class GDLRule implements Serializable {
+d100 1
+a100 1
+    private GDLRule m_next;
+d103 1
+a103 1
+     * Constructor that takes string output from gdl executable.
+d110 1
+a110 1
+    public GDLRule(Instances d, String str) throws Exception {
+d162 1
+a162 1
+    public GDLRule(Instances data, int cl) throws Exception {
+d282 1
+a282 1
+	return "Can't print GDL classifier!";
+d323 1
+a323 1
+  private GDLRule m_rules;
+d357 1
+a357 1
+      // GDL doesn't care how many attr each instance has
+d398 1
+a398 1
+      throw new UnsupportedClassTypeException("GDL can't handle a numeric class!");
+d405 1
+a405 1
+	throw new UnsupportedAttributeTypeException("GDL can only deal with nominal attributes!");
+d419 1
+a419 1
+    StringBuffer cmd = new StringBuffer("gdl-" + gdl_c_version);
+d446 1
+a446 1
+      GDLRule r = null;
+d448 1
+a448 1
+	r = new GDLRule(data, line);
+d457 1
+a457 1
+      throw new Exception("GDL exit value = " + p.exitValue());
+d470 1
+a470 1
+  private GDLRule addRule(GDLRule lastRule, GDLRule newRule) {
+d488 1
+a488 1
+  private Test addTest(GDLRule rule, Test lastTest, Test newTest) {
+d541 1
+a541 1
+      return "GDL: No model built yet.";
+d543 1
+a543 1
+    return "GDL rules\n----------\n" + m_rules.toString();
+d715 1
+a715 1
+      System.out.println(Evaluation.evaluateModel(new GDL(), args));
+@
+
+
+1.7
+log
+@*** empty log message ***
+@
+text
+@d40 1
+a40 1
+ * @@version $Revision: 1.6 $ 
+d45 1
+a45 1
+  private String gdl_c_version = "4-1-12";
+d50 3
+d76 1
+a76 1
+      + "GDL.java version $Revision: 1.6 $"
+d420 3
+a422 2
+    if (m_Folds != 5) cmd.append(" -v " + m_Folds);
+    if (m_Wait != 5) cmd.append(" -w " + m_Wait);
+d551 1
+a551 1
+    Vector newVector = new Vector(4);
+d554 1
+a554 4
+      (new Option("\tThe maximum number of antecedents allowed in a single rule.\n"
+		  + "\tSet this higher if more antecedents might improve performance.\n"
+		  + "\tSet this lower if the search is taking too much time.\n"
+		  + "\tDefault = 5.",
+d558 1
+a558 3
+      (new Option("\tDetermines the amount of training data used for validation.\n"
+		  + "\tOne fold is used for validation, the rest for growing the rules.\n"
+		  + "\tDefault = 5.",
+d562 5
+a566 4
+      (new Option("\tThe number of rules to consider after validation starts dropping.\n"
+		  + "\tSet this higher if you think more rules may increase validation performance.\n"
+		  + "\tSet this lower if you want the search to stop sooner.\n"
+		  + "\tDefault = 5.",
+d570 1
+a570 2
+      (new Option("\tSet if you wish to randomize the training vs. validation data split.\n"
+		  + "\tDefault = False.",
+d584 6
+d596 3
+a598 3
+    String numAntdsString = Utils.getOption('A', options);
+    if (numAntdsString.length() != 0) 
+      m_NumAntds = Integer.parseInt(numAntdsString);
+d600 1
+a600 1
+      m_NumAntds = 5;
+d606 1
+a606 1
+      m_Wait = 5;
+d622 1
+d641 4
+a644 4
+    return "The maximum number of antecedents allowed in a single rule.  "
+      + "Set this higher if more antecedents might improve performance.  "
+      + "Set this lower if the search is taking too much time.  "
+      + "Default = 5.";
+d656 3
+a658 3
+    return "Determines the amount of training data used for validation.  "
+      + "One fold is used for validation, the rest for growing the rules.  "
+      + "Default = 5.";
+d669 16
+d686 4
+a689 4
+    return "The number of rules to consider after validation starts dropping.  "
+      + "Set this higher if you think more rules may increase validation performance.  "
+      + "Set this lower if you want the search to stop sooner.  "
+      + "Default = 5.";
+d701 1
+a701 1
+    return "Set if you wish to randomize the training vs. validation data split.  "
+@
+
+
+1.6
+log
+@Added -W option.
+@
+text
+@d40 1
+a40 1
+ * @@version $Revision: 1.5 $ 
+d45 1
+a45 1
+  private String gdl_c_version = "4.1.12";
+d73 1
+a73 1
+      + "GDL.java version $Revision: 1.5 $"
+d420 1
+a420 1
+    System.err.println("Running " + cmd);
+@
+
+
+1.5
+log
+@Changed handling of missing values.
+Added gdl_c_version to the documentation and the name of the
+executable.
+@
+text
+@a33 1
+ * Can only deal with nominal attributes. Can't deal with missing values.
+d40 1
+a40 1
+ * @@version $Revision: 1.4 $ 
+d45 1
+a45 1
+  private String gdl_c_version = "4.1.10";
+d53 3
+a67 1
+      + "Numeric attributes are not handled yet, try pre-discretization.  "
+d69 2
+d73 1
+a73 2
+      + "Vol.27, No.4, pp.349-370.<p>"
+      + "GDL.java version $Revision: 1.4 $"
+d418 1
+d547 1
+a547 1
+    Vector newVector = new Vector(3);
+d549 12
+a560 3
+    newVector.addElement(new Option("\tSet maximum number of antecedents in a rule\n" +
+				    "\t(default = 5)",
+				    "A", 1, "-A <number of antecedents>"));
+d562 11
+a572 6
+    newVector.addElement(new Option("\tSet number of folds for validation\n" +
+				    "\tOne fold of training data is used for pruning.\n" +
+				    "\t(default 5)","V", 1, "-V <number of folds>"));
+	
+    newVector.addElement(new Option("\tSet if you want randomization in gdl\n" +
+				    "\t(default:no randomization)","R", 0, "-R"));
+d597 6
+d617 1
+d635 4
+a638 4
+    return "Set the number of antecedents allowed in the rule if "
+      + "pre-pruning is used.  If this value is other than -1, then "
+      + "pre-pruning will be used, otherwise the rule uses reduced-error "
+      + "pruning.";
+d650 3
+a652 2
+    return "Determines the amount of data used for pruning. One fold is used for "
+      + "pruning, the rest for growing the rules.";
+d663 15
+d679 2
+a680 2
+    return "Set whether to consider exclusive expressions for nominal "
+      + "attribute splits.";
+@
+
+
+1.4
+log
+@Got rid of sh -c, did not work in linux.
+Putting gdl.exe in the path worked in windows.
+@
+text
+@d41 1
+a41 1
+ * @@version $Revision: 1.3 $ 
+d45 3
+d64 4
+a67 4
+  return "Class for building and using a decision list for classification.  "
+      + "Uses the greedy decision list (GDL) algorithm for construction."
+      + "Can only deal with nominal attributes."
+      + "Considers missing values a distinct value type."
+d70 5
+a74 2
+      + "Vol.27, No.4, pp.349-370.<p>";
+  }
+d128 3
+a130 12
+	if (nameval[1].equals("?")) {
+	  t.m_val = -1;
+	} else {
+	  t.m_val = d.attribute(t.m_attr).indexOfValue(nameval[1]);
+	  if (t.m_val == -1) {
+	    System.err.println("Legal values for attribute:");
+	    Enumeration e = d.attribute(t.m_attr).enumerateValues();
+	    while(e.hasMoreElements()) {
+	      System.err.println("["+e.nextElement()+"]");
+	    }
+	    throw new Exception("Unknown attribute value: " + attr[i]);
+	  }
+d341 3
+d350 12
+a361 7
+      if (x.attribute(i).name().indexOf(eqChar) != -1) {
+	throw new Exception("Attribute name has eqChar");
+      }
+      String str = x.attribute(i).name() + eqChar + 
+	(x.isMissing(i) ? "?" : x.stringValue(i));
+      if (str.indexOf(spChar) != -1) {
+	throw new Exception("Attribute has spChar");
+d363 1
+d413 1
+a413 1
+    StringBuffer cmd = new StringBuffer("gdl");
+@
+
+
+1.3
+log
+@*** empty log message ***
+@
+text
+@d41 1
+a41 1
+ * @@version $Revision: 1.2 $ 
+d411 2
+a412 1
+    Process p = runtime.exec("sh -c '"+ cmd.toString() + "'");
+@
+
+
+1.2
+log
+@All done except for numeric and missing attributes.
+@
+text
+@d41 1
+a41 1
+ * @@version $Revision: 1.1 $ 
+d45 10
+d63 2
+a64 1
+      + "Can only deal with nominal attributes. Can't deal with missing values."
+d115 22
+d138 1
+a138 1
+	  if (!d.classAttribute().name().equals(nameval[0])) {
+d143 1
+a143 5
+	  m_classification = d.classAttribute().indexOfValue(nameval[1]);
+	  if (m_classification == -1) {
+	    throw new Exception("Class value not found: " + nameval[1]);
+	  }
+	  //System.out.println("Class value: " + nameval[1]);
+a144 11
+	  Test t = new Test();
+	  t.m_attr = d.attribute(nameval[0]).index();
+	  if (t.m_attr == -1) {
+	    throw new Exception("Unknown attribute name: " + nameval[0]);
+	  }
+	  //System.out.println("Attr name: " + nameval[0]);
+	  t.m_val = d.attribute(t.m_attr).indexOfValue(nameval[1]);
+	  if (t.m_val == -1) {
+	    throw new Exception("Unknown attribute value: " + attr[i]);
+	  }
+	  //System.out.println("Attr value: " + nameval[1]);
+d261 2
+d306 3
+a308 1
+      if ((int) inst.value(m_attr) == m_val) {
+d338 1
+a338 1
+  private char eqChar = '=';
+d353 2
+a354 1
+      String str = x.attribute(i).name() + eqChar + x.toString(i);
+d380 26
+d407 5
+a411 1
+    Process p = runtime.exec("sh -c gdl");
+d416 1
+d420 1
+d424 5
+d430 1
+a430 1
+      //System.out.println("Rule: "+line);
+a440 3
+    while ((line = p_err.readLine()) != null) {
+      System.out.println("ERR>" + line);
+    }
+d444 2
+d532 108
+a644 25
+      /*
+      Runtime r = Runtime.getRuntime();
+      Process p = r.exec("sh -c 'arff2dlist.pl data/UCI-2005/nominal/mushroom.arff | gdl'");
+      InputStream s = p.getInputStream();
+      InputStreamReader sr = new InputStreamReader(s);
+      BufferedReader br = new BufferedReader(sr);
+      String line;
+      while ((line = br.readLine()) != null) {
+	System.out.println(line);
+      }
+        
+      // check for ls failure
+    
+      try {
+	if (p.waitFor() != 0) {
+	  System.err.println("exit value = " +
+			     p.exitValue());
+	}
+      }
+      catch (InterruptedException e) {
+	System.err.println(e);
+      }
+
+      System.exit(0);
+      */
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@d18 2
+a19 2
+ *    Prism.java
+ *    Copyright (C) 1999 Ian H. Witten
+d32 2
+a33 1
+ * Class for building and using a PRISM rule set for classifcation.  
+d35 1
+a35 1
+ * Doesn't do any pruning. For more information, see <p>
+d37 2
+a38 3
+ * J. Cendrowska (1987). <i>PRISM: An algorithm for
+ * inducing modular rules</i>. International Journal of Man-Machine
+ * Studies. Vol.27, No.4, pp.349-370.<p>
+d40 2
+a41 2
+ * @@author Ian H. Witten (ihw@@cs.waikato.ac.nz)
+ * @@version $Revision: 1.17 $ 
+d43 1
+a43 1
+public class Prism extends Classifier {
+d51 6
+a56 6
+  return "Class for building and using a PRISM rule set for classification. "
+    + "Can only deal with nominal attributes. Can't deal with missing values. "
+    + "Doesn't do any pruning. For more information, see \n\n"
+    + "J. Cendrowska (1987). \"PRISM: An algorithm for "
+    + "inducing modular rules\". International Journal of Man-Machine "
+    + "Studies. Vol.27, No.4, pp.349-370.";
+d60 1
+a60 1
+   * Class for storing a PRISM ruleset, i.e. a list of rules
+d62 1
+a62 1
+  private class PrismRule implements Serializable {
+d77 56
+a132 1
+    private PrismRule m_next;
+d141 1
+a141 1
+    public PrismRule(Instances data, int cl) throws Exception {
+d259 1
+a259 1
+	return "Can't print Prism classifier!";
+d298 1
+a298 1
+  private PrismRule m_rules;
+d316 34
+d357 20
+a376 25
+
+    int cl; // possible value of theClass
+    Instances E, ruleE, emptyDataset;
+    PrismRule rule = null;
+    Test test = null, oldTest = null;
+    int bestCorrect, bestCovers, attUsed;
+
+    if (data.checkForStringAttributes()) {
+      throw new UnsupportedAttributeTypeException("Cannot handle string attributes!");
+    }
+    if (data.classAttribute().isNumeric()) {
+      throw new UnsupportedClassTypeException("Prism can't handle a numeric class!");
+    }
+    data = new Instances(data);
+    Enumeration enumAtt = data.enumerateAttributes();
+    while (enumAtt.hasMoreElements()) {
+      Attribute attr = (Attribute) enumAtt.nextElement();
+      if (!attr.isNominal()) {
+	throw new UnsupportedAttributeTypeException("Prism can only deal with nominal attributes!");
+      }
+      Enumeration enu = data.enumerateInstances();
+      while (enu.hasMoreElements()) {
+	if (((Instance) enu.nextElement()).isMissing(attr)) {
+	  throw new NoSupportForMissingValuesException("Prism can't handle attributes with missing values!");
+	}
+d378 5
+d384 2
+a385 67
+    data.deleteWithMissingClass(); // delete all instances with a missing class
+    if (data.numInstances() == 0) {
+      throw new Exception("No instances with a class value!");
+    }
+
+    for (cl = 0; cl < data.numClasses(); cl++) { // for each class cl
+      E = data; // initialize E to the instance set
+      while (contains(E, cl)) { // while E contains examples in class cl
+        rule = addRule(rule, new PrismRule(E, cl)); // make a new rule
+        ruleE = E; // examples covered by this rule
+        while (rule.m_errors != 0) { // until the rule is perfect
+          test = new Test(); // make a new test
+          bestCorrect = bestCovers = attUsed = 0;
+
+          // for every attribute not mentioned in the rule
+          enumAtt = ruleE.enumerateAttributes();
+          while (enumAtt.hasMoreElements()) {
+            Attribute attr = (Attribute) enumAtt.nextElement();
+            if (isMentionedIn(attr, rule.m_test)) {
+	      attUsed++; 
+	      continue;
+	    }
+            int M = attr.numValues();
+            int[] covers = new int [M];
+            int[] correct = new int [M];
+            for (int j = 0; j < M; j++) {
+	      covers[j] = correct[j] = 0;
+	    }
+
+            // ... calculate the counts for this class
+            Enumeration enu = ruleE.enumerateInstances();
+            while (enu.hasMoreElements()) {
+              Instance i = (Instance) enu.nextElement();
+              covers[(int) i.value(attr)]++;
+              if ((int) i.classValue() == cl) {
+                correct[(int) i.value(attr)]++;
+	      }
+            }
+
+            // ... for each value of this attribute, see if this test is better
+            for (int val = 0; val < M; val ++) {
+              int diff = correct[val] * bestCovers - bestCorrect * covers[val];
+
+              // this is a ratio test, correct/covers vs best correct/covers
+              if (test.m_attr == -1
+                  || diff > 0 || (diff == 0 && correct[val] > bestCorrect)) {
+
+                // update the rule to use this test
+                bestCorrect = correct[val];
+                bestCovers = covers[val];
+                test.m_attr = attr.index();
+                test.m_val = val;
+                rule.m_errors = bestCovers - bestCorrect;
+              }
+            }
+          }
+	  if (test.m_attr == -1) { // Couldn't find any sensible test
+	    break;
+	  }
+	  oldTest = addTest(rule, oldTest, test);
+	  ruleE = rule.coveredBy(ruleE);
+	  if (attUsed == (data.numAttributes() - 1)) { // Used all attributes.
+	    break;
+	  }
+        }
+        E = rule.notCoveredBy(E);
+      }
+d396 1
+a396 1
+  private PrismRule addRule(PrismRule lastRule, PrismRule newRule) {
+d414 1
+a414 1
+  private Test addTest(PrismRule rule, Test lastTest, Test newTest) {
+d467 1
+a467 1
+      return "Prism: No model built yet.";
+d469 1
+a469 1
+    return "Prism rules\n----------\n" + m_rules.toString();
+d478 26
+a503 1
+      System.out.println(Evaluation.evaluateModel(new Prism(), args));
+@

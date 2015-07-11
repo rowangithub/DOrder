@@ -1,0 +1,2 @@
+qpAst.cmo: qpMisc.cmo qpAst.cmi
+qpAst.cmx: qpMisc.cmx qpAst.cmi

@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wc-entries
+   xmlns="svn:">
+<entry
+   committed-rev="28"
+   name=""
+   committed-date="2011-10-12T08:35:10.054173Z"
+   url="http://project-bull.googlecode.com/svn/trunk/Src/solvers/minisat/utils"
+   last-author="gulu0724@gmail.com"
+   kind="dir"
+   uuid="98f8fb66-45aa-33f9-3024-5cfe4fc578d6"
+   repos="http://project-bull.googlecode.com/svn"
+   revision="68"/>
+<entry
+   committed-rev="28"
+   name="ParseUtils.h"
+   text-time="2014-07-05T15:50:57.000000Z"
+   committed-date="2011-10-12T08:35:10.054173Z"
+   checksum="04be685d2afb7e5f804fd961baa9c551"
+   last-author="gulu0724@gmail.com"
+   kind="file"
+   prop-time="2014-07-05T15:50:57.000000Z"/>
+<entry
+   committed-rev="28"
+   name="Options.h"
+   text-time="2014-07-05T15:50:57.000000Z"
+   committed-date="2011-10-12T08:35:10.054173Z"
+   checksum="ab2fef1f36fe86d46724bb632baf9c6a"
+   last-author="gulu0724@gmail.com"
+   kind="file"
+   prop-time="2014-07-05T15:50:57.000000Z"/>
+<entry
+   committed-rev="28"
+   name="depend.mk"
+   text-time="2014-07-05T15:50:57.000000Z"
+   committed-date="2011-10-12T08:35:10.054173Z"
+   checksum="1c3a14010d3a66fe228d637aa5f748d2"
+   last-author="gulu0724@gmail.com"
+   kind="file"
+   prop-time="2014-07-05T15:50:57.000000Z"/>
+<entry
+   committed-rev="28"
+   name="System.h"
+   text-time="2014-07-05T15:50:57.000000Z"
+   committed-date="2011-10-12T08:35:10.054173Z"
+   checksum="ad6e440258ba5f99d45db93687cceb01"
+   last-author="gulu0724@gmail.com"
+   kind="file"
+   prop-time="2014-07-05T15:50:57.000000Z"/>
+<entry
+   committed-rev="28"
+   name="Makefile"
+   text-time="2014-07-05T15:50:57.000000Z"
+   committed-date="2011-10-12T08:35:10.054173Z"
+   checksum="9e4cafca14e779fec34980b7d79144b7"
+   last-author="gulu0724@gmail.com"
+   kind="file"
+   prop-time="2014-07-05T15:50:57.000000Z"/>
+</wc-entries>

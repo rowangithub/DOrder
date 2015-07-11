@@ -1,0 +1,2 @@
+qpEquality.cmo: qpVector.cmi qpMisc.cmo qpDag.cmi qpArch.cmo cong.cmi
+qpEquality.cmx: qpVector.cmx qpMisc.cmx qpDag.cmx qpArch.cmx cong.cmx

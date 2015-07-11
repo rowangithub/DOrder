@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wc-entries
+   xmlns="svn:">
+<entry
+   committed-rev="20704"
+   name=""
+   committed-date="2013-03-29T17:48:49.070568Z"
+   url="svn+ssh://zhu103@zed.cs.purdue.edu/p/sss/svn/MCPA/external/yices/include"
+   last-author="zhu103"
+   kind="dir"
+   repos="svn+ssh://zhu103@zed.cs.purdue.edu/p/sss/svn"
+   revision="21258"/>
+<entry
+   name="build"
+   kind="dir"/>
+<entry
+   committed-rev="20704"
+   name="swig.cmi"
+   text-time="2013-03-26T20:32:45.000000Z"
+   committed-date="2013-03-29T17:48:49.070568Z"
+   checksum="82bc38bb8b9c98490df3de4434ea2d00"
+   last-author="zhu103"
+   kind="file"
+   prop-time="2013-03-29T17:48:25.000000Z"/>
+<entry
+   committed-rev="20704"
+   name="yicesl_c.h"
+   text-time="2013-02-25T18:24:10.000000Z"
+   committed-date="2013-03-29T17:48:49.070568Z"
+   checksum="483fdfc1c7dc144e1fba741c7c74a91c"
+   last-author="zhu103"
+   kind="file"/>
+<entry
+   committed-rev="20704"
+   name="oyices.i"
+   text-time="2008-05-01T01:37:27.000000Z"
+   committed-date="2013-03-29T17:48:49.070568Z"
+   checksum="b7c51a5366ae0db1a09627e31b442700"
+   last-author="zhu103"
+   kind="file"/>
+<entry
+   committed-rev="20704"
+   name="yices_c.h"
+   text-time="2013-02-25T18:24:10.000000Z"
+   committed-date="2013-03-29T17:48:49.070568Z"
+   checksum="ebb33e2c35f5d23c2678f34bcdd0650d"
+   last-author="zhu103"
+   kind="file"/>
+<entry
+   committed-rev="20704"
+   name="swig.mli"
+   text-time="2013-03-26T20:32:45.000000Z"
+   committed-date="2013-03-29T17:48:49.070568Z"
+   checksum="ac2eef6b939395da62906e1f4699b0a6"
+   last-author="zhu103"
+   kind="file"/>
+<entry
+   committed-rev="20704"
+   name="Makefile"
+   text-time="2008-05-01T01:37:27.000000Z"
+   committed-date="2013-03-29T17:48:49.070568Z"
+   checksum="e2bb4babba9153cc0a6f394a44fac8a8"
+   last-author="zhu103"
+   kind="file"/>
+<entry
+   committed-rev="20704"
+   name="make-safe-interface.py"
+   text-time="2008-05-01T01:37:27.000000Z"
+   committed-date="2013-03-29T17:48:49.070568Z"
+   checksum="84ed7b4e84d9b79e4263749b7c68f9b0"
+   last-author="zhu103"
+   kind="file"
+   prop-time="2013-03-29T17:48:25.000000Z"/>
+</wc-entries>

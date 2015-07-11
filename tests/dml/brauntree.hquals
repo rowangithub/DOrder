@@ -1,0 +1,4 @@
+(* Data structure invariant: balance *)
+qualif Brauntree(v): (volumn1 v >= volumn2 v and volumn1 v <= volumn2 v + 1) and volumn v >= 0
+
+qualif Inv(res) : res >= 0

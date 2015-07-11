@@ -1,0 +1,20 @@
+let main () =	
+	let ns = [|(1,69);(15,63);(24,72);(14,62);(2,66);(18,75);(13,56);(17,73);(12,71);(6,59);
+	(25,67);(9,55);(5,65);(21,53);(20,60);(4,68);(10,54);(3,61);(23,57);(11,70);(8,58);(16,52)|] in	
+	
+	let t = Leaf in	
+	let t = Array.fold_left (fun t (k, p) -> 
+		let _ = fprintf outch "env:newtest\t\n" in
+		add t k p
+		) t ns in
+	let _ = Array.fold_left (fun t (k, _) -> 
+		let _ = fprintf outch "env:newtest\t\n" in
+		(*if (Random.bool ()) then (ignore (find_min t); t)
+		else*) (delete t k)
+		) t ns in
+	let _ = fprintf outch "env:newtest\t\n" in	
+	let _ = find t 13 in
+	let _ = fprintf outch "env:newtest\t\n" in	
+	let _ = find t 0 in
+	()
+let _ = main () 

@@ -1,0 +1,28 @@
+(*qualif Inv(res) : forall (u v ). ((-. link (res, same, 0, u, v)) or link (heap, same, 0, u, v) or (((reach (heap, v)) and (u = x)) or  link (heap, diff, 2, u, v)) or link (heap, diff, 0, u, v))
+
+qualif Inv(res) : forall (u v ). ((-. link (res, diff, 2, u, v)) or link (heap, diff, 2, u, v) or (((reach (heap, v)) and (u = x)) or  link (heap, same, 2, u, v)) or link (heap, same, 0, u, v))
+
+qualif Inv(res) : forall (u ). (((-. ((u = x) or  (reach (heap, u)))) or (reach (res, u))) and ((-. (reach (res, u))) or ((u = x) or  (reach (heap, u))))) *)
+
+qualif Inv(res) : reach (heap, res)
+qualif Inv(res) : forall (u). (-. reach (heap, u) or u <= res)
+
+(*qualif Inv(res) : forall (u v ). ((-.(link (res.1, diff, 2, u, v) )) or link (heap, same, 20, u, v) or link (heap, diff, 0, v, u) or (link (heap, diff, 20, v, u) or link (heap, diff, 2, u, v)) or link (heap, same, 2, v, u) or link (heap, same, 2, u, v))
+
+qualif Inv(res) : forall (u v ). ((-.(link (res.1, diff, 0, u, v) )) or link (heap, diff, 0, u, v) or link (heap, same, 20, u, v) or (link (heap, diff, 20, v, u) or link (heap, same, 2, v, u)) or link (heap, diff, 0, v, u) or link (heap, same, 0, u, v))
+
+
+qualif Inv(res) : forall (u v ). ((-.(link (res.1, same, 0, u, v) )) or link (heap, same, 0, u, v) or link (heap, diff, 0, v, u) or (link (heap, diff, 20, v, u) or link (heap, diff, 0, u, v)) or link (heap, same, 2, v, u) or link (heap, same, 20, u, v))
+
+qualif Inv(res) : forall (u v ). ((-.(link (res.1, same, 2, u, v) )) or link (heap, same, 20, u, v) or link (heap, diff, 0, v, u) or (link (heap, diff, 20, v, u) or link (heap, diff, 2, u, v)) or link (heap, same, 2, v, u) or link (heap, same, 2, u, v))
+
+
+
+qualif Inv(res) : forall (u v ). ((-.(link (res.1, same, 20, u, v) )) or link (heap, same, 20, u, v) or link (heap, same, 2, v, u) or link (heap, diff, 20, v, u) or link (heap, diff, 20, u, v) or link (heap, diff, 0, v, u))
+
+
+qualif Inv(res) : forall (u v ). ((-.(link (res.1, diff, 20, u, v) )) or link (heap, same, 20, u, v) or link (heap, same, 2, v, u) or link (heap, diff, 20, v, u) or link (heap, diff, 20, u, v) or link (heap, diff, 0, v, u))
+
+
+qualif Inv(res) : forall (u v ). (-.(u = res and (reach (heap, v) )) or link (heap, same, 0, u, v) or link (heap, same, 2, u, v) or link (heap, diff, 0, u, v) or link (heap, diff, 2, u, v))
+*)

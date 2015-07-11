@@ -1,0 +1,31 @@
+qualif L(x) : x.p1 <= x.p2
+qualif M(x) : x.q1 <= x.q2
+qualif P(x) : x.q4 >= x.q3
+qualif N(x) : x.q3 <= x.q2
+qualif U(x) : x.q2 <= x.q3 + 1
+qualif Z(x) : x <= pd + 1
+qualif Z'(x) : z >= pa - 1
+qualif N2DEEP(x) : x <= limit + 1
+qualif O(x) : x <= pc + 1
+qualif LN(x) : x != a + n
+qualif LM(x) : x <= a + n
+qualif Q(x) : x <= a + n - 1
+qualif QM(x) : x < a + n - 1
+qualif R(x) : x.p2 <= limit + 1
+qualif V(x) : x.p2 >= limit
+qualif R'(x) : x.p2 <= pc + 1
+qualif V'(x) : x.p2 >= pc
+qualif S(x) : x.p1 >= limit - 1
+qualif T(x) : x.q3 <= x.q2 + 1
+qualif STARTSIZE(k) : start + k <= Array.length arr
+qualif STARTSIZELT(k) : start + k < Array.length arr
+qualif LEISIZE(n) : n + i <= Array.length arr
+qualif LTISIZE(n) : n + i < Array.length arr
+qualif LEJSIZE(n) : n + j <= Array.length arr
+qualif LTJSIZE(n) : n + j < Array.length arr
+qualif LEASIZE(n) : n + a <= Array.length arr
+qualif LTASIZE(n) : n + a < Array.length arr
+qualif LE_P1SIZE(n) : n <= 1 + Array.length arr
+qualif LT_P1SIZE(n) : n < 1 + Array.length arr
+qualif O(x) : x + r < Array.length arr
+qualif O(x) : x + r <= Array.length arr

@@ -1,0 +1,11 @@
+let main () =
+	let _ = fprintf outch "env:newtest\t\n" in
+	let t = mktree 3 9 in
+	let _ = fprintf outch "env:newtest\t\n" in
+	let _ = tree_flip t in
+	let _ = fprintf outch "env:newtest\t\n" in
+	let l = list_of_tree t in
+	let _ = fprintf outch "env:newtest\t\n" in
+	let _ = tree_of_list l in
+	()
+let _ = main ()

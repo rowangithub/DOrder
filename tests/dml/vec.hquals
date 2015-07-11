@@ -1,0 +1,13 @@
+(* Data structure invariant *)
+qualif Tree(v): height1 v - height2 v <= 2
+qualif Tree(v): height2 v - height1 v <= 2
+qualif Tree(v): height v >= 0
+qualif Tree(v): length v >= 0
+
+
+
+(*qualif T(v)(A: int) : ~A <= length t - length v
+qualif T(v) : v <= length t - length t'*)
+
+(*qualif T(v): v >= 0
+qualif T(v): v <= j*)

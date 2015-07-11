@@ -1,0 +1,2 @@
+cong.cmo: qpMisc.cmo cong.cmi
+cong.cmx: qpMisc.cmx cong.cmi

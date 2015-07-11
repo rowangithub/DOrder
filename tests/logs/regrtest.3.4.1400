@@ -1,0 +1,330 @@
+RUNNING postests TESTS
+RUNNING: examples-liquid/tree.ml
+
+real	0m0.340s
+user	0m0.227s
+sys	0m0.054s
+SUCCESS!
+Time in solver:  0.163s
+
+
+RUNNING: examples-liquid/list.ml
+
+real	0m0.197s
+user	0m0.126s
+sys	0m0.045s
+SUCCESS!
+Time in solver:  0.072s
+
+
+RUNNING: examples-liquid/fold.ml
+
+real	0m0.503s
+user	0m0.361s
+sys	0m0.081s
+SUCCESS!
+Time in solver:  0.294s
+
+
+RUNNING: DML/quicksort_sane.ml
+
+real	0m12.705s
+user	0m9.863s
+sys	0m0.764s
+SUCCESS!
+Time in solver:  9.558s
+
+
+RUNNING: DML/tower.ml
+
+real	0m3.689s
+user	0m2.712s
+sys	0m0.331s
+SUCCESS!
+Time in solver:  2.589s
+
+
+RUNNING: DML/fft.ml
+
+real	0m8.389s
+user	0m6.152s
+sys	0m0.809s
+SUCCESS!
+Time in solver:  5.895s
+
+
+RUNNING: examples-liquid/sum.ml
+
+real	0m0.138s
+user	0m0.070s
+sys	0m0.046s
+SUCCESS!
+Time in solver:  0.016s
+
+
+RUNNING: examples-liquid/dotprod0.ml
+
+real	0m0.535s
+user	0m0.170s
+sys	0m0.050s
+SUCCESS!
+Time in solver:  0.105s
+
+
+RUNNING: DML/bsearch.ml
+
+real	0m0.473s
+user	0m0.337s
+sys	0m0.074s
+SUCCESS!
+Time in solver:  0.264s
+
+
+RUNNING: DML/dotprod.ml
+
+real	0m0.368s
+user	0m0.263s
+sys	0m0.061s
+SUCCESS!
+Time in solver:  0.187s
+
+
+RUNNING: DML/dotprod2.ml
+
+real	0m0.674s
+user	0m0.260s
+sys	0m0.074s
+SUCCESS!
+Time in solver:  0.192s
+
+
+RUNNING: DMLex/bcopy.ml
+
+real	0m0.548s
+user	0m0.215s
+sys	0m0.070s
+SUCCESS!
+Time in solver:  0.143s
+
+
+RUNNING: DMLex/bs2.ml
+
+real	0m1.063s
+user	0m0.320s
+sys	0m0.089s
+SUCCESS!
+Time in solver:  0.241s
+
+
+RUNNING: DML/insertsort.ml
+
+real	0m2.479s
+user	0m0.830s
+sys	0m0.151s
+SUCCESS!
+Time in solver:  0.725s
+
+
+RUNNING: DML/queen.ml
+
+real	0m2.264s
+user	0m0.785s
+sys	0m0.124s
+SUCCESS!
+Time in solver:  0.679s
+
+
+RUNNING: DMLex/gauss.ml
+
+real	0m5.572s
+user	0m2.824s
+sys	0m0.311s
+SUCCESS!
+Time in solver:  2.670s
+
+
+RUNNING: DMLex/simplex.ml
+
+real	0m7.749s
+user	0m6.117s
+sys	0m0.522s
+SUCCESS!
+Time in solver:  5.792s
+
+
+RUNNING: examples-liquid/unbounded.ml
+
+real	0m5.134s
+user	0m0.883s
+sys	0m0.110s
+SUCCESS!
+Time in solver:  0.792s
+
+
+RUNNING: examples-liquid/vecswap.ml
+
+real	0m0.668s
+user	0m0.446s
+sys	0m0.100s
+SUCCESS!
+Time in solver:  0.360s
+
+
+RUNNING: examples-liquid/arraymax.ml
+
+real	0m1.232s
+user	0m0.268s
+sys	0m0.073s
+SUCCESS!
+Time in solver:  0.175s
+
+
+RUNNING: examples-liquid/minibot.ml
+
+real	0m0.381s
+user	0m0.269s
+sys	0m0.064s
+SUCCESS!
+Time in solver:  0.193s
+
+
+RUNNING: DMLex/heapsort.ml
+
+real	0m1.113s
+user	0m0.732s
+sys	0m0.155s
+SUCCESS!
+Time in solver:  0.619s
+
+
+RUNNING: examples-liquid/encrypt_cfb8.ml
+
+real	0m0.668s
+user	0m0.493s
+sys	0m0.093s
+SUCCESS!
+Time in solver:  0.402s
+
+
+RUNNING: DMLex/matmult.ml
+
+real	0m1.972s
+user	0m1.476s
+sys	0m0.252s
+SUCCESS!
+Time in solver:  1.353s
+
+
+RUNNING: DMLex/simplex.ml
+
+real	0m7.702s
+user	0m6.181s
+sys	0m0.493s
+SUCCESS!
+Time in solver:  5.859s
+
+
+RUNNING: examples-liquid/quicksort.ml
+
+real	0m2.828s
+user	0m1.758s
+sys	0m0.265s
+SUCCESS!
+Time in solver:  1.611s
+
+
+RUNNING: examples-liquid/bitv.ml
+
+real	0m2.224s
+user	0m1.645s
+sys	0m0.169s
+FAILURE :(
+Time in solver:  1.510s
+
+
+RUNNING: examples-liquid/assert_fun.ml
+
+real	0m0.150s
+user	0m0.066s
+sys	0m0.056s
+SUCCESS!
+Time in solver:  0.014s
+
+
+RUNNING: examples-liquid/fold.ml
+
+real	0m0.507s
+user	0m0.352s
+sys	0m0.088s
+SUCCESS!
+Time in solver:  0.281s
+
+
+RUNNING: examples-liquid/baseinst.ml
+
+real	0m0.119s
+user	0m0.058s
+sys	0m0.045s
+SUCCESS!
+Time in solver:  0.004s
+
+
+DONE
+RUNNING NEGFILE
+RUNNING: DMLex/bcopy2.ml
+
+real	0m0.656s
+user	0m0.455s
+sys	0m0.101s
+SUCCESS!
+TOTAL                          0.004 s
+RUNNING: DMLex/matmult-bad.ml
+
+real	0m2.093s
+user	0m1.517s
+sys	0m0.246s
+SUCCESS!
+TOTAL                          0.004 s
+RUNNING: DMLex/bcopy-bad.ml
+
+real	0m0.350s
+user	0m0.221s
+sys	0m0.061s
+SUCCESS!
+TOTAL                          0.004 s
+RUNNING: DML/bsearch-bad.ml
+
+real	0m0.820s
+user	0m0.353s
+sys	0m0.063s
+SUCCESS!
+TOTAL                          0.004 s
+RUNNING: examples-liquid/dotprod0-bad.ml
+
+real	0m0.272s
+user	0m0.165s
+sys	0m0.057s
+SUCCESS!
+TOTAL                          0.004 s
+RUNNING: examples-liquid/access-bad.ml
+
+real	0m0.129s
+user	0m0.072s
+sys	0m0.032s
+SUCCESS!
+TOTAL                          0.004 s
+RUNNING: DMLex/gauss-bad.ml
+
+real	0m3.697s
+user	0m2.777s
+sys	0m0.305s
+SUCCESS!
+TOTAL                          0.004 s
+RUNNING: DML/queen-bad.ml
+
+real	0m0.999s
+user	0m0.717s
+sys	0m0.139s
+SUCCESS!
+TOTAL                          0.004 s
+DONE

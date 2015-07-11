@@ -1,0 +1,7 @@
+
+
+
+
+
+qualif Inv(res) : (-.reach (t, k) or k = res.1)
+qualif Inv(res) : (reach (t, k) or -.(k = res.1))

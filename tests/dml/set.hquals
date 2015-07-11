@@ -1,0 +1,2 @@
+(* Data structure invariant *)
+qualif Tree(v): (height1 v - height2 v <= 2) and ((height2 v - height1 v <= 2) and (height v >= 0))

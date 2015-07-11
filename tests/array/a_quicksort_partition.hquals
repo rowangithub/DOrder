@@ -1,0 +1,2 @@
+qualif T(x) : x <= (i + 1)
+qualif T(x) : x >= (0 - 1)

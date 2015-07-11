@@ -1,0 +1,35 @@
+qualif Inv1(res) : forall (u v). (-. link(res, node, 2, u, v) or (link (ts1, node, 2, u, v) or link (ts2, node, 2, u, v) or (reach (ts1, u) and reach (ts2, v)) or (reach (ts2, u) and reach (ts1, v))))
+
+qualif Inv2(res) : forall (u v). (-. link(res, node, 2, u, v) or (link (t, node, 2, u, v) or link (ts, node, 2, u, v) or (reach (t, u) and reach (ts, v)) or (reach (ts, u) and reach (t, v))))
+
+
+(*qualif Inv6(res) : forall (u). (-. (reach (t1, u) or reach (t2, u)) or reach (res, u))
+qualif Inv6(res) : forall (u). (-. reach (res, u) or (reach (t1, u) or reach (t2, u)))
+
+qualif Inv8(res) : forall (u v). (-. link (t1, node, 2, u, v) or link (res, node, 2, u, v))
+qualif Inv8(res) : forall (u v). (-. link (t2, node, 2, u, v) or link (res, node, 2, u, v))
+
+qualif Inv6(res) : forall (u). (-. (reach (t, u) or reach (ts, u)) or reach (res, u))
+qualif Inv6(res) : forall (u). (-. reach (res, u) or (reach (t, u) or reach (ts, u)))
+
+qualif Inv8(res) : forall (u v). (-. link (t, node, 2, u, v) or link (res, node, 2, u, v))
+qualif Inv8(res) : forall (u v). (-. link (ts, node, 2, u, v) or link (res, node, 2, u, v))
+
+qualif Inv6(res) : forall (u). (-. (u = x or reach (ts, u)) or reach (res, u))
+qualif Inv6(res) : forall (u). (-. reach (res, u) or (u = x or reach (ts, u)))
+
+qualif Inv6(res) : forall (u). (-. (reach (ts1, u) or reach (ts2, u)) or reach (res, u))
+qualif Inv6(res) : forall (u). (-. reach (res, u) or (reach (ts1, u) or reach (ts2, u)))
+
+qualif Inv8(res) : forall (u v). (-. link (ts1, node, 2, u, v) or link (res, node, 2, u, v))
+qualif Inv8(res) : forall (u v). (-. link (ts2, node, 2, u, v) or link (res, node, 2, u, v))
+
+qualif Inv6(res) : forall (u). (-. (reach (res.0, u) or reach (res.1, u)) or reach (ts, u))
+qualif Inv6(res) : forall (u). (-. reach (ts, u) or (reach (res.0, u) or reach (res.1, u)))
+
+qualif Inv7(res) : forall (u v). (-. link (ts, node, 2, u, v) or (link (res.0, node, 2, u, v) or link (res.1, node, 2, u, v)))
+qualif Inv7(res) : forall (u v). (-. (link (res.0, node, 2, u, v) or link (res.1, node, 2, u, v)) or link (ts, node, 2, u, v))
+
+qualif Inv9(res) : reach (ts, res.0)
+qualif Inv9(res) : forall (u). (-. (res.0 = u or reach (res.1, u)) or reach (ts, u))
+qualif Inv9(res) : forall (u). (-. reach (ts, u) or (res.0 = u or reach (res.1, u))) *)

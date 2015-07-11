@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wc-entries
+   xmlns="svn:">
+<entry
+   committed-rev="20704"
+   name=""
+   committed-date="2013-03-29T17:48:49.070568Z"
+   url="svn+ssh://zhu103@zed.cs.purdue.edu/p/sss/svn/MCPA/external/yices"
+   last-author="zhu103"
+   kind="dir"
+   repos="svn+ssh://zhu103@zed.cs.purdue.edu/p/sss/svn"
+   revision="21258"/>
+<entry
+   committed-rev="20704"
+   name="LICENSE"
+   text-time="2013-02-25T18:24:10.000000Z"
+   committed-date="2013-03-29T17:48:49.070568Z"
+   checksum="ed4e0587f1cc7a962e4c4c710812cf95"
+   last-author="zhu103"
+   kind="file"/>
+<entry
+   name="include"
+   kind="dir"/>
+<entry
+   committed-rev="20704"
+   name="NOTICES"
+   text-time="2013-02-25T18:24:10.000000Z"
+   committed-date="2013-03-29T17:48:49.070568Z"
+   checksum="a0d676b1374256342fa51fddc505a746"
+   last-author="zhu103"
+   kind="file"/>
+<entry
+   name="lib"
+   kind="dir"/>
+<entry
+   name="bin"
+   kind="dir"/>
+</wc-entries>

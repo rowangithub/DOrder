@@ -1,0 +1,1 @@
+(*qualif Loop(v) : ((x <= y and y <= 100 * x) and z = 10 * w)*)

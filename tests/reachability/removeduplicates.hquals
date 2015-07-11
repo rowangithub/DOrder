@@ -1,0 +1,86 @@
+qualif Inv1(res) : forall (u v). (-. (link (res, cons, 1, u, v)) or link (xs, cons, 1, u, v))
+qualif Inv2(res) : forall (u v). (-. (link (xs, cons, 1, u, v)) or link (res, cons, 1, u, v))
+qualif Inv3(res) : forall (u v). (-. (link (ys, cons, 1, u, v)) or link (res, cons, 1, u, v))
+qualif Inv4(res) : forall (u v). (-. (reach (xs, u) and reach (ys, v)) or link (res, cons, 1, u, v))
+qualif Inv4(res) : forall (u v). (-. (reach (ys, u) and reach (xs, v)) or link (res, cons, 1, u, v))
+qualif Inv4(res) : forall (u v). (-. (reach (xs, u) and reach (ys, v)) or link (res, cons, 1, v, u))
+qualif Inv4(res) : forall (u v). (-. (reach (ys, u) and reach (xs, v)) or link (res, cons, 1, v, u))
+
+qualif Inv5(res) : forall (u). (-. reach (xs, u) or reach (res, u))
+qualif Inv6(res) : forall (u). (-. reach (ys, u) or reach (res, u))
+
+qualif Inv7(res) : forall (u v). (-. (link (xs, cons, 1, u, v)) or link (res, cons, 1, v, u))
+qualif Inv8(res) : forall (u v). (-. (link (ys, cons, 1, u, v)) or link (res, cons, 1, v, u))
+
+qualif Inv9(res) : forall (u v). (-. (link (l, cons, 1, u, v)) or link (res, cons, 1, v, u))
+qualif Inv9(res) : forall (u v). (-. (link (res, cons, 1, u, v)) or link (l, cons, 1, v, u))
+qualif Inv10(res) : forall (u). (-. reach (l, u) or reach (res, u))
+qualif Inv10(res) : forall (u). (-. reach (res, u) or reach (l, u))
+
+qualif Inv11(res) : forall (u v). (-. (link (res, cons, 1, u, v)) or (link (xs, cons, 1, v, u) or link (ys, cons, 1, u, v) or (reach (xs, u) and reach (ys, v)) ))
+
+qualif Inv11(res) : forall (u v). (-. (link (res, cons, 1, u, v)) or (link (xs, cons, 1, u, v) or link (ys, cons, 1, u, v) or (reach (xs, u) and reach (ys, v)) ))
+
+
+
+qualif Inv12(res) : forall (u v). (-. (link (res, cons, 1, u, v)) or u <= v)
+qualif Inv13(res) : forall (u). (-. reach (res, u) or (reach (xs, u) or u = y))
+qualif Inv13(res) : forall (u). (-. (reach (xs, u) or u = y) or reach (res, u))
+qualif Inv14(res) : forall (u). (-. reach (res, u) or reach (xs, u))
+
+qualif Inv15(res) : forall (u). (-. reach (res, u) or (reach (xs, u) or reach (ys, u)))
+qualif Inv15(res) : forall (u). (-. (reach (xs, u) or reach (ys, u)) or reach (res, u))
+qualif Inv16(res) : forall (u). (-. reach (xs, u) or (reach (res.0, u) or reach (res.1, u)))
+
+qualif Inv17(res) : forall (u). (-. reach (res, u) or u >= x)
+qualif Inv17(res) : forall (u). (-. reach (res, u) or u < x)
+(*qualif Inv17(res) : forall (u). (-. reach (l, u) or reach (res, u))*)
+qualif Inv17(res) : forall (u). (-. reach (g, u) or reach (res, u))
+qualif Inv17(res) : forall (u). (-. (reach (res.0, u) or reach (res.1, u)) or (reach (l, u) or reach (g, u) or reach (rest, u)))
+qualif Inv17(res) : forall (u). (-. (reach (l, u) or reach (g, u) or reach (rest, u)) or (reach (res.0, u) or reach (res.1, u)))
+
+qualif Inv18(value) : forall (u). (-. reach (xs, u) or u >= value)
+qualif Inv18(res) : forall (u). (-. reach (xs, u) or (reach (res, u) or u = m))
+qualif Inv18(res) : forall (u). (-. (reach (res, u) or u = m) or reach (xs, u))
+
+qualif Inv19(res) : forall (u). (-. reach (res, u) or -. (u = m))
+qualif Inv19(res) : forall (u v). (-. (link (res, cons, 1, u, v)) or (link (xs, cons, 1, u, v) or link (ys, cons, 1, v, u) or (reach (ys, u) and reach (xs, v)) ))
+qualif Inv19(res) : forall (u v). (-. (reach (res, u) and reach (xs, v)) or -. (u = v))
+qualif Inv19(res) : forall (u v). (-. (link (res, cons, 1, u, v)) or -. (u = v)) 
+
+(*
+Link (xs, cons, 1, u, v) <=> Link (x::xs, cons, 1, u, v) <=> (u = x && Reach (xs, v)) || Link (xs, cons, 1, u, v)
+						 <=> Link ([], cons, 1, u, v) <=> false
+Reach (xs, u) <=> Reach (x::xs, u) <=> u = x || Reach (xs, u) 
+			  <=> Reach ([], u) <=> false
+ 
+
+Link (tree, Node, 0, u, v) <=> Link (Node (l, x, r), Node, 0, u, v) <=> (u = x && Reach (l, v)) || Link (l, Node, 0, u, v) || Link (r, Node, 0, u, v)
+							   Link (Empty, Node, 0, u, v) <=> false
+
+Link (tree, Node, 2, u, v) <=> Link (Node (l, x, r), Node, 2, u, v) <=> (u = x && Reach (r, v)) || Link (l, Node, 2, u, v) || Link (r, Node, 2, u, v)
+							   Link (Empty, Node, 2, u, v) <=> false
+Reach (tree, u) <=> Reach (Node (l, x, r), u) <=> u = x || Reach (l, u) || Reach (r, u)
+				<=> Reach (Empty, u) <=> false
+				
+				
+				
+Specification for identical list:
+forall (u:list, v:list). Link (xs, cons, 1, u, v) => Link (res, cons, 1, u, v)
+
+Specification for identical tree:
+Link (inputtree, Node, 0, u, v) => Link (restree, Node, 0, u, v)
+Link (inputtree, Node, 1, u, v) => Link (restree, Node, 1, u, v)
+
+Specification for transforming a tree into a list with in-order sequence:
+Link (tree, Node, 0, u, v) => Link (res, cons, 1, v, u)
+Link (tree, Node, 2, u, v) => Link (res, cons, 1, u, v)		
+//Link (tree, Node, 0, u, v) && Link (tree, Node, 1, u, w) => Link (res, cons, 1, v, w)		
+
+Specification for lowest common ancestor:
+Link (res, Node, 0, u, v) => Link (inputtree, Node, 0, u, v) &&
+Link (res, Node, 1, u, v) => Link (inputtree, Node, 1, u ,v) &&
+Reach (res, u) => Reach (inputtree, u)
+Reach (res, p) && Reach (res, q) &&
+Reach (res, u) => not (Reach (u, p) && Reach (u, q)) *)
+

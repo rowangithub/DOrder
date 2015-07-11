@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wc-entries
+   xmlns="svn:">
+<entry
+   committed-rev="28"
+   name=""
+   committed-date="2011-10-12T08:35:10.054173Z"
+   url="http://project-bull.googlecode.com/svn/trunk/Src/solvers/minisat/mtl"
+   last-author="gulu0724@gmail.com"
+   kind="dir"
+   uuid="98f8fb66-45aa-33f9-3024-5cfe4fc578d6"
+   repos="http://project-bull.googlecode.com/svn"
+   revision="68"/>
+<entry
+   committed-rev="28"
+   name="Alloc.h"
+   text-time="2014-07-05T15:50:57.000000Z"
+   committed-date="2011-10-12T08:35:10.054173Z"
+   checksum="806be2eeb46d5b560d5ef23055114978"
+   last-author="gulu0724@gmail.com"
+   kind="file"
+   prop-time="2014-07-05T15:50:57.000000Z"/>
+<entry
+   committed-rev="28"
+   name="template.mk"
+   text-time="2014-07-05T15:50:57.000000Z"
+   committed-date="2011-10-12T08:35:10.054173Z"
+   checksum="b1add914b2c4e2b00d67fac77366d46f"
+   last-author="gulu0724@gmail.com"
+   kind="file"
+   prop-time="2014-07-05T15:50:57.000000Z"/>
+<entry
+   committed-rev="28"
+   name="Map.h"
+   text-time="2014-07-05T15:50:57.000000Z"
+   committed-date="2011-10-12T08:35:10.054173Z"
+   checksum="8fe47eb0f1849f8481c07d08aa8092ce"
+   last-author="gulu0724@gmail.com"
+   kind="file"
+   prop-time="2014-07-05T15:50:57.000000Z"/>
+<entry
+   committed-rev="28"
+   name="Heap.h"
+   text-time="2014-07-05T15:50:57.000000Z"
+   committed-date="2011-10-12T08:35:10.054173Z"
+   checksum="7b4871c04dd5c98a514b73c4cbdd9601"
+   last-author="gulu0724@gmail.com"
+   kind="file"
+   prop-time="2014-07-05T15:50:57.000000Z"/>
+<entry
+   committed-rev="28"
+   name="Vec.h"
+   text-time="2014-07-05T15:50:57.000000Z"
+   committed-date="2011-10-12T08:35:10.054173Z"
+   checksum="43561f4d965ce3e160712854bf343558"
+   last-author="gulu0724@gmail.com"
+   kind="file"
+   prop-time="2014-07-05T15:50:57.000000Z"/>
+<entry
+   committed-rev="28"
+   name="IntTypes.h"
+   text-time="2014-07-05T15:50:57.000000Z"
+   committed-date="2011-10-12T08:35:10.054173Z"
+   checksum="1eca8531afc59b7f0ab8a5d4e1639680"
+   last-author="gulu0724@gmail.com"
+   kind="file"
+   prop-time="2014-07-05T15:50:57.000000Z"/>
+<entry
+   committed-rev="28"
+   name="XAlloc.h"
+   text-time="2014-07-05T15:50:57.000000Z"
+   committed-date="2011-10-12T08:35:10.054173Z"
+   checksum="85f720e4ddfe2cb66fca45a5838e919f"
+   last-author="gulu0724@gmail.com"
+   kind="file"
+   prop-time="2014-07-05T15:50:57.000000Z"/>
+<entry
+   committed-rev="28"
+   name="Alg.h"
+   text-time="2014-07-05T15:50:57.000000Z"
+   committed-date="2011-10-12T08:35:10.054173Z"
+   checksum="9274e1f7c72e8979e4c2bf93f24a8c6f"
+   last-author="gulu0724@gmail.com"
+   kind="file"
+   prop-time="2014-07-05T15:50:57.000000Z"/>
+<entry
+   committed-rev="28"
+   name="Queue.h"
+   text-time="2014-07-05T15:50:57.000000Z"
+   committed-date="2011-10-12T08:35:10.054173Z"
+   checksum="af449a021a53630fb496b53f27bd8de7"
+   last-author="gulu0724@gmail.com"
+   kind="file"
+   prop-time="2014-07-05T15:50:57.000000Z"/>
+<entry
+   committed-rev="28"
+   name="config.mk"
+   text-time="2014-07-05T15:50:57.000000Z"
+   committed-date="2011-10-12T08:35:10.054173Z"
+   checksum="9f1566e5c4f7b083360f73f9e4c38948"
+   last-author="gulu0724@gmail.com"
+   kind="file"
+   prop-time="2014-07-05T15:50:57.000000Z"/>
+<entry
+   committed-rev="28"
+   name="Sort.h"
+   text-time="2014-07-05T15:50:57.000000Z"
+   committed-date="2011-10-12T08:35:10.054173Z"
+   checksum="f227d760df4aedff1efd221077fa9061"
+   last-author="gulu0724@gmail.com"
+   kind="file"
+   prop-time="2014-07-05T15:50:57.000000Z"/>
+</wc-entries>

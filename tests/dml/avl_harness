@@ -1,0 +1,9 @@
+let main () =
+	let ns = Array.init 100 (fun _ -> Random.int 100) in	
+	let t = E in	
+	let t = Array.fold_left (fun t k -> 
+		let _ = fprintf outch "env:newtest\t\n" in
+		insert k t
+		) t ns in
+	()
+let _ = main ()

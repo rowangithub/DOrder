@@ -1,0 +1,22 @@
+(*qualif I(_V) : _V { * * } ^
+qualif Int_rel_array_id(_V) : Array.length _V { * * } ^
+qualif Int_rel_bigarray1_id(_V) : Bigarray.Array2.dim1 _V { * * } [0,1]
+qualif Int_rel_bigarray2_id(_V) : Bigarray.Array2.dim2 _V { * * } [0,1]
+qualif Id_rel_id_int(_V)(A:int) : _V { * * } ~A
+qualif Id_eq_id(_V) : _V = ~A
+qualif Id_rel_array_id(_V)(A:int) : ~A { * * } Array.length _V
+qualif Id_rel_array_idd(_V)(A:'a array) : _V { * * } Array.length ~A
+qualif Av_rel_a(_V)(A:'a array) : Array.length _V { * * } Array.length ~A
+qualif Id_rel_bigarray1_id(_V)(A:int) : ~A { * * } Bigarray.Array2.dim1 _V
+qualif Id_rel_bigarray2_id(_V)(A:int) : ~A { * * } Bigarray.Array2.dim2 _V
+qualif Id_rel_bigarray1_idd(_V)(A:('a, 'b, 'c) Bigarray.Array2.t) : _V { * * } Bigarray.Array2.dim1 ~A
+qualif Id_rel_bigarray2_idd(_V)(A:('a, 'b, 'c) Bigarray.Array2.t) : _V { * * } Bigarray.Array2.dim2 ~A
+qualif Big1v_rel_big1(_V)(A: ('a, 'b, 'c) Bigarray.Array2.t) : Bigarray.Array2.dim1 _V { * * } Bigarray.Array2.dim1 ~A
+qualif Big2v_rel_big2(_V)(A: ('a, 'b, 'c) Bigarray.Array2.t) : Bigarray.Array2.dim2 _V { * * } Bigarray.Array2.dim2 ~A
+qualif Big1v_rel_big2(_V)(A:('a, 'b, 'c) Bigarray.Array2.t) : Bigarray.Array2.dim1 _V { * * } Bigarray.Array2.dim2 ~A
+qualif Big2v_rel_big1(_V)(A:('a, 'b, 'c) Bigarray.Array2.t) : Bigarray.Array2.dim2 _V { * * } Bigarray.Array2.dim1 ~A
+qualif Big1v_rel_big2v(_V) : Bigarray.Array2.dim1 _V { * * } Bigarray.Array2.dim2 _V
+qualif Av_rel_big1(_V)(A:('a, 'b, 'c) Bigarray.Array2.t) : Array.length _V { * * } Bigarray.Array2.dim1 ~A
+qualif Av_rel_big2(_V)(A:('a, 'b, 'c) Bigarray.Array2.t) : Array.length _V { * * } Bigarray.Array2.dim2 ~A
+qualif A_rel_big1v(_V)(A:'a array) : Array.length ~A { * * } Bigarray.Array2.dim1 _V
+qualif A_rel_big2v(_V)(A:'a array) : Array.length ~A { * * } Bigarray.Array2.dim2 _V*)
