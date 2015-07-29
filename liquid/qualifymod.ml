@@ -2082,6 +2082,8 @@ let prepare_unsounds se_env =
 let query_atomics env se_env () = 
 	Hashtbl.fold (fun path bad res -> 
 		(*res @ (List.map (fun p -> (path, Path.mk_ident "", p)) (Backwalker.find_atomics path))*)
+		if !(Backwalker.data_structure_dealing_flag) then res
+		else
 		let allbindings = Frame.get_fun_bindings env (Hashtbl.find se_env.funframebindings path) in
 		let bad = destruct_record bad in
 		let bad = destruct_list_access bad in
