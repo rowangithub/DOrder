@@ -2082,21 +2082,21 @@ let prepare_unsounds se_env =
 let query_atomics env se_env () = 
 	Hashtbl.fold (fun path bad res -> 
 		(*res @ (List.map (fun p -> (path, Path.mk_ident "", p)) (Backwalker.find_atomics path))*)
-		(*let allbindings = Frame.get_fun_bindings env (Hashtbl.find se_env.funframebindings path) in
+		let allbindings = Frame.get_fun_bindings env (Hashtbl.find se_env.funframebindings path) in
 		let bad = destruct_record bad in
 		let bad = destruct_list_access bad in
 		let bad = ease_bad_condition path allbindings bad pos_samples in
 		let qs = ref [] in
 		let _ = (Predicate.map_pred (fun pred -> match pred with
-			| Predicate.Atom _ when (Predicate.vars pred <> []) -> 
+			| Predicate.Atom _ when (Predicate.vars pred <> [] && Predicate.ints pred = []) -> 
 				(qs := (path, Path.mk_ident "", pred)::(!qs); pred)
 			| pred -> pred) bad.post) in
-		let _ = (Predicate.map_pred (fun pred -> match pred with
+		(*let _ = (Predicate.map_pred (fun pred -> match pred with
 			| Predicate.Atom _ when (Predicate.vars pred <> []) -> 
 				(qs := (path, Path.mk_ident "", pred)::(!qs); pred)
-			| pred -> pred) bad.pre) in
+			| pred -> pred) bad.pre) in*)
 		let qs = Common.remove_duplicates (!qs) in 
-		res @ qs*) res
+		res @ qs 
 	) se_env.badbindings []
 	
 (** Find post-conditions that requires more than 1 coeffs *)

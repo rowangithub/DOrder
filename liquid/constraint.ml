@@ -1740,8 +1740,8 @@ let solve functions is_higher_order query_atomics query_pos_samples query_neg_sa
 				let (unsat, s, invariants) = 
 					loop pos_samples (Hashtbl.create 0) (Hashtbl.create 0) [] unsat s in
 				let _ = if not !(Backwalker.hoflag) then (iter_count := 1) in
-				if !(Backwalker.hoflag) (* if hoflag is set, iteratively generate more positive samples *)
-				then testloop unsat s invariants else (unsat, s)
+				(*if !(Backwalker.hoflag) (* if hoflag is set, iteratively generate more positive samples *)
+				then*) testloop unsat s invariants (*else (unsat, s)*)
 		else (unsat, s) in
 	let (unsat, s) = testloop unsat s (Hashtbl.create 0) (*
 		if (List.length unsat > 0 || (!Clflags.gen_inv)) then 
