@@ -441,20 +441,15 @@ liquid/qualifymod.cmx: typing/types.cmx typing/typedtree.cmx \
     liquid/builtins.cmx liquid/run.cmx liquid/learn.cmx liquid/cbslearner.cmx \
     liquid/datatype.cmx typing/btype.cmx utils/bstats.cmx \
     parsing/asttypes.cmi liquid/pprintast.cmx liquid/backwalker.cmx liquid/qualifymod.cmi 
-liquid/theoremProver.cmo: liquid/theoremProverYices.cmo \
-    typing/predicate.cmi typing/common.cmo \
+liquid/theoremProver.cmo:typing/predicate.cmi typing/common.cmo \
     utils/clflags.cmi utils/bstats.cmi 
-liquid/theoremProver.cmx: liquid/theoremProverYices.cmx liquid/theoremProverZ3.cmx \
+liquid/theoremProver.cmx: liquid/theoremProverZ3.cmx \
     typing/predicate.cmx typing/common.cmx \
     utils/clflags.cmx utils/bstats.cmx 
 liquid/theoremProverSimplify.cmo: typing/predicate.cmi typing/path.cmi \
     utils/misc.cmi liquid/message.cmi utils/clflags.cmi 
 liquid/theoremProverSimplify.cmx: typing/predicate.cmx typing/path.cmx \
     utils/misc.cmx liquid/message.cmx utils/clflags.cmx 
-liquid/theoremProverYices.cmo: typing/predicate.cmi typing/path.cmi \
-    utils/misc.cmi utils/clflags.cmi utils/bstats.cmi 
-liquid/theoremProverYices.cmx: typing/predicate.cmx typing/path.cmx \
-    utils/misc.cmx utils/clflags.cmx utils/bstats.cmx 
 liquid/theoremProverZ3.cmo: typing/predicate.cmi typing/path.cmi \
     utils/misc.cmi utils/clflags.cmi utils/bstats.cmi 
 liquid/theoremProverZ3.cmx: typing/predicate.cmx typing/path.cmx \
@@ -476,11 +471,11 @@ liquid/learn.cmo : typing/predicate.cmi liquid/learn.cmi
 liquid/learn.cmx : typing/predicate.cmx liquid/learn.cmi
 liquid/cbslearner.cmi : liquid/modelsolver.cmi liquid/backwalker.cmi liquid/bes.cmi liquid/datatype.cmi
 liquid/cbslearner.cmo : typing/predicate.cmi liquid/Theoremprover.cmo liquid/backwalker.cmi \
-	liquid/rulemine.cmi liquid/invmine.cmi liquid/cpredmine.cmi learning/cdnf/cdnflearn.cmo \
-	learning/cdnf/oracle.cmi liquid/bes.cmi liquid/datatype.cmi liquid/cbslearner.cmi
+	liquid/rulemine.cmi liquid/invmine.cmi liquid/cpredmine.cmi \
+	liquid/bes.cmi liquid/datatype.cmi liquid/cbslearner.cmi
 liquid/cbslearner.cmx : typing/predicate.cmx liquid/Theoremprover.cmx liquid/backwalker.cmx \
-	liquid/rulemine.cmx liquid/invmine.cmx liquid/cpredmine.cmx learning/cdnf/cdnflearn.cmx \
-	learning/cdnf/oracle.cmx liquid/bes.cmx liquid/datatype.cmx liquid/cbslearner.cmi
+	liquid/rulemine.cmx liquid/invmine.cmx liquid/cpredmine.cmx \
+	liquid/bes.cmx liquid/datatype.cmx liquid/cbslearner.cmi
 liquid/rulemine.cmi : typing/predicate.cmi liquid/frame.cmi
 liquid/rulemine.cmo: typing/predicate.cmi liquid/frame.cmi liquid/instrument.cmi \
 	liquid/rulemine.cmi liquid/Theoremprover.cmo

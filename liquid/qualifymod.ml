@@ -168,9 +168,9 @@ let quickcheck_measures	se_env fpath =
 			
 (** Add higher order function (array) encoding to support local reasoning *)
 let encode_higher_order_function se_env env recflag bindings = 
-	let rec count_ho_args t = match repr t with
+	(*let rec count_ho_args t = match repr t with
 		| {desc = Tarrow (_,_,t,_)} -> 1 + count_ho_args t
-		| _ -> 0 in 
+		| _ -> 0 in *)
 	let encode p t fpath exps env = 
 		(*let n = count_ho_args t + 1 in
 		let hoargs = Array.to_list (Array.init n (fun i -> P.Var (F.get_ho_param i))) in

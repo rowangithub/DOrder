@@ -18,6 +18,7 @@ type token =
   | EOF
 
 open Parsing;;
+let _ = parse_error;;
 # 23 "src/dot_parser.mly"
   open Dot_ast
   open Parsing
@@ -33,7 +34,7 @@ open Parsing;;
     | Ident "nw" -> Nw
     | _ -> invalid_arg "compass_pt"
 
-# 37 "src/dot_parser.ml"
+# 38 "src/dot_parser.ml"
 let yytransl_const = [|
   258 (* COLON *);
   259 (* COMMA *);
@@ -195,44 +196,44 @@ let yyact = [|
     Obj.repr(
 # 49 "src/dot_parser.mly"
     ( { strict = _1; digraph = _2; id = _3; stmts = _5 } )
-# 199 "src/dot_parser.ml"
+# 200 "src/dot_parser.ml"
                : Dot_ast.file))
 ; (fun __caml_parser_env ->
     Obj.repr(
 # 53 "src/dot_parser.mly"
                 ( false )
-# 205 "src/dot_parser.ml"
+# 206 "src/dot_parser.ml"
                : 'strict_opt))
 ; (fun __caml_parser_env ->
     Obj.repr(
 # 54 "src/dot_parser.mly"
                 ( true )
-# 211 "src/dot_parser.ml"
+# 212 "src/dot_parser.ml"
                : 'strict_opt))
 ; (fun __caml_parser_env ->
     Obj.repr(
 # 58 "src/dot_parser.mly"
           ( false )
-# 217 "src/dot_parser.ml"
+# 218 "src/dot_parser.ml"
                : 'graph_or_digraph))
 ; (fun __caml_parser_env ->
     Obj.repr(
 # 59 "src/dot_parser.mly"
           ( true )
-# 223 "src/dot_parser.ml"
+# 224 "src/dot_parser.ml"
                : 'graph_or_digraph))
 ; (fun __caml_parser_env ->
     Obj.repr(
 # 63 "src/dot_parser.mly"
                 ( [] )
-# 229 "src/dot_parser.ml"
+# 230 "src/dot_parser.ml"
                : 'stmt_list))
 ; (fun __caml_parser_env ->
     let _1 = (Parsing.peek_val __caml_parser_env 0 : 'list1_stmt) in
     Obj.repr(
 # 64 "src/dot_parser.mly"
                 ( _1 )
-# 236 "src/dot_parser.ml"
+# 237 "src/dot_parser.ml"
                : 'stmt_list))
 ; (fun __caml_parser_env ->
     let _1 = (Parsing.peek_val __caml_parser_env 1 : 'stmt) in
@@ -240,7 +241,7 @@ let yyact = [|
     Obj.repr(
 # 68 "src/dot_parser.mly"
                      ( [_1] )
-# 244 "src/dot_parser.ml"
+# 245 "src/dot_parser.ml"
                : 'list1_stmt))
 ; (fun __caml_parser_env ->
     let _1 = (Parsing.peek_val __caml_parser_env 2 : 'stmt) in
@@ -249,40 +250,40 @@ let yyact = [|
     Obj.repr(
 # 69 "src/dot_parser.mly"
                                 ( _1 :: _3 )
-# 253 "src/dot_parser.ml"
+# 254 "src/dot_parser.ml"
                : 'list1_stmt))
 ; (fun __caml_parser_env ->
     Obj.repr(
 # 73 "src/dot_parser.mly"
                 ( () )
-# 259 "src/dot_parser.ml"
+# 260 "src/dot_parser.ml"
                : 'semicolon_opt))
 ; (fun __caml_parser_env ->
     Obj.repr(
 # 74 "src/dot_parser.mly"
                 ( () )
-# 265 "src/dot_parser.ml"
+# 266 "src/dot_parser.ml"
                : 'semicolon_opt))
 ; (fun __caml_parser_env ->
     let _1 = (Parsing.peek_val __caml_parser_env 0 : 'node_stmt) in
     Obj.repr(
 # 78 "src/dot_parser.mly"
             ( _1 )
-# 272 "src/dot_parser.ml"
+# 273 "src/dot_parser.ml"
                : 'stmt))
 ; (fun __caml_parser_env ->
     let _1 = (Parsing.peek_val __caml_parser_env 0 : 'edge_stmt) in
     Obj.repr(
 # 79 "src/dot_parser.mly"
             ( _1 )
-# 279 "src/dot_parser.ml"
+# 280 "src/dot_parser.ml"
                : 'stmt))
 ; (fun __caml_parser_env ->
     let _1 = (Parsing.peek_val __caml_parser_env 0 : 'attr_stmt) in
     Obj.repr(
 # 80 "src/dot_parser.mly"
             ( _1 )
-# 286 "src/dot_parser.ml"
+# 287 "src/dot_parser.ml"
                : 'stmt))
 ; (fun __caml_parser_env ->
     let _1 = (Parsing.peek_val __caml_parser_env 2 : Dot_ast.id) in
@@ -290,14 +291,14 @@ let yyact = [|
     Obj.repr(
 # 81 "src/dot_parser.mly"
               ( Equal (_1, _3) )
-# 294 "src/dot_parser.ml"
+# 295 "src/dot_parser.ml"
                : 'stmt))
 ; (fun __caml_parser_env ->
     let _1 = (Parsing.peek_val __caml_parser_env 0 : 'subgraph) in
     Obj.repr(
 # 82 "src/dot_parser.mly"
             ( Subgraph _1 )
-# 301 "src/dot_parser.ml"
+# 302 "src/dot_parser.ml"
                : 'stmt))
 ; (fun __caml_parser_env ->
     let _1 = (Parsing.peek_val __caml_parser_env 1 : 'node_id) in
@@ -305,7 +306,7 @@ let yyact = [|
     Obj.repr(
 # 86 "src/dot_parser.mly"
                         ( Node_stmt (_1, _2) )
-# 309 "src/dot_parser.ml"
+# 310 "src/dot_parser.ml"
                : 'node_stmt))
 ; (fun __caml_parser_env ->
     let _1 = (Parsing.peek_val __caml_parser_env 2 : 'node) in
@@ -314,28 +315,28 @@ let yyact = [|
     Obj.repr(
 # 90 "src/dot_parser.mly"
                               ( Edge_stmt (_1, _2, _3) )
-# 318 "src/dot_parser.ml"
+# 319 "src/dot_parser.ml"
                : 'edge_stmt))
 ; (fun __caml_parser_env ->
     let _2 = (Parsing.peek_val __caml_parser_env 0 : 'attr_list) in
     Obj.repr(
 # 94 "src/dot_parser.mly"
                   ( Attr_graph _2 )
-# 325 "src/dot_parser.ml"
+# 326 "src/dot_parser.ml"
                : 'attr_stmt))
 ; (fun __caml_parser_env ->
     let _2 = (Parsing.peek_val __caml_parser_env 0 : 'attr_list) in
     Obj.repr(
 # 95 "src/dot_parser.mly"
                   ( Attr_node _2 )
-# 332 "src/dot_parser.ml"
+# 333 "src/dot_parser.ml"
                : 'attr_stmt))
 ; (fun __caml_parser_env ->
     let _2 = (Parsing.peek_val __caml_parser_env 0 : 'attr_list) in
     Obj.repr(
 # 96 "src/dot_parser.mly"
                   ( Attr_edge _2 )
-# 339 "src/dot_parser.ml"
+# 340 "src/dot_parser.ml"
                : 'attr_stmt))
 ; (fun __caml_parser_env ->
     let _2 = (Parsing.peek_val __caml_parser_env 1 : 'node) in
@@ -343,13 +344,13 @@ let yyact = [|
     Obj.repr(
 # 100 "src/dot_parser.mly"
                            ( _2 :: _3 )
-# 347 "src/dot_parser.ml"
+# 348 "src/dot_parser.ml"
                : 'edge_rhs))
 ; (fun __caml_parser_env ->
     Obj.repr(
 # 104 "src/dot_parser.mly"
                 ( [] )
-# 353 "src/dot_parser.ml"
+# 354 "src/dot_parser.ml"
                : 'edge_rhs_opt))
 ; (fun __caml_parser_env ->
     let _2 = (Parsing.peek_val __caml_parser_env 1 : 'node) in
@@ -357,21 +358,21 @@ let yyact = [|
     Obj.repr(
 # 105 "src/dot_parser.mly"
                            ( _2 :: _3 )
-# 361 "src/dot_parser.ml"
+# 362 "src/dot_parser.ml"
                : 'edge_rhs_opt))
 ; (fun __caml_parser_env ->
     let _1 = (Parsing.peek_val __caml_parser_env 0 : 'node_id) in
     Obj.repr(
 # 109 "src/dot_parser.mly"
            ( NodeId _1 )
-# 368 "src/dot_parser.ml"
+# 369 "src/dot_parser.ml"
                : 'node))
 ; (fun __caml_parser_env ->
     let _1 = (Parsing.peek_val __caml_parser_env 0 : 'subgraph) in
     Obj.repr(
 # 110 "src/dot_parser.mly"
            ( NodeSub _1 )
-# 375 "src/dot_parser.ml"
+# 376 "src/dot_parser.ml"
                : 'node))
 ; (fun __caml_parser_env ->
     let _1 = (Parsing.peek_val __caml_parser_env 1 : Dot_ast.id) in
@@ -379,20 +380,20 @@ let yyact = [|
     Obj.repr(
 # 114 "src/dot_parser.mly"
               ( _1, _2 )
-# 383 "src/dot_parser.ml"
+# 384 "src/dot_parser.ml"
                : 'node_id))
 ; (fun __caml_parser_env ->
     Obj.repr(
 # 118 "src/dot_parser.mly"
                 ( None )
-# 389 "src/dot_parser.ml"
+# 390 "src/dot_parser.ml"
                : 'port_opt))
 ; (fun __caml_parser_env ->
     let _1 = (Parsing.peek_val __caml_parser_env 0 : 'port) in
     Obj.repr(
 # 119 "src/dot_parser.mly"
                 ( Some _1 )
-# 396 "src/dot_parser.ml"
+# 397 "src/dot_parser.ml"
                : 'port_opt))
 ; (fun __caml_parser_env ->
     let _2 = (Parsing.peek_val __caml_parser_env 0 : Dot_ast.id) in
@@ -400,7 +401,7 @@ let yyact = [|
 # 123 "src/dot_parser.mly"
            ( try PortC (compass_pt _2)
              with Invalid_argument _ -> PortId (_2, None) )
-# 404 "src/dot_parser.ml"
+# 405 "src/dot_parser.ml"
                : 'port))
 ; (fun __caml_parser_env ->
     let _2 = (Parsing.peek_val __caml_parser_env 2 : Dot_ast.id) in
@@ -411,27 +412,27 @@ let yyact = [|
   	  try compass_pt _4 with Invalid_argument _ -> raise Parse_error 
 	in
 	PortId (_2, Some cp) )
-# 415 "src/dot_parser.ml"
+# 416 "src/dot_parser.ml"
                : 'port))
 ; (fun __caml_parser_env ->
     Obj.repr(
 # 133 "src/dot_parser.mly"
                 ( [] )
-# 421 "src/dot_parser.ml"
+# 422 "src/dot_parser.ml"
                : 'attr_list_opt))
 ; (fun __caml_parser_env ->
     let _1 = (Parsing.peek_val __caml_parser_env 0 : 'attr_list) in
     Obj.repr(
 # 134 "src/dot_parser.mly"
                ( _1 )
-# 428 "src/dot_parser.ml"
+# 429 "src/dot_parser.ml"
                : 'attr_list_opt))
 ; (fun __caml_parser_env ->
     let _2 = (Parsing.peek_val __caml_parser_env 1 : 'a_list) in
     Obj.repr(
 # 138 "src/dot_parser.mly"
                  ( [_2] )
-# 435 "src/dot_parser.ml"
+# 436 "src/dot_parser.ml"
                : 'attr_list))
 ; (fun __caml_parser_env ->
     let _2 = (Parsing.peek_val __caml_parser_env 2 : 'a_list) in
@@ -439,20 +440,20 @@ let yyact = [|
     Obj.repr(
 # 139 "src/dot_parser.mly"
                            ( _2 :: _4 )
-# 443 "src/dot_parser.ml"
+# 444 "src/dot_parser.ml"
                : 'attr_list))
 ; (fun __caml_parser_env ->
     Obj.repr(
 # 143 "src/dot_parser.mly"
                 ( None )
-# 449 "src/dot_parser.ml"
+# 450 "src/dot_parser.ml"
                : 'id_opt))
 ; (fun __caml_parser_env ->
     let _1 = (Parsing.peek_val __caml_parser_env 0 : Dot_ast.id) in
     Obj.repr(
 # 144 "src/dot_parser.mly"
                 ( Some _1 )
-# 456 "src/dot_parser.ml"
+# 457 "src/dot_parser.ml"
                : 'id_opt))
 ; (fun __caml_parser_env ->
     let _1 = (Parsing.peek_val __caml_parser_env 1 : 'equality) in
@@ -460,7 +461,7 @@ let yyact = [|
     Obj.repr(
 # 148 "src/dot_parser.mly"
                      ( [_1] )
-# 464 "src/dot_parser.ml"
+# 465 "src/dot_parser.ml"
                : 'a_list))
 ; (fun __caml_parser_env ->
     let _1 = (Parsing.peek_val __caml_parser_env 2 : 'equality) in
@@ -469,14 +470,14 @@ let yyact = [|
     Obj.repr(
 # 149 "src/dot_parser.mly"
                             ( _1 :: _3 )
-# 473 "src/dot_parser.ml"
+# 474 "src/dot_parser.ml"
                : 'a_list))
 ; (fun __caml_parser_env ->
     let _1 = (Parsing.peek_val __caml_parser_env 0 : Dot_ast.id) in
     Obj.repr(
 # 153 "src/dot_parser.mly"
      ( _1, None )
-# 480 "src/dot_parser.ml"
+# 481 "src/dot_parser.ml"
                : 'equality))
 ; (fun __caml_parser_env ->
     let _1 = (Parsing.peek_val __caml_parser_env 2 : Dot_ast.id) in
@@ -484,26 +485,26 @@ let yyact = [|
     Obj.repr(
 # 154 "src/dot_parser.mly"
               ( _1, Some _3 )
-# 488 "src/dot_parser.ml"
+# 489 "src/dot_parser.ml"
                : 'equality))
 ; (fun __caml_parser_env ->
     Obj.repr(
 # 158 "src/dot_parser.mly"
                 ( () )
-# 494 "src/dot_parser.ml"
+# 495 "src/dot_parser.ml"
                : 'comma_opt))
 ; (fun __caml_parser_env ->
     Obj.repr(
 # 159 "src/dot_parser.mly"
                 ( () )
-# 500 "src/dot_parser.ml"
+# 501 "src/dot_parser.ml"
                : 'comma_opt))
 ; (fun __caml_parser_env ->
     let _2 = (Parsing.peek_val __caml_parser_env 0 : Dot_ast.id) in
     Obj.repr(
 # 164 "src/dot_parser.mly"
               ( SubgraphId _2 )
-# 507 "src/dot_parser.ml"
+# 508 "src/dot_parser.ml"
                : 'subgraph))
 ; (fun __caml_parser_env ->
     let _2 = (Parsing.peek_val __caml_parser_env 3 : Dot_ast.id) in
@@ -511,21 +512,21 @@ let yyact = [|
     Obj.repr(
 # 165 "src/dot_parser.mly"
                                   ( SubgraphDef (Some _2, _4) )
-# 515 "src/dot_parser.ml"
+# 516 "src/dot_parser.ml"
                : 'subgraph))
 ; (fun __caml_parser_env ->
     let _3 = (Parsing.peek_val __caml_parser_env 1 : 'stmt_list) in
     Obj.repr(
 # 166 "src/dot_parser.mly"
                                ( SubgraphDef (None, _3) )
-# 522 "src/dot_parser.ml"
+# 523 "src/dot_parser.ml"
                : 'subgraph))
 ; (fun __caml_parser_env ->
     let _2 = (Parsing.peek_val __caml_parser_env 1 : 'stmt_list) in
     Obj.repr(
 # 167 "src/dot_parser.mly"
                       ( SubgraphDef (None, _2) )
-# 529 "src/dot_parser.ml"
+# 530 "src/dot_parser.ml"
                : 'subgraph))
 (* Entry file *)
 ; (fun __caml_parser_env -> raise (Parsing.YYexit (Parsing.peek_val __caml_parser_env 0)))

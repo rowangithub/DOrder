@@ -415,7 +415,7 @@ let __ocaml_lex_tables = {
 }
 
 let rec file lexbuf =
-lexbuf.Lexing.lex_mem <- Array.create 2 (-1) ;   __ocaml_lex_file_rec lexbuf 0
+  lexbuf.Lexing.lex_mem <- Array.create 2 (-1) ;   __ocaml_lex_file_rec lexbuf 0
 and __ocaml_lex_file_rec lexbuf __ocaml_lex_state =
   match Lexing.new_engine __ocaml_lex_tables __ocaml_lex_state lexbuf with
       | 0 ->
@@ -452,7 +452,7 @@ let
   | __ocaml_lex_state -> lexbuf.Lexing.refill_buff lexbuf; __ocaml_lex_file_rec lexbuf __ocaml_lex_state
 
 and value_list lexbuf =
-lexbuf.Lexing.lex_mem <- Array.create 2 (-1) ;   __ocaml_lex_value_list_rec lexbuf 7
+  lexbuf.Lexing.lex_mem <- Array.create 2 (-1) ;   __ocaml_lex_value_list_rec lexbuf 7
 and __ocaml_lex_value_list_rec lexbuf __ocaml_lex_state =
   match Lexing.new_engine __ocaml_lex_tables __ocaml_lex_state lexbuf with
       | 0 ->
@@ -489,7 +489,7 @@ let
   | __ocaml_lex_state -> lexbuf.Lexing.refill_buff lexbuf; __ocaml_lex_value_list_rec lexbuf __ocaml_lex_state
 
 and value lexbuf =
-  __ocaml_lex_value_rec lexbuf 14
+    __ocaml_lex_value_rec lexbuf 14
 and __ocaml_lex_value_rec lexbuf __ocaml_lex_state =
   match Lexing.engine __ocaml_lex_tables __ocaml_lex_state lexbuf with
       | 0 ->
