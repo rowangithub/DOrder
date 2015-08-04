@@ -63,7 +63,7 @@ The tool has some troubles to be compatible with OCaml 4.0+. We will improve our
 In order to make sure that you have Z3 ready for the tool, we require users to manually 
 
 		Go into external/z3/ocaml, and run ./build-lib.sh /usr/local/lib/ocaml/
-		please adjust the path to ocaml lib and install CamlIDL if necessary.
+		please adjust the path to Ocaml library and install CamlIDL if necessary.
 		
 If you encounter any error, please follow ReadMe provided under external/z3/ocaml
 to install Z3. You are also required to put libz3.dylib (you need to compile Z3 to get this
