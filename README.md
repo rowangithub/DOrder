@@ -70,10 +70,21 @@ Currently, the source code of SpecLearn can only be complied and run in Mac OS
 
 The tool has some troubles to be compatible with OCaml 4.0+. We will improve our code soon.
 
-To compile SpecLearn, from the top directory:
+In order to make sure that you have Z3 ready for the tool, we require users to manually 
+
+		Go into external/z3/ocaml, and run ./build-lib.sh /usr/local/lib/ocaml/
+		please adjust the path to ocaml lib and install CamlIDL if necessary.
+		
+If you encounter any error, please follow ReadMe provided under external/z3/ocaml
+to install Z3. You are also required to put libz3.dylib (you need to compile Z3 to get this
+file) under external/z3/lib.
+
+
+Then, to compile SpecLearn (DOrder), from the top directory:
 
         Run make libs && make
 
+Note that the makefile assumes CamlIDL is installed under /usr/local/lib/ocaml
 
 Running SpecLearn
 ==============
