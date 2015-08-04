@@ -13,22 +13,12 @@ A recent extension of SpecLearn is able to prove around 200 loop programs.
 SpecLearn is still under very active development. Our next effort is
 to enable SpecLearn to verify (imperative) heap-manipulating programs.
 
-Z3
-===
-
-SpecLearn has recently chosen Z3 as its backend decision procedure.
-
-1. Be sure that the files in external/Z3/lib are in your library
-   path!  One way to do this is to run, from the top directory,
-
-        export DYLD_LIBRARY_PATH="external/z3/lib/:$DYLD_LIBRARY_PATH"
-
 Virtual Machine
 ===========
 
-An old version of the virtual machine of SpecLearn is available at <a href="https://www.dropbox.com/s/jm3obb9zmq0m9y1/SpecLearn.ova?dl=0">this link</a>.
+A very old version of the virtual machine of SpecLearn is available at <a href="https://www.dropbox.com/s/jm3obb9zmq0m9y1/SpecLearn.ova?dl=0">this link</a>.
 
-We will update the VM to reflect our progress soon.
+We will update the VM to reflect our progress on data structure verification soon.
 
 Notes for Reviewers
 ===========
@@ -84,7 +74,8 @@ Then, to compile SpecLearn (DOrder), from the top directory:
 
         Run make libs && make
 
-Note that the makefile assumes CamlIDL is installed under /usr/local/lib/ocaml
+Note that our makefile assumes CamlIDL is installed under /usr/local/lib/ocaml. Please
+make adjustment if necessary.
 
 Running SpecLearn
 ==============
