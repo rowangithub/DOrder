@@ -393,7 +393,7 @@ let invmine_learn n pos_samples neg_samples tbl enforcements env ffr =
 ********************************)
 
 (* Translate a bool formula into a predicate *)	
-let interpret_cdnf predicates f = 
+(*let interpret_cdnf predicates f = 
 	let rec loop f = match f with
 		| BoolFormula.And fs -> Predicate.big_and (Array.to_list (Array.map (fun f -> loop f) fs))
 		| BoolFormula.Or fs -> Predicate.big_or (Array.to_list (Array.map (fun f -> loop f) fs))
@@ -475,7 +475,7 @@ let is_equivalent predicates pos_samples n conj =
 					let counterexample = Array.sub assignment 0 (succ n) in
 					(*let _ = Array.iter (fun ce -> Format.fprintf Format.std_formatter "%b " ce) counterexample in
 					let _ = Format.fprintf Format.std_formatter "@." in*)
-					Query.CE counterexample)
+					Query.CE counterexample) *)
 
 (** 0, 0, ... should be put into every partition *)
 let post_process_partitions flag partitions =	

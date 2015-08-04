@@ -30,9 +30,9 @@ OCAMLDEP = ocamldep
 OCAMLDOC = ocamldoc.opt
 OCAMLLEX = ocamllex.opt
 OCAMLYACC= ocamlyacc
-OCAMLLIB = /usr/local/lib/ocaml
+OCAMLLIB = /usr/lib/ocaml
 OCAMLBEST= opt
-OCAMLVERSION = 3.12.0
+OCAMLVERSION = 4.01.0
 OCAMLWEB = true
 OCAMLWIN32 = no
 OCAMLFIND = 
@@ -54,7 +54,7 @@ OFLAGS = $(INCLUDES) -for-pack Graph
 NAME=ocamlgraph
 
 all: byte $(OCAMLBEST)
-#all: byte $(OCAMLBEST) editor-no
+#all: byte $(OCAMLBEST) editor-yes
 
 # bytecode and native-code compilation
 ######################################
@@ -160,17 +160,17 @@ ED_CMO = ed_hyper ed_graph ed_draw ed_display ed_main
 ED_CMO:= $(patsubst %, $(ED_DIR)/%.cmo, $(ED_CMO))
 ED_CMX = $(ED_CMO:.cmo=.cmx)
 
-ED_INCLUDES =  -I +threads -I $(ED_DIR)
+ED_INCLUDES = -I +lablgtk2 -I +threads -I $(ED_DIR)
 
 $(ED_CMO): BFLAGS+= $(ED_INCLUDES)
 $(ED_CMX): OFLAGS+= $(ED_INCLUDES)
 
 $(ED_DIR)/editor.byte: $(CMA) $(ED_CMO)
-	$(OCAMLC) -g -o $@  \
+	$(OCAMLC) -g -o $@ -I +lablgtk2 \
 		lablgtk.cma lablgnomecanvas.cma unix.cma $^
 
 $(ED_DIR)/editor.opt: $(CMXA) $(ED_CMX)
-	$(OCAMLOPT) -o $@  \
+	$(OCAMLOPT) -o $@ -I +lablgtk2 \
 		lablgtk.cmxa lablgnomecanvas.cmxa unix.cmxa $^
 
 VERSION=0.99b

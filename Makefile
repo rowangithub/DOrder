@@ -10,7 +10,7 @@ CAMLLEX=ocamllex
 CAMLDEP=ocamldep
 DEPFLAGS=$(INCLUDES)
 COMPFLAGS=$(FLAGS) -dtypes -warn-error A $(INCLUDES)
-LINKFLAGS=$(FLAGS) -cclib -lz3 -cclib -lz3stubs /usr/local/lib/ocaml/libcamlidl.a z3.cmxa \
+LINKFLAGS=$(FLAGS) -cclib -lz3 -cclib -lz3stubs /usr/lib/ocaml/libcamlidl.a z3.cmxa \
 		 -cclib -loyices -cclib -lgmp -cclib -lyices -I external/yices/lib/ -I external/ocamlgraph/ \
 		 -I external/z3/ocaml -I external/z3/bin -I external/z3/lib
 INCLUDES=-I external/z3/ocaml/ \
@@ -42,7 +42,6 @@ TYPING=typing/unused_var.cmo typing/ident.cmo typing/path.cmo \
   typing/typemod.cmo typing/qualmod.cmo 
 
 LIQUID= liquid/message.cmo liquid/theoremProverSimplify.cmo \
-  liquid/theoremProverYices.cmo \
   liquid/theoremProverZ3.cmo \
   liquid/theoremProver.cmo \
   liquid/run.cmo liquid/lightenv.cmo \
@@ -71,11 +70,7 @@ CFLAGS = -I$(OCAMLTOP) -I$(CDNFCORE)
 CXXFLAGS = -I$(OCAMLTOP) -I$(MINISATDIR) -I$(CDNFCORE)
 LDFLAGS = -L$(CDNFCORE)
 
-CDNFOBJS    = learning/cdnf/minisat.cmo learning/cdnf/minisat_stubs.o \
-	learning/cdnf/cdnfp.cmo learning/cdnf/cdnfp_stubs.o \
-	learning/cdnf/boolFormula.cmo learning/cdnf/query.cmo \
-	learning/cdnf/oracle.cmo learning/cdnf/cdnflearn.cmo  
-  
+CDNFOBJS    =   
 # Compose everything together  
 
 LIQOBJS=$(UTILS) $(PARSING) $(TYPING) $(CDNFOBJS) $(LIQUID)
@@ -201,7 +196,7 @@ graphlib:
 minisatlib:
 	cd external/satsolvers/minisat/core; $(MAKE)$
 
-libs: yiceslib graphlib minisatlib
+libs: graphlib minisatlib
 
 world: liquid.byte liquid.opt
 
