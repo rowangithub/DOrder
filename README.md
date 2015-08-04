@@ -1,6 +1,10 @@
 SpecLearn (DOrder)
 ==================
 
+Update: fix the errors in Makefile. If you have any problem with compiling SpecLearn (DOrder),
+send an email to rowangithub@yahoo.com (without having to identify your name and institution)
+and I will try to make it right for you.
+
 SpecLearn is a tool that automatically infers useful invariants for
 (higher-order) programs. SpecLearn finds invariants from program samples
 and represents invariants into refinement types.
