@@ -10,9 +10,13 @@ SpecLearn is a tool that automatically infers useful invariants for
 and represents invariants into refinement types.
 
 SpecLearn is not dedicated to higher-order functional programs. It can
-infer and verify useful properties for array programs. 
+infer and verify useful properties for array programs (with side-effects). 
 
-A recent extension of SpecLearn is able to prove around 200 loop programs.
+A recent extension of SpecLearn is able to prove the safety properties of over 200 loop programs and 
+a suite of recursive programs (collected from relate tools), using numeric invariants.
+
+Another extension of SpecLearn, which we call DOrder, can automatically infer expressive
+shape specifications beyond the scope of competing tools.
 
 SpecLearn is still under very active development. Our next effort is
 to enable SpecLearn to verify (imperative) heap-manipulating programs.
