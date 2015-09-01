@@ -14,8 +14,8 @@ LINKFLAGS=$(FLAGS) -cclib -lz3 -cclib -lz3stubs /usr/local/lib/ocaml/libcamlidl.
 		 -cclib -loyices -cclib -lgmp -cclib -lyices -I external/yices/lib/ -I external/ocamlgraph/ \
 		 -I external/z3/ocaml -I external/z3/bin -I external/z3/lib
 INCLUDES=-I external/z3/ocaml/ \
-		 -I external/yices/lib/ -I external/ocamlgraph/ \
-         -I utils -I parsing -I typing -I learning/cdnf/ -I liquid
+		 -I external/ocamlgraph/ \
+         -I utils -I parsing -I typing -I liquid
 
 UTILS=utils/misc.cmo utils/config.cmo \
   utils/clflags.cmo utils/terminfo.cmo utils/ccomp.cmo utils/warnings.cmo \
@@ -78,17 +78,10 @@ LIQOBJS=$(UTILS) $(PARSING) $(TYPING) $(CDNFOBJS) $(LIQUID)
 default: liquid.opt
 
 liquid.byte: $(LIQOBJS)
-	$(CAMLC) $(LINKFLAGS) -custom -o liquid.byte str.cma unix.cma nums.cma oyices.cma graph.cma $(LIQOBJS) \
-	-cclib -lz3 -cclib -lz3stubs z3.cmxa \
-	-cclib $(LDFLAGS) -cclib -lcdnfp \
-	$(MINISATDIR)/core/Solver.o \
-	-cclib -lstdc++
+	$(CAMLC) $(LINKFLAGS) -custom -o liquid.byte str.cma unix.cma nums.cma oyices.cma graph.cma $(LIQOBJS)
 
 liquid.opt: $(LIQOBJS:.cmo=.cmx)
-	$(CAMLOPT) $(LINKFLAGS) -o liquid.opt str.cmxa unix.cmxa nums.cmxa oyices.cmxa graph.cmxa $(LIQOBJS:.cmo=.cmx) \
-	-cclib $(LDFLAGS) -cclib -lcdnfp \
-	$(MINISATDIR)/core/Solver.o \
-	-cclib -lstdc++
+	$(CAMLOPT) $(LINKFLAGS) -o liquid.opt str.cmxa unix.cmxa nums.cmxa oyices.cmxa graph.cmxa $(LIQOBJS:.cmo=.cmx)
 
 .PHONY: tests
 tests:

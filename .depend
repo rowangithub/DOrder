@@ -465,32 +465,32 @@ liquid/instrument.cmo: typing/typedtree.cmi typing/env.cmi \
 liquid/instrument.cmx: typing/typedtree.cmx typing/env.cmx \
 	liquid/lightenv.cmx liquid/frame.cmx liquid/backwalker.cmx liquid/instrument.cmi 
 liquid/modelsolver.cmi: liquid/backwalker.cmi
-liquid/modelsolver.cmo: liquid/backwalker.cmi liquid/Theoremprover.cmo liquid/modelsolver.cmi
-liquid/modelsolver.cmx: liquid/backwalker.cmx liquid/Theoremprover.cmx liquid/modelsolver.cmi
+liquid/modelsolver.cmo: liquid/backwalker.cmi liquid/theoremProver.cmo liquid/modelsolver.cmi
+liquid/modelsolver.cmx: liquid/backwalker.cmx liquid/theoremProver.cmx liquid/modelsolver.cmi
 liquid/learn.cmo : typing/predicate.cmi liquid/learn.cmi
 liquid/learn.cmx : typing/predicate.cmx liquid/learn.cmi
 liquid/cbslearner.cmi : liquid/modelsolver.cmi liquid/backwalker.cmi liquid/bes.cmi liquid/datatype.cmi
-liquid/cbslearner.cmo : typing/predicate.cmi liquid/Theoremprover.cmo liquid/backwalker.cmi \
+liquid/cbslearner.cmo : typing/predicate.cmi liquid/theoremProver.cmo liquid/backwalker.cmi \
 	liquid/rulemine.cmi liquid/invmine.cmi liquid/cpredmine.cmi \
 	liquid/bes.cmi liquid/datatype.cmi liquid/cbslearner.cmi
-liquid/cbslearner.cmx : typing/predicate.cmx liquid/Theoremprover.cmx liquid/backwalker.cmx \
+liquid/cbslearner.cmx : typing/predicate.cmx liquid/theoremProver.cmx liquid/backwalker.cmx \
 	liquid/rulemine.cmx liquid/invmine.cmx liquid/cpredmine.cmx \
 	liquid/bes.cmx liquid/datatype.cmx liquid/cbslearner.cmi
 liquid/rulemine.cmi : typing/predicate.cmi liquid/frame.cmi
 liquid/rulemine.cmo: typing/predicate.cmi liquid/frame.cmi liquid/instrument.cmi \
-	liquid/rulemine.cmi liquid/Theoremprover.cmo
+	liquid/rulemine.cmi liquid/theoremProver.cmo
 liquid/rulemine.cmx: typing/predicate.cmx liquid/frame.cmx liquid/instrument.cmx \
-	liquid/rulemine.cmi liquid/Theoremprover.cmx
+	liquid/rulemine.cmi liquid/theoremProver.cmx
 liquid/invmine.cmi : typing/predicate.cmi liquid/frame.cmi
 liquid/invmine.cmo : typing/predicate.cmi liquid/frame.cmi liquid/instrument.cmi \
-	liquid/invmine.cmi liquid/Theoremprover.cmo
+	liquid/invmine.cmi liquid/theoremProver.cmo
 liquid/invmine.cmx : typing/predicate.cmx liquid/frame.cmx liquid/instrument.cmx \
-	liquid/invmine.cmi liquid/Theoremprover.cmx
+	liquid/invmine.cmi liquid/theoremProver.cmx
 liquid/cpredmine.cmi : typing/predicate.cmi liquid/frame.cmi liquid/backwalker.cmi
 liquid/cpredmin.cmo : typing/predicate.cmi liquid/frame.cmi liquid/backwalker.cmi \
-	liquid/cpredmine.cmi liquid/Theoremprover.cmo
+	liquid/cpredmine.cmi liquid/theoremProver.cmo
 liquid/cpredmine.cmx : typing/predicate.cmx liquid/frame.cmx liquid/backwalker.cmx \
-	liquid/cpredmine.cmi liquid/Theoremprover.cmx	
+	liquid/cpredmine.cmi liquid/theoremProver.cmx	
 liquid/datatype.cmi : liquid/backwalker.cmi liquid/constraint.cmi
 liquid/datatype.cmo : liquid/backwalker.cmi liquid/constraint.cmi liquid/datatype.cmi
 liquid/datatype.cmx : liquid/backwalker.cmx liquid/constraint.cmx liquid/datatype.cmi
