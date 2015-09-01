@@ -49,7 +49,8 @@ The latter directory contains benchmarks for learning numeric properties over da
 
 4. The data structure program benchmarks, for DOrder implementation, are included in ./tests/reachability/ directory.
 
-		To try an example, run ./msolve.py -no_hoflag -reachability ./tests/reachability/avl2.ml or
+		To try an example, run ./msolve.py -reachability -no_hoflag ./tests/reachability/reverselist.ml or
+							   ./msolve.py -no_hoflag -reachability ./tests/reachability/avl2.ml or
 						 	   ./msolve.py -no_hoflag -reachability ./tests/reachability/redblackset.ml
 		
 
