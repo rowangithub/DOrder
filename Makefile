@@ -11,7 +11,7 @@ CAMLDEP=ocamldep
 DEPFLAGS=$(INCLUDES)
 COMPFLAGS=$(FLAGS) -dtypes -warn-error A $(INCLUDES)
 LINKFLAGS=$(FLAGS) -cclib -lz3 -cclib -lz3stubs /usr/local/lib/ocaml/libcamlidl.a z3.cmxa \
-		 -cclib -loyices -cclib -lgmp -cclib -lyices -I external/yices/lib/ -I external/ocamlgraph/ \
+		 -I external/ocamlgraph/ \
 		 -I external/z3/ocaml -I external/z3/bin -I external/z3/lib
 INCLUDES=-I external/z3/ocaml/ \
 		 -I external/ocamlgraph/ \
@@ -78,10 +78,10 @@ LIQOBJS=$(UTILS) $(PARSING) $(TYPING) $(CDNFOBJS) $(LIQUID)
 default: liquid.opt
 
 liquid.byte: $(LIQOBJS)
-	$(CAMLC) $(LINKFLAGS) -custom -o liquid.byte str.cma unix.cma nums.cma oyices.cma graph.cma $(LIQOBJS)
+	$(CAMLC) $(LINKFLAGS) -custom -o liquid.byte str.cma unix.cma nums.cma graph.cma $(LIQOBJS)
 
 liquid.opt: $(LIQOBJS:.cmo=.cmx)
-	$(CAMLOPT) $(LINKFLAGS) -o liquid.opt str.cmxa unix.cmxa nums.cmxa oyices.cmxa graph.cmxa $(LIQOBJS:.cmo=.cmx)
+	$(CAMLOPT) $(LINKFLAGS) -o liquid.opt str.cmxa unix.cmxa nums.cmxa graph.cmxa $(LIQOBJS:.cmo=.cmx)
 
 .PHONY: tests
 tests:
