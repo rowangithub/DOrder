@@ -407,9 +407,9 @@ let synthesize flag fpath pos_samples cranges dranges tbl enforces =
 	(** 1. Find forall = *)
 	let sepeq = synthesize_eq flag fpath names pos_samples cranges dranges tbl enforces in
 	(** 2. Find forall >= *)
-	let sepge = if (sepeq = [] && flag = 1) then synthesize_ge flag fpath names pos_samples cranges dranges tbl enforces else [] in
+	let sepge = if (sepeq = [] ) then synthesize_ge flag fpath names pos_samples cranges dranges tbl enforces else [] in
 	(** 3. Find forall > *)
-	let sepgt = if (sepeq = [] && List.length (count_names sepge) <> List.length names && flag = 1) 
+	let sepgt = if (sepeq = [] && List.length (count_names sepge) <> List.length names ) 
 							then synthesize_gt flag fpath names pos_samples cranges dranges tbl enforces else [] in
 	(constants) @ sepeq @ sepge @ sepgt (*@ separators_ex	*)
 	(** Generalize from existential-eq relations *)

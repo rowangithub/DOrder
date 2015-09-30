@@ -3,7 +3,7 @@ let rec loopa i k n =
 	else k 
 	
 let rec	loopb i k n = 
-	if i < n then (assert (k > 0); loopb (i+1) (k-1)) n
+	if i < n then (assert (k > 0); loopb (i+1) (k-1) n)
 	else k
 	
 let rec loopc i k n = 

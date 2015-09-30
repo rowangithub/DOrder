@@ -1,2 +1,2 @@
 (** From the MLQ **)
-qualif Dict(v): (height1 v = height2 v and height v >= 0) and (color v < 2 or color v > 2) or (color1 v = 1 and color2 v = 1)
+qualif Dict(v): (treebal v = 1 and height v >= 0)

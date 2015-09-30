@@ -1,6 +1,6 @@
 let rec loop i (j:int) k p n = 
 	if i < n then
-		if (i = p ) then loop (i+1) k k p n
+		if (i >= p ) then loop (i+1) k k p n
 		else loop (i+1) j k p n
 	else j
 
@@ -10,12 +10,10 @@ let main p n =
 	let k = 3 in
 	
 		let res = loop i j k p n in
-		if (p > 0 && n > p) then
+	if (p > 0 && n > p) then	
 		assert (res = k)
 		
 	else ()
 	
-let _ = main 5 10
-let _ = main 2 5
-(*let _ = main 1 4*)
-let _ = main (-1) 3
+
+let _ = main (-1) (-3)

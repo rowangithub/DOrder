@@ -3,5 +3,5 @@ let rec append xs ys =
 		| x::xs' -> x::(append xs' ys)
 		| [] -> ys
 
-let main () = append [1;3;2] [4;5;9;6]
+let main () = append [1;9;3] [4;5;2;6]
 let _ = main ()

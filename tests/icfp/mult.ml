@@ -6,6 +6,5 @@ let rec mult n m =
 		
 let main n = assert (n <= mult n n)
 
-let _ = main 3
-let _ = main 2
+
 let _ = main (-2)

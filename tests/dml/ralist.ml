@@ -13,16 +13,17 @@ let rec size xs = match xs with
 	| Even (t1, t2) -> size t1 + size t2
 	| Odd (t1, t2) -> size t1 + size t2
 
-let size1 t = match t with
-	| Nil -> 0 | One x -> 1
-	| Even (t1, t2) -> size t1
-	| Odd (t1, t2) -> size t1
-
-let size2 t = match t with
-	| Nil -> 0
-	| One x -> 0
-	| Even (t1, t2) -> size t2
-	| Odd (t1, t2) -> size t2
+let rec treebal t = match t with
+	| Nil -> 1
+	| One x -> 1
+	| Even (t1, t2) ->
+		if (size t1 >= size t2 && size t1 <= size t2 + 1
+				&& treebal t1 = 1 && treebal t2 = 1) then 1
+		else 0
+	| Odd (t1, t2) ->
+		if (size t1 >= size t2 && size t1 <= size t2 + 1
+				&& treebal t1 = 1 && treebal t2 = 1) then 1
+		else 0
 
 let rec cons x xs = 
 	match xs with
@@ -96,6 +97,7 @@ let main n =
 	if (n > 0) then
 		let xs = makelist n in
 		let xs' = reverse xs in
+		let xs' = reverse2 xs in
 		let x = lookup (n/2) xs in
 		assert (size xs' = size xs)
 	else ()

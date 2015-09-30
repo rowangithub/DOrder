@@ -7,14 +7,14 @@ let rec loop i j k n b =
 		loop i j k n b
 	(* Hack: add n mod 2 = 0 as a predicate *)	
 	else if (n mod 2 = 0) then assert (i = j)
-	else assert (i = j)
+	else ()
 
 (* add a qualifier b = 0 || b = 1 to 
   encode boolean variables using integer *)
 let main j b =
-  let k = 100 in
+  let k = 10 in
   let i = j in
-	loop i j k 0 b
+		loop i j k 0 b
 	
 let _ = main 0 1
 let _ = main 0 0

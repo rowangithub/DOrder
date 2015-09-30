@@ -8,3 +8,5 @@ let main x y z =
 	
 	if (x < 100 && z < 100) then loop x z
 	else ()
+	
+let _ = main (-1) (-1) (-1)

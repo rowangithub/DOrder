@@ -4,17 +4,16 @@ type 'a brauntree =
   | B of 'a * 'a brauntree(*m*) * 'a brauntree(*n*) (*{m:nat, n:nat | n <= m <= n+1}*)
 
 (*The measure functions of brauntree*)
-let rec volumn t = match t with
+let rec volumn tree = match tree with
 	| L -> 0
 	| B (x, t1, t2) -> 1 + volumn t1 + volumn t2
 
-let volumn1 t = match t with
-	| L -> 0
-	| B (x, t1, t2) -> volumn t1
-
-let volumn2 t = match t with
-	| L -> 0
-	| B (x, t1, t2) -> volumn t2
+let rec treebal t = match t with
+	| L -> 1
+	| B (x, t1, t2) ->
+		if (volumn t1 >= volumn t2 && volumn t1 <= volumn t2 + 1
+				&& treebal t1 = 1 && treebal t2 = 1) then 1
+		else 0 
 
 let rec diff k t = 
 	let _ = assert (k >= 0) in

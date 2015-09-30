@@ -2,21 +2,19 @@ type 'a tree =
 	| Empty
 	| Node of 'a tree * 'a * 'a tree
 
-let rec height t = match t with
+let rec height tree = match tree with
 	| Empty -> 0
 	| Node (t1, dv, t2) -> 
 		if (height t1 < height t2) 
 		then 1 + height t2 
-		else 1 + height t1
-		
-let height1 t = match t with
-	| Empty -> 0
-	| Node (t1, dv, t2) -> height t1
+		else 1 + height t1	
 
-let height2 t = match t with
-	| Empty -> 0
-	| Node (t1, dv, t2) -> height t2		
-
+let rec treebal t = match t with
+	| Node (t1, dv, t2) -> 
+		if (height t1 - height t2 <= 2) && (height t2 - height t1 <= 2)
+			&& treebal t1 = 1 && treebal t2 = 1 then 1
+		else 0
+	| Empty -> 1
 
 let bal l x n =
   let hl = height l in

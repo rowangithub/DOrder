@@ -814,13 +814,24 @@ let sorted_pattern env is_higher_order sm =
 	
 (** If deciding properties on array AA=array may be needed in some rare case *)
 let look_checking_obj env r = 
-	let r_k = match r with (_, F.Qvar (k, _)) -> Some k | _ -> None in
-	let path_option_same p1 p2 = match p1 with Some p1 -> Path.same p1 p2 | _ -> false in 
+	let r_k = match r with (ksubs, F.Qvar (k, _)) -> Some (ksubs, k) | _ -> None in
+	let path_option_same p1 (p2subs, p2) = 
+		match p1 with 
+			| Some (p1subs, p1) -> 
+				Path.same p1 p2 && (List.length p1subs = List.length p2subs) &&
+				List.for_all2 (fun (a, b) (c, d) -> Path.same a c && b = d) p1subs p2subs 
+			| _ -> false in 
 	Lightenv.fold (fun path fr res -> match fr with
-		| Frame.Fconstr (x,_,_,(subs, Frame.Qvar (k,_)),_) when 
+		| Frame.Fconstr (x,_,_,(pathsubs, Frame.Qvar (k,_)),_) when 
 			(x = Predef.path_array || x = Predef.path_list || Hashtbl.mem !(Wellformed.measures) x) ->
-			if (path_option_same r_k k (*&& List.for_all (fun u -> not (Path.same u k)) !functional_unknows*)) 
-			then res @ [path] else res
+			if (path_option_same r_k (pathsubs, k) (*&& List.for_all (fun u -> not (Path.same u k)) !functional_unknows*)) 
+			then 
+			((*match r_k with 
+				| Some k -> 
+					Format.fprintf Format.std_formatter "path = %s and k = %s@." (Path.name path) (Path.unique_name k)
+				| None -> assert false*)
+				res @ [path] )
+			else res
 		| _ -> res
 	) env []
 	
@@ -837,13 +848,13 @@ let lookup_array env r =
 		List.map (fun cand -> Predicate.Atom (qual_test_expr, Predicate.Eq, Predicate.Var cand)) cands
 	else [])*)
 	if (List.length cands = 0) then [] 
-	else [Predicate.big_or (List.map (fun cand -> Predicate.Atom (qual_test_expr, Predicate.Eq, Predicate.Var cand)) cands)])
+	else [Predicate.big_and (List.map (fun cand -> Predicate.Atom (qual_test_expr, Predicate.Eq, Predicate.Var cand)) cands)])
 	
 let lookup_id env r id = 
 	let cands = look_checking_obj env r in
 	(*List.map (fun cand -> Predicate.Atom (id, Predicate.Eq, Predicate.Var cand)) cands*)
 	if (List.length cands = 0) then []
-	else [Predicate.big_or (List.map (fun cand -> Predicate.Atom (id, Predicate.Eq, Predicate.Var cand)) cands)]
+	else [Predicate.big_and (List.map (fun cand -> Predicate.Atom (id, Predicate.Eq, Predicate.Var cand)) cands)]
 	
 (** Automatically instantiate the old array *)
 let inst_oldarray env = 

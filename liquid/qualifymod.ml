@@ -168,9 +168,9 @@ let quickcheck_measures	se_env fpath =
 			
 (** Add higher order function (array) encoding to support local reasoning *)
 let encode_higher_order_function se_env env recflag bindings = 
-	(*let rec count_ho_args t = match repr t with
+	let rec count_ho_args t = match repr t with
 		| {desc = Tarrow (_,_,t,_)} -> 1 + count_ho_args t
-		| _ -> 0 in *)
+		| _ -> 0 in 
 	let encode p t fpath exps env = 
 		(*let n = count_ho_args t + 1 in
 		let hoargs = Array.to_list (Array.init n (fun i -> P.Var (F.get_ho_param i))) in
@@ -2090,7 +2090,7 @@ let query_atomics env se_env () =
 		let bad = ease_bad_condition path allbindings bad pos_samples in
 		let qs = ref [] in
 		let _ = (Predicate.map_pred (fun pred -> match pred with
-			| Predicate.Atom _ when (Predicate.vars pred <> [] && Predicate.ints pred = []) -> 
+			| Predicate.Atom _ when (Predicate.vars pred <> [] ) -> 
 				(qs := (path, Path.mk_ident "", pred)::(!qs); pred)
 			| pred -> pred) bad.post) in
 		(*let _ = (Predicate.map_pred (fun pred -> match pred with

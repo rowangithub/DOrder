@@ -12,5 +12,4 @@ let main x y =
 	
 
 let _ = main 2 2
-let _ = main 2 (-2)
-let _ = main (-2) 2
+let _ = main (-2) (-2)

@@ -96,7 +96,12 @@ let comparePred p1 p2 = match (p1, p2) with
 		else if (List.exists (fun p2var -> 
 			List.for_all (fun p1var -> not (Path.same p2var p1var)) p1vars) p2vars) then false
 		else (* use a theorem prover call to decide whether p1 and p2 are equivalent *)
-			TheoremProver.unsat (Predicate.Not (Predicate.And (Predicate.implies (p1, p2), Predicate.implies (p2, p1))))
+			TheoremProver.unsat (Predicate.Not (
+				Predicate.And (Predicate.implies (p1, p2), Predicate.implies (p2, p1))
+				(*Predicate.Or (
+					Predicate.And (Predicate.implies (p1, p2), Predicate.implies (p2, p1)),
+					Predicate.And (Predicate.implies (Predicate.Not p1, p2), Predicate.implies (p2, Predicate.Not p1))) *)
+				)) 
 
 let trans_preds tbl predicates = 
 	(*let _ = Format.fprintf Format.std_formatter "atomic len = %d@." (List.length predicates) in
@@ -673,6 +678,37 @@ let find_similarity pure return' returns =
 			| (return, return') -> res, ind+1
 		) ([], 0) returns	)
 	
+let symmetric_version pred = 
+	match pred with
+		| Predicate.Link (_,_,_,v,_) 
+		| Predicate.Reach (_, v) when v = Datatype.forall_vexpr -> true
+		| _ -> false
+
+(** The other predicates in Pi_O other than Pi shall be added back to Pi_I *)
+let otherreturns pure allreturns currreturns focusreturn = 	
+	if (pure) then []
+	else 
+		match focusreturn with
+			| Predicate.Reach (x, u) -> 
+				Common.map_partial (fun x->x) 
+					(Misc.mapi (fun return i -> 
+						match return with
+							| Predicate.Reach (y, v) when u <> v && x <> y ->
+								if (List.exists (fun i' -> i = i') currreturns) then None else Some i
+							| _ -> None		
+					) allreturns) 
+			| _ -> []
+
+(** Bound the free varialbes in a predicate with quantifers *)
+let find_quantifiers pred = 
+	let vars = Predicate.vars pred in
+	let u = List.mem (Datatype.forall_uvar) vars in
+	let v = List.mem (Datatype.forall_vvar) vars in
+	if (u && v) then [Datatype.forall_uvar; Datatype.forall_vvar]
+	else if u then [Datatype.forall_uvar]
+	else if v then [Datatype.forall_vvar]
+	else []
+	
 (* pure = true learning shape or data invariant *)
 (* pure = false learning mixed shape and data invariant *)	
 let solve_shape_constraints pure table params returns = 
@@ -681,7 +717,7 @@ let solve_shape_constraints pure table params returns =
 	(* 1. work on each returns *)
 	fst (List.fold_left (fun (res, index) return -> 	
 		let _ = Format.fprintf Format.std_formatter "Focusing on %a@." Predicate.pprint return in
-		if (Hashtbl.mem cache index || kind_of return = 0) then res, index+1
+		if (Hashtbl.mem cache index || kind_of return = 0 || symmetric_version return) then res, index+1
 		else
 		(* 1.5 find the other returns that are similiar (~record and tuple~) *)
 		let similarities = find_similarity pure return returns in
@@ -700,29 +736,24 @@ let solve_shape_constraints pure table params returns =
 			(*else 
 				(* Study arithmetic properties *) 
 				(table, [])*) in
+				
+		(** Need to add the rest of returns to the params and hence pos_samples and neg_samples *)		
+		let otherreturns = otherreturns pure returns similarities return in
+		let _ = List.iter (fun i -> Hashtbl.add cache i ()) otherreturns in
 		(* 3. only reserve params in the table *)
 		(*let params = if (kind_of return > 0) then params else params @ returns in*)
 		let pos_samples = 
 			(*if (kind_of return > 0) then*)
-				List.map (fun sample -> Common.sublist 0 (List.length params - 1) sample) pos_samples 
+				List.map (fun sample -> Common.sublist 0 (List.length params - 1) sample @
+						List.map (fun i -> List.nth sample (param_len+i)) otherreturns ) pos_samples 
 			(*else pos_samples*) in
 		let neg_samples = 
 			(*if (kind_of return > 0) then*)
-				List.map (fun sample -> Common.sublist 0 (List.length params - 1) sample) neg_samples
+				List.map (fun sample -> Common.sublist 0 (List.length params - 1) sample @
+						List.map (fun i -> List.nth sample (param_len+i)) otherreturns ) neg_samples
 			(*else neg_samples*) in 	
-		let foralls = match return with
-			| Predicate.Link _ -> [Datatype.forall_uvar; Datatype.forall_vvar]
-			| Predicate.Reach _ when (kind_of return = 1) -> [Datatype.forall_uvar] 
-			| return when (kind_of return = 0) ->
-				(match return with
-					| Predicate.Atom (_,Predicate.Eq,_) -> assert false
-					| return -> 
-						if (List.exists (fun var ->
-							 not (Path.same var Datatype.forall_uvar || Path.same var Datatype.forall_vvar)) 
-							(Predicate.vars return)) then [Datatype.forall_uvar]
-						else [Datatype.forall_uvar; Datatype.forall_vvar]
-				)
-			| _ -> [] in
+		let params = params @ (List.map (fun i -> List.nth returns i) otherreturns) in	
+			
 		let rminds = match return with
 			| Predicate.Link _ -> 
 				if (pure) then
@@ -747,12 +778,12 @@ let solve_shape_constraints pure table params returns =
 					| _ -> if (kind_of param < 0) then res @ [ind], ind+1 else res, ind+1
 					) ([], 0) params)
 				else (* drop all predicate that is u * v *) 
-					fst (List.fold_left (fun (res, ind) param ->
+					(*fst (List.fold_left (fun (res, ind) param ->
 						if (kind_of param = 0) && (List.for_all (fun var ->
 							 (Path.same var Datatype.forall_uvar || Path.same var Datatype.forall_vvar)) 
 							(Predicate.vars param))
 						then res @ [ind], ind+1 else res, ind+1
-					) ([], 0) params)
+					) ([], 0) params) *) []
 			| return when (kind_of return = 0) -> assert false
 				(*match return with
 					| Predicate.Atom (_,Predicate.Eq,_) -> assert false
@@ -813,6 +844,19 @@ let solve_shape_constraints pure table params returns =
 		let pos_set = of_list pos_samples in
 		let neg_set = of_list neg_samples in
 		let inter_set = SampleSet.inter pos_set neg_set in
+		(*let foralls = match return with
+			| Predicate.Link _ -> [Datatype.forall_uvar; Datatype.forall_vvar]
+			| Predicate.Reach _ when (kind_of return = 1) -> [Datatype.forall_uvar] 
+			| return when (kind_of return = 0) ->
+				(match return with
+					| Predicate.Atom (_,Predicate.Eq,_) -> assert false
+					| return -> 
+						if (List.exists (fun var ->
+							 not (Path.same var Datatype.forall_uvar || Path.same var Datatype.forall_vvar)) 
+							(Predicate.vars return)) then [Datatype.forall_uvar]
+						else [Datatype.forall_uvar; Datatype.forall_vvar]
+				)
+			| _ -> [] in*)
 		let separators =
 			(*if (SampleSet.cardinal neg_set = 0) then
 				(* Could only be possible if type_kind return < 0 *)
@@ -839,15 +883,19 @@ let solve_shape_constraints pure table params returns =
 			if (SampleSet.cardinal neg_set = 0) then
 				(* This is tailored for reach (t, u) or reach (t, x) *)
 				match return with
-					| Predicate.Reach _ when kind_of return = 1 ->
+					| Predicate.Reach (_, u) when kind_of return = 1 ->
 						let _ = assert (not pure) in
 						let (preds, _) = List.fold_left (fun (res, i) param -> 
-							if (List.for_all (fun sample -> List.nth sample i > 0) pos_samples) 
+							if (List.mem (Predicate.exp_var u) (Predicate.vars param) &&
+								List.for_all (fun sample -> List.nth sample i > 0) pos_samples) 
 							then res @ [param], i + 1
 							else res, i + 1
 						) ([], 0) params in
 						if (preds = []) then []
-						else [Predicate.Forall (foralls, Predicate.implies (returnpred, Predicate.big_and preds))]
+						else 
+							let pre = Predicate.big_and preds in
+							let foralls = find_quantifiers pre in
+							[Predicate.Forall (foralls, Predicate.implies (returnpred, pre))]
 					| Predicate.Reach (_, r) ->  
 						let _ = assert pure in if (isreturn r) then [return] else []
 					| _ -> assert false
@@ -855,6 +903,7 @@ let solve_shape_constraints pure table params returns =
 				let solutions = mini_invariants params pos_samples neg_samples in
 				List.map (fun solution ->
 					let pre = interprete solution params pos_samples neg_samples in
+					let foralls = find_quantifiers pre in
 					Predicate.Forall (foralls, 
 					Predicate.And 
 						(Predicate.implies (pre, returnpred), Predicate.implies (returnpred, pre)))
@@ -872,12 +921,14 @@ let solve_shape_constraints pure table params returns =
 				let separators1 = 
 					List.map (fun solution ->
 						let pre = interprete solution params pos_samples1 neg_samples in
+						let foralls = find_quantifiers pre in
 						Predicate.Forall (foralls, 
 						Predicate.implies (pre, returnpred))
 						) solutions1 in
 				let separators2 = 
 					List.map (fun solution ->
 						let pre = interprete solution params pos_samples neg_samples1 in
+						let foralls = find_quantifiers pre in
 						Predicate.Forall (foralls, 
 						Predicate.implies (returnpred, pre))
 						) solutions2 in
@@ -1178,8 +1229,8 @@ let heap_cdnf_learn path heap_samples tbl enforces env fr udt_table =
 		else 
 			(* filter atomics ... *)
 			let rminds = fst (List.fold_left (fun (res, ind) atomic -> match atomic with
-				| Predicate.Link (_,_,_,v,_) 
-				| Predicate.Reach (_, v) when v = Datatype.forall_vexpr -> res @ [ind], ind+1
+				| Predicate.Link (_,_,i,v,_) 
+				(*| Predicate.Reach (_, v)*) when v = Datatype.forall_vexpr || i > 9 -> res @ [ind], ind+1
 				| _ -> if (kind_of atomic < 1) then res @ [ind], ind+1 else res, ind+1
 				) ([], 0) atomics) in
 			let atomics = remove_nth atomics rminds in
@@ -1312,13 +1363,13 @@ let fast_cdnf_learn ni flag path atomics assertions terminations pos_samples neg
 				) else [])
 			@ defaults @ 
 			(let res = 
-				Hashtbl.fold (fun _ pos_samples res -> 
+				Hashtbl.fold (fun key pos_samples res -> 
 					let _ = Format.fprintf Format.std_formatter "partition sample size = %d@." (List.length pos_samples) in
 					res @ (
 						if flag then 
-							Cpredmine.synthesize (Hashtbl.length partitions) path pos_samples cranges dranges tbl enforces
+								Cpredmine.synthesize (Hashtbl.length partitions) path pos_samples cranges dranges tbl enforces
 						else Cpredmine.synthesize_datatype_constraints path pos_samples cranges dranges tbl enforces)
-				) partitions [] in
+				) partitions [] in 
 			if (isjunk res) then
 				let _ = Format.fprintf Format.std_formatter "junk invaraints from partitions@." in
 				let samples = Hashtbl.fold (fun _ samples res -> res @ samples) partitions [] in
@@ -1341,16 +1392,36 @@ let fast_cdnf_learn ni flag path atomics assertions terminations pos_samples neg
 				Format.fprintf Format.std_formatter "Has atomicinf pred: %a@." 
 				Predicate.pprint pred
 				) atomics_inf in
-		let params = genAtomicPredicates flag path tbl enforces (sourceatomics @ atomics) in
-		let returns = genAtomicPredicates flag path tbl enforces (atomics_inf @ assertions) in	
-		 (*-- remove the params that are equaal to assertion  --*)
-		let params = List.filter (fun param -> 
-			List.for_all (fun assertion -> (param <> assertion)) assertions
-		) params in 
-		 (*-- remove the returns that are equal to param --*)
+		let source_r, source_p = List.partition (fun atomic -> 
+				List.exists (fun var -> 
+					String.compare (Path.name var) (Path.name (Frame.returnpath)) = 0 ||
+					Common.str_contains (Path.name var) ((Path.name (Frame.returnpath)) ^ ".")
+					) (Predicate.vars atomic)
+			) sourceatomics in			
+			
+		let source_p = trans_preds tbl source_p in
+		let atomics = trans_preds tbl atomics in
+		let source_r = trans_preds tbl source_r in
+		let atomics_inf = trans_preds tbl atomics_inf in
+		let assertions = trans_preds tbl assertions in
+		
+		(*-- remove the params that are equal to assertions and inferred predicates  --*)
+		let source_p = List.filter (fun source -> 
+			List.for_all (fun assertion -> (source <> assertion)) assertions &&
+			List.for_all (fun atomic -> comparePred source atomic = false) atomics_inf &&
+			List.for_all (fun atomic -> comparePred source (Not atomic) = false) atomics_inf
+			) source_p in
+		let atomics = List.filter (fun param -> 
+			List.for_all (fun assertion -> (param <> assertion)) assertions 
+		) atomics in 
+		
+		let params = genAtomicPredicates flag path tbl enforces (source_p @ atomics) in
+		let returns = genAtomicPredicates flag path tbl enforces (source_r @ atomics_inf @ assertions) in	
+		(*-- remove the returns that are equal to param --*)
 		let returns = List.filter (fun return -> 
 			List.for_all (fun param -> comparePred return param = false) params	
 		) returns in 
+		
 		let params, returns = 
 			if returns = [] && List.length params > 1 then 
 				Common.sublist 0 (List.length params - 2) params, 
@@ -1358,6 +1429,7 @@ let fast_cdnf_learn ni flag path atomics assertions terminations pos_samples neg
 			else if params = [] && List.length returns > 1 then
 				[List.hd returns], List.tl returns 
 			else params, returns in 
+			
 		let predicates = params @ returns in
 		let _ = (nb_hypo := !nb_hypo + List.length predicates) in
 		let pos_samples = List.map (eval_sample predicates) pos_samples in
@@ -1407,8 +1479,15 @@ let fast_cdnf_learn ni flag path atomics assertions terminations pos_samples neg
 		let _ = List.iter (fun pred -> 
 			Format.fprintf Format.std_formatter "Atomic predicate = %a@." Predicate.pprint pred) (params@returns) in
 		let separators = try solve_shape_constraints true pos_samples params returns with _ -> [] in
-		let separators = List.map (fun sep -> ([], sep)
-		) separators in
+		let separators = 
+			Common.map_partial (fun sep -> match sep with
+				| Predicate.Forall ([], sep) when 
+					List.length (Common.remove_duplicates (Predicate.vars sep)) = 1 -> 
+					if TheoremProver.unsat (Predicate.Not sep) then None
+					else Some ([], sep)
+				| _ -> Some ([], sep)
+				) separators
+			(*List.map (fun sep -> ([], sep) ) separators*) in
 		(* Begin commment old CDNF stuff *)
 		(*let predicates = remove_nth predicates (fulls@emptys) in
 		let pos_samples = List.map (fun pos_sample -> 
@@ -1483,31 +1562,41 @@ let cdnf_learn ni path atomics assertions terminations
 				else if (List.exists (fun ho -> Common.str_contains name ho) ho)        (* ho in- and out-put out *)
 				then () else Hashtbl.replace mtbl name v) tbl in
 			(** 2. Learn equality *)
-			if (Hashtbl.length mtbl = 0) then res else
-			let pos_samples = List.map (fun pos_samples -> 
-				List.filter (fun (k, v) -> Hashtbl.mem mtbl k) pos_samples) pos_samples in
-			let pos_samples = Common.remove_duplicates pos_samples in	
-			let simpleinv = (invmine_learn 0 pos_samples neg_samples mtbl enforces env fr) in
-			(*Heuristic: a learning algorithm tries only simply account for equlities invariants at first *)
-			if (List.length simpleinv > 0 && !counter = 1) then
-				res @ simpleinv
-			(** 3. Learn inequality *)	
-			else
-				let simpleinv = simpleinv @ (invmine_learn 1 pos_samples neg_samples mtbl enforces env fr) in			
-				(** 4. Cut off the fields that is not a measure *)
-				let _ = Hashtbl.iter (fun name v -> 
-					if is_measure_variable name measure 
-						(*Common.str_contains name (Path.name measure)*) (* only *measure* left *)
-					then () else Hashtbl.remove mtbl name
-					) tbl in
-				(** 5. Learn complex invariants using CDNF *) 
+			if (Hashtbl.length mtbl = 0) then res 
+			(* if value is only 0/1, then don't learn (boolean measure) *)
+			else if (Hashtbl.fold (fun k _ res -> 
+				if (res || (List.for_all (fun measure -> 
+						not (is_measure_variable k measure)) measures)) then res 
+				else if (List.exists (fun s -> 
+					List.assoc k s > 1 || List.assoc k s < 0) pos_samples) then true
+				else false  
+				) mtbl false) 
+			then
 				let pos_samples = List.map (fun pos_samples -> 
 					List.filter (fun (k, v) -> Hashtbl.mem mtbl k) pos_samples) pos_samples in
 				let pos_samples = Common.remove_duplicates pos_samples in	
-				let cdnfinv = fast_cdnf_learn ni false path atomics assertions terminations 
-																						pos_samples neg_samples mtbl enforces env fr measures in
-				(** 6. Combine equality and inequality invariants with CDNF invariants *)
-				res @ simpleinv @ cdnfinv
+				let simpleinv = (invmine_learn 0 pos_samples neg_samples mtbl enforces env fr) in
+				(*Heuristic: a learning algorithm tries only simply account for equlities invariants at first *)
+				if (List.length simpleinv > 0 && !counter = 1) then
+					res @ simpleinv
+				(** 3. Learn inequality *)	
+				else
+					let simpleinv = simpleinv @ (invmine_learn 1 pos_samples neg_samples mtbl enforces env fr) in			
+					(** 4. Cut off the fields that is not a measure *)
+					let _ = Hashtbl.iter (fun name v -> 
+						if is_measure_variable name measure 
+							(*Common.str_contains name (Path.name measure)*) (* only *measure* left *)
+						then () else Hashtbl.remove mtbl name
+						) tbl in
+					(** 5. Learn complex invariants using CDNF *) 
+					let pos_samples = List.map (fun pos_samples -> 
+						List.filter (fun (k, v) -> Hashtbl.mem mtbl k) pos_samples) pos_samples in
+					let pos_samples = Common.remove_duplicates pos_samples in	
+					let cdnfinv = fast_cdnf_learn ni false path atomics assertions terminations 
+																							pos_samples neg_samples mtbl enforces env fr measures in
+					(** 6. Combine equality and inequality invariants with CDNF invariants *)
+					res @ simpleinv @ cdnfinv
+			else (res)
 		) [] measures
 	
 	
@@ -2240,7 +2329,7 @@ let learn algnumber templates udt_table atomics pos_samples neg_samples invarian
 			(* NEW: Learning strategy: *)
 			(* 1. Dont mention "r" (return) for learning precondition only *)
 			(* 2. Mention "r" to enforce a learning for postcondition *)	
-			(** generate the enforcements *)
+			(** generate the enforcements; should be aware that boolean measures do not attend learning  *)
 			let measures = Hashtbl.fold (fun _ ms res ->
 					List.fold_left (fun res (m, b) -> if b then res @ [m] else res) res ms
 				) se_env.measures [] in

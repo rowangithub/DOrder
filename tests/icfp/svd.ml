@@ -58,7 +58,5 @@ let main l m n =
 		loop n l m n
 	else ()
 	
-let _ = main 4 0 2
-let _ = main 2 0 4
-let _ = main 1 0 0
-let _ = main (-1) 0 0
+
+let _ = main (-1) 0 (-2)

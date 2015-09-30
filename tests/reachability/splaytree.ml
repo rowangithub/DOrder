@@ -108,4 +108,7 @@
 			| Node (l, value, n) -> 
 				let (l, value, n) = splay x tree in
 				Node (l, value, n)	
-	let harness2 () = (add 0 Empty;delete 0 Empty;lookup Empty 0)	
+	let harness2 () = (
+		add 0 (Node (Empty, 0, Empty));
+		delete 0 (Node (Empty, 0, Empty));
+		lookup Empty 0)	

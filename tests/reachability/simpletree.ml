@@ -42,7 +42,7 @@ let rec add t x =
 			else if (x < x') then (*Node (add x l, x', n)*)
 				bal x' (add l x) n
 			else (*Node (l, x', add x n) *)
-				bal x' l (add n x)		
+				bal x' l (add n x)
 				
 let rec elements_aux accu s = 
 	match s with

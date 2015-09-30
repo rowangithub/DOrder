@@ -25,10 +25,6 @@ let main flag =
 	loopb flag a b j i
 	
 
-let _ = main 30
-let _ = main 20
+let _ = main (-3)
+let _ = main (-1)
 let _ = main 10
-let _ = main 0
-let _ = main (-10)
-let _ = main (-20)
-let _ = main (-30)

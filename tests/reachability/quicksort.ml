@@ -17,8 +17,6 @@ let rec qs xs =
     let (l, g) = par x rest [] [] in
     (*(qs l) @ (x :: (qs g))			*)
 		append (qs l) (x::(qs g))
-			
-let main () = 
-	(*par 5 [3; 7; 8; 1] [] []	*)
-	qs [3; 7; 8; 1; 6; 2; 4]
+		
+let main () = ()
 let _ = main ()

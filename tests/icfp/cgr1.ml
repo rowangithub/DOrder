@@ -8,8 +8,5 @@ let main x y =
 		loop x y
 	else () 
 	
-let _ = main 0 1
-let _ = main 1 0
-let _ = main 4 0
-let _ = main 0 4
+
 let _ = main (-1) (-1)

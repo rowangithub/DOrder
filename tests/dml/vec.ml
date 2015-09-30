@@ -10,28 +10,25 @@ type 'a tree =
 
 let empty = Empty
 
-let rec height t = 
-	match t with
+let rec height tree = 
+	match tree with
 	| Empty -> 0
 	| Node (t1, v, t2) -> 
 		if (height t1 < height t2) 
 		then 1 + height t2 
 		else 1 + height t1
-		
-let height1 t = 
-	match t with
-	| Empty -> 0
-	| Node (t1, v, t2) -> height t1
 
-let height2 t = 
-	match t with
-	| Empty -> 0
-	| Node (t1, v, t2) -> height t2		
-
-let rec length t = 
-	match t with
+let rec length tree = 
+	match tree with
 	| Empty -> 0
 	| Node (t1, v, t2) -> 1 + length t1 + length t2 
+
+let rec treebal t = match t with
+	| Node (t1, dv, t2) -> 
+		if (height t1 - height t2 <= 2) && (height t2 - height t1 <= 2)
+			&& treebal t1 = 1 && treebal t2 = 1 then 1
+		else 0
+	| Empty -> 1	
 
 let bal l x n =
   let hl = height l in
@@ -182,7 +179,18 @@ let rec append d t =
       Empty -> Node (Empty, d, Empty)
     | Node (l, dd, r) -> 
       bal l dd (append d r)	
- 			
+			
+let rec concat tr1 tr2 =
+  match tr1 with
+    | Empty -> tr2
+    | Node(l, dd, n) -> (
+        match tr2 with
+          | Empty -> tr1
+          | Node(l', dd', n') ->
+              let d = leftmost tr2 in
+              recbal tr1 d (remove_leftmost tr2)	
+		)
+			 			
 let rec pop i t =
   match t with
     (*  Empty -> assert (1 = 0); assert false (*raise Vec_index_out_of_bounds*)*)
@@ -195,17 +203,6 @@ let rec pop i t =
 	  		let (e, v) = pop (i - cl - 1) r in 
 	    	(e, bal l d v)
       else (d, merge l r)					
-	
-let rec concat tr1 tr2 =
-  match tr1 with
-    | Empty -> tr2
-    | Node(l, dd, n) -> (
-        match tr2 with
-          | Empty -> tr1
-          | Node(l', dd', n') ->
-              let d = leftmost tr2 in
-              recbal tr1 d (remove_leftmost tr2)	
-		)
 		
 let rec harness t1 t2 = 
 	(concat t1 t2; harness t1 t2)

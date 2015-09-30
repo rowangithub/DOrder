@@ -7,7 +7,7 @@ let rec loop i j k n b =
 		loop i j k n b
 	(* Hack: add n mod 2 = 0 as a predicate *)	
 	else if (n mod 2 = 0) then assert (i = j)
-	else assert (i = j)
+	else ()
 
 (* add a qualifier b = 0 || b = 1 to 
   encode boolean variables using integer *)

@@ -6,15 +6,15 @@
 		if a >= b then a
 		else b
 
-  let rec member e t = 
+  let rec member ele t = 
     match t with
 			| Leaf -> false
 			| Node (h,l,x,n) ->
-				if e < x then
-					member e l
-				else if e = x then
+				if ele < x then
+					member ele l
+				else if ele = x then
 					true
-				else member e n
+				else member ele n
 				
 
   let depth tree = 

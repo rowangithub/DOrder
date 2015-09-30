@@ -13,6 +13,14 @@ let rec var b = match b with
   | Zero -> max_var+1 | One -> (*!max_var + 1*) (*11*)max_var+1
   | Node (vv, l, h) -> vv
 
+let rec vorder b = match b with
+	| Node (x, l, h) -> 
+		if (x < var l && x < var h
+				&& vorder l = 1 && vorder h = 1) then 1
+		else 0
+	| Zero -> 1
+	| One -> 1
+
 let low b = match b with
   (*| Zero | One -> invalid_arg "Bdd.low"*)
   | Node (x, l, h) -> l
@@ -20,14 +28,6 @@ let low b = match b with
 let high b = match b with
   (*| Zero | One -> invalid_arg "Bdd.low"*)
   | Node (x, l, h) -> h
-
-let var1 b = match b with
-	| Zero -> (*20*)max_var+2 | One -> (*20*)max_var+2
-	| Node (vv, l, h) -> var l
-
-let var2 b = match b with
-	| Zero -> (*20*)max_var+2 | One -> (*20*)max_var+2
-	| Node (vv, l, h) -> var h
 
 let mk (vv:int) (low: bdd) (high: bdd) = 
   if low == high then low else Node (vv, low, high)

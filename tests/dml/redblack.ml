@@ -10,15 +10,6 @@ type 'a dict =
   | Red of 'a * 'a dict * 'a dict
   | Purple of 'a * 'a dict * 'a dict
 
-let color d = match d with
-  | Empty -> 1
-  | Black (a, b, c) -> 1
-  | Red (a, b, c) -> 2
-  | Purple (a, b, c) -> 3
-
-let max x y =
-  if x > y then x else y
-
 let rec height d = match d with
   | Empty -> 0
   | Red (x, l, n) -> 
@@ -34,29 +25,21 @@ let rec height d = match d with
 		then height l
 		else height n
 		
-let height1 t = match t with
-	| Empty -> 0
-	| Black (x, l, n) -> height l
-	| Red (x, l, n) -> height l
-	| Purple (x, l, n) -> height l
-
-let height2 t = match t with
-	| Empty -> 0
-	| Black (x, l, n) -> height n
-	| Red (x, l, n) -> height n
-	| Purple (x, l, n) -> height n	
-
-let color1 t = match t with
-	| Empty -> 1
-	| Black (x, l, n) -> color l
-	| Red (x, l, n) -> color l
-	| Purple (x, l, n) -> color l
-
-let color2 t = match t with
-	| Empty -> 1
-	| Black (x, l, n) -> color n
-	| Red (x, l, n) -> color n
-	| Purple (x, l, n) -> color n	
+let rec treebal t = 
+	match t with
+		| Empty -> 1
+		| Red (x, l, n) -> 
+			if height l = height n && 
+				treebal l = 1 && treebal n = 1 then 1
+			else 0
+		| Black (x, l, n) ->
+			if height l = height n &&
+				treebal l = 1 && treebal n = 1 then 1
+			else 0
+		| Purple (x, l, n) ->
+			if height l = height n &&
+				treebal l = 1 && treebal n = 1 then 1
+			else 0
 
 let restore_right e lt n =
   match n with

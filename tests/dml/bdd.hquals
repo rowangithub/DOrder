@@ -1,2 +1,2 @@
 (* Data structure invariant *)
-qualif Bdd(v): var v < var1 v and var v < var2 v
+qualif Bdd(v): vorder(v) = 1

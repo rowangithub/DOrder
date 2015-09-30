@@ -33,7 +33,10 @@ let main () =
 		let _ = fprintf outch "env:newtest\t\n" in
 		insert t k
 		) t2 ns2 in
-		
+	let _ = fprintf outch "env:newtest\t\n" in
+	let _ = member 1000 t in
+	let _ = fprintf outch "env:newtest\t\n" in
+	let _ = member 20 t in	
 	let _ = List.fold_left (fun t k -> 
 		let _ = fprintf outch "env:newtest\t\n" in
 		delete k t

@@ -50,7 +50,5 @@ let main flag =
   let d = 0 in
 	loopb flag a b c d
 	
-let _ = main 1
-let _ = main 1
-let _ = main 0
-let _ = main (0)	
+
+let _ = main (-1)	

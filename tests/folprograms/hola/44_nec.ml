@@ -22,8 +22,6 @@ let main k flag =
 		else 2 in
 	loop i j k n flag
 	
-let _ = main 3 1
-let _ = main 2 1
-let _ = main 3 0
-let _ = main 2 0
-let _ = main (-1) (2)
+
+let _ = main (-1) (4)
+let _ = main (-2) (-1)
