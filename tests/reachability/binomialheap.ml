@@ -1,4 +1,5 @@
-  type 'a tree = Node of int * 'a * ('a tree) list
+  type 'a tree = 
+		| Node of int * 'a * ('a tree) list
   (*type 'a heap = ('a tree) list*)
 
   (*let empty = []
@@ -16,20 +17,17 @@
 				if x1 <= x2 then Node (r1 + 1, x1, t2 :: c1)
     		else Node (r1 + 1, x2, t1 :: c2)
 
-  let rec ins_tree t ts = 
-		match ts with
-    | [] -> t::ts
+  let rec ins_tree t mts = 
+		match mts with
+    | [] -> t::mts
     | t' :: ts' ->
-        if rank t < rank t' then t :: ts
+        if rank t < rank t' then t :: mts
         else ins_tree (mylink t t') ts'
 	
   let insert x ts = 
 		let em = ([]: ('a tree) list) in 
 		ins_tree (Node (0, x, em)) ts
 		
-	let harness0 y = 
-		let em = ([]: ('a tree) list) in
-		insert y ([]: ('a tree) list)
 
   let rec merge ts1 ts2 = 
 		match ts1, ts2 with
@@ -40,8 +38,8 @@
         else if rank t2 < rank t1 then t2 :: merge ts1 ts2'
         else ins_tree (mylink t1 t2) (merge ts1' ts2') 
 
-  let rec remove_min_tree ts = 
-		match ts with
+  let rec remove_min_tree ts'' = 
+		match ts'' with
     (*| [] -> raise Empty*)
     | t :: ts ->
 			(match ts with
@@ -52,11 +50,22 @@
         	else (t', t :: ts')
 				)
 
-  let find_delete_min ts =
-    let (t, ts2) = remove_min_tree ts in
+	let reverse (l : ('a tree) list) =
+		let rec aux (us : ('a tree) list) (ys : ('a tree) list) = 
+			match us with
+				| [] -> ys
+				| x::zs -> aux zs (x::ys) in
+		let em = ([]: ('a tree) list) in
+    aux l em
+		
+
+  let find_delete_min ts' =
+    let (t, ts2) = remove_min_tree ts' in
 		match t with
 			| Node (rank, x, ts1) -> 
-    	(x, merge ((*List.rev*) ts1) ts2 ) 
-	let harness1 x = 
-		let em = ([]: ('a tree) list) in
-		find_delete_min ([]: ('a tree) list)
+    	(x, merge (reverse ts1) ts2 ) 
+	
+	let harness1 y = 
+		(find_delete_min ([]: ('a tree) list);
+		insert y ([]: ('a tree) list)
+		)

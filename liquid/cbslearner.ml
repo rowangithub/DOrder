@@ -397,91 +397,6 @@ let invmine_learn n pos_samples neg_samples tbl enforcements env ffr =
 ******CDNF learning engine******
 ********************************)
 
-(* Translate a bool formula into a predicate *)	
-(*let interpret_cdnf predicates f = 
-	let rec loop f = match f with
-		| BoolFormula.And fs -> Predicate.big_and (Array.to_list (Array.map (fun f -> loop f) fs))
-		| BoolFormula.Or fs -> Predicate.big_or (Array.to_list (Array.map (fun f -> loop f) fs))
-		| BoolFormula.Not f -> Predicate.Not (loop f)
-		| BoolFormula.Lit v -> 
-			if (v > 0) then
-				let v = v - 1 in List.nth predicates v
-			else if (v < 0) then 
-				let v = abs v - 1 in Predicate.Not (List.nth predicates v)
-			else assert false in
-	loop f
-		
-let is_member pos_samples assignment = 
-	(*let _ = Format.fprintf Format.std_formatter "Mem: @." in
-	let _ = Array.iter (fun ce -> Format.fprintf Format.std_formatter "%b " ce) assignment in
-	let _ = Format.fprintf Format.std_formatter "@." in*)
-	if List.exists (fun pos_sample -> (* pos_samples == assignment ? *)
-		let pos_sample = Array.to_list (Array.sub pos_sample 1 (Array.length assignment - 1)) in
-		let assignment = Array.to_list (Array.sub assignment 1 (Array.length assignment - 1)) in
-		List.for_all2 (fun p a -> p = a) pos_sample assignment
-	) pos_samples then Query.YES
-	else Query.NO
-	
-(*let is_co_member neg_samples assignment = 
-	let _ = Format.fprintf Format.std_formatter "is_co_member@." in
-	if List.exists (fun neg_sample -> (* pos_samples == assignment ? *)
-		let neg_sample = Array.to_list (Array.sub pos_sample 1 (Array.length assignment - 1)) in
-		let assignment = Array.to_list (Array.sub assignment 1 (Array.length assignment - 1)) in
-		List.for_all2 (fun p a -> p = a) neg_sample assignment
-	) neg_samples then Query.YES
-	else Query.NO*)
-
-let encode_pos_samples pos_samples n =
-	let samples = List.map (fun pos_sample -> 
-		let pos_sample = Array.mapi (fun i b -> if b then BoolFormula.Lit i else BoolFormula.Lit (-i)) pos_sample in
-		(BoolFormula.And (Array.sub pos_sample 1 (Array.length pos_sample - 1)))
-	) pos_samples in
-	let samples = Array.of_list samples in
-	BoolFormula.Or samples
-
-let is_equivalent predicates pos_samples n conj = 
-	(*let _ = Format.fprintf Format.std_formatter "is_equivalent@." in*)
-	let nvars = List.length predicates in
-	let conjecture = BoolFormula.from_boolformula_t conj in
-	(*let _ = Format.fprintf Format.std_formatter "conjecture: %a@." Predicate.pprint (interpret_cdnf predicates conjecture) in*)
-	(*let _ = (BoolFormula.print conjecture;
-   	print_newline ()) in*)
-	(** 1. Look for ce \in f /\ ce \notin f' *)
-	let counterexample = List.fold_left (fun res assignment -> match res with
-		| Some _ -> res
-		| None -> (
-			match Oracle.is_satisfiable_with_assumption nvars conjecture assignment with
-				| None -> (* Found a counterexample *)
-					(*let _ = Format.fprintf Format.std_formatter "counterexample len = %d and n = %d@." (Array.length assignment) n in*)
-					let counterexample = Array.sub assignment 0 (succ n) in
-					(*let _ = Array.iter (fun ce -> Format.fprintf Format.std_formatter "%b " ce) counterexample in*)
-					(*let _ = Format.fprintf Format.std_formatter "@." in*)
-      		Some (Query.CE counterexample)
-				| Some _ -> res)) None pos_samples in
-	(*let _ = Format.fprintf Format.std_formatter "First try completed@." in*)
-	match counterexample with
-		| Some counterexample -> counterexample
-		| None -> (
-			(** 2. Look for ce \in f' /\ ce \notin f *)
-			(*let _ = Format.fprintf Format.std_formatter "Second try started@." in*)
-			let target = encode_pos_samples pos_samples n in
-			(*let _ = Format.fprintf Format.std_formatter "Encoded@." in*)
-			let eq = BoolFormula.And [|conjecture; BoolFormula.Not target |] in
-			(*let _ = BoolFormula.print ( eq) in*)
-			(*let _ = Format.fprintf Format.std_formatter "Conjoined@." in*)
-			match Oracle.is_statisfiable nvars eq with
-				| None -> Query.EQ
-				| Some assignment -> 
-					(*let _ = Format.fprintf Format.std_formatter "counterexample' len = %d and n = %d@." (Array.length assignment) n in*) 
-					(*let helper i b =
-    				if i = 0 then () else print_int (if b then 1 else 0) in
-  				let _ = Array.iteri helper assignment in*)
-					
-					let counterexample = Array.sub assignment 0 (succ n) in
-					(*let _ = Array.iter (fun ce -> Format.fprintf Format.std_formatter "%b " ce) counterexample in
-					let _ = Format.fprintf Format.std_formatter "@." in*)
-					Query.CE counterexample) *)
-
 (** 0, 0, ... should be put into every partition *)
 let post_process_partitions flag partitions =	
 	if (flag || Hashtbl.length partitions <> 2) then ()
@@ -581,7 +496,7 @@ let mini_invariants predicates pos_samples neg_samples =
 		List.iter (fun v ->
 		Format.fprintf Format.std_formatter "%d  " v
 		) n; Format.fprintf Format.std_formatter "@.") neg_samples in
-	let _ = Format.fprintf Format.std_formatter "@." in *)
+	let _ = Format.fprintf Format.std_formatter "@." in*) 
 	if (pos_samples = [] || neg_samples = []) then []
 	else
 	(** link (t, u, v), link (t, v, u) and reach (t, u) and reanch (t, v) have better not come
@@ -654,8 +569,7 @@ let find_similarity pure return' returns =
 							else (res, ind+1)
 						| _ -> res, ind+1) *)
 			| (Predicate.Reach (a,u), Predicate.Reach (b,u1))
-				when (u = Datatype.forall_uexpr || u = Datatype.forall_vexpr) &&
-						(u = u1) && pure -> 
+				when (u = Datatype.forall_uexpr) && (u = u1) && pure -> 
 					(match (a, b) with
 						| Predicate.Proj (_, pexpr), Predicate.Proj (_, pexpr') 
 						| Predicate.Field (_, pexpr), Predicate.Field (_, pexpr') ->
@@ -666,8 +580,7 @@ let find_similarity pure return' returns =
 			| (Predicate.Link (a,_,_,u,_), Predicate.Atom (u1,Predicate.Eq,b))		*)	
 			| (Predicate.Atom (u1,Predicate.Eq,b), Predicate.Reach (a,u))
 			| (Predicate.Reach (a,u), Predicate.Atom (u1,Predicate.Eq,b)) ->
-				if (u = Datatype.forall_uexpr || u = Datatype.forall_vexpr) &&
-						(u1 = Datatype.forall_uexpr|| u1 = Datatype.forall_vexpr) then
+				if (u = Datatype.forall_uexpr) && (u = u1) then
 					match (a, b) with
 						| Predicate.Proj (_, pexpr), Predicate.Proj (_, pexpr') 
 						| Predicate.Field (_, pexpr), Predicate.Field (_, pexpr') ->
@@ -680,13 +593,34 @@ let find_similarity pure return' returns =
 	
 let symmetric_version pred = 
 	match pred with
+		| Predicate.Atom (v,Predicate.Eq,_) 
 		| Predicate.Link (_,_,_,v,_) 
 		| Predicate.Reach (_, v) when v = Datatype.forall_vexpr -> true
 		| _ -> false
 
+(* Return the index/field of a return *)
+let suffixf return =
+	match return with
+		| Predicate.Reach (Predicate.Proj (i, e), u)
+		| Predicate.Atom (Predicate.Proj (i, e), Predicate.Eq, u) 
+		| Predicate.Atom (u, Predicate.Eq, Predicate.Proj (i, e)) 
+			when (u = Datatype.forall_uexpr || u = Datatype.forall_vexpr) -> i
+		| _ -> (-1)
+
 (** The other predicates in Pi_O other than Pi shall be added back to Pi_I *)
 let otherreturns pure allreturns currreturns focusreturn = 	
-	if (pure) then []
+	if (pure) then 
+		(* ONLY support record types: reach (r.2, v) should consider reach (r.1, u) and u = r.0 *)
+		let suffix = suffixf focusreturn in
+		if List.length currreturns > 1 || suffix < 0 then []
+		else
+			let _ = assert (List.mem Datatype.forall_vvar (Predicate.vars focusreturn)) in
+			let focusreturn = Predicate.subst Datatype.forall_uexpr Datatype.forall_vvar focusreturn in
+			let others = find_similarity pure focusreturn allreturns in
+			List.filter (fun i -> 
+				let other = List.nth allreturns i in
+				let suffix' = suffixf other in
+				(assert (suffix' >= 0); suffix' <> suffix)) others
 	else 
 		match focusreturn with
 			| Predicate.Reach (x, u) -> 
@@ -717,7 +651,8 @@ let solve_shape_constraints pure table params returns =
 	(* 1. work on each returns *)
 	fst (List.fold_left (fun (res, index) return -> 	
 		let _ = Format.fprintf Format.std_formatter "Focusing on %a@." Predicate.pprint return in
-		if (Hashtbl.mem cache index || kind_of return = 0 || symmetric_version return) then res, index+1
+		(* Hack: if return = (u = r) then it should be sent to learning !!*)
+		if (Hashtbl.mem cache index || (symmetric_version return && not pure)) then res, index+1
 		else
 		(* 1.5 find the other returns that are similiar (~record and tuple~) *)
 		let similarities = find_similarity pure return returns in
@@ -739,6 +674,8 @@ let solve_shape_constraints pure table params returns =
 				
 		(** Need to add the rest of returns to the params and hence pos_samples and neg_samples *)		
 		let otherreturns = otherreturns pure returns similarities return in
+		if (otherreturns = [] && symmetric_version return) then res, index + 1
+		else
 		let _ = List.iter (fun i -> Hashtbl.add cache i ()) otherreturns in
 		(* 3. only reserve params in the table *)
 		(*let params = if (kind_of return > 0) then params else params @ returns in*)
@@ -753,7 +690,7 @@ let solve_shape_constraints pure table params returns =
 						List.map (fun i -> List.nth sample (param_len+i)) otherreturns ) neg_samples
 			(*else neg_samples*) in 	
 		let params = params @ (List.map (fun i -> List.nth returns i) otherreturns) in	
-			
+		
 		let rminds = match return with
 			| Predicate.Link _ -> 
 				if (pure) then
@@ -772,11 +709,19 @@ let solve_shape_constraints pure table params returns =
 				if (pure) then
 					(* the params with kind < 0 don't need consideration *) 
 					(* the params with kind = 2 don't need consideration *)
-					fst (List.fold_left (fun (res, ind) param -> match param with
-					| Predicate.Link _ -> res @ [ind], ind+1
-					| param when (List.mem (Datatype.forall_vvar) (Predicate.vars param)) -> res @ [ind], ind+1
-					| _ -> if (kind_of param < 0) then res @ [ind], ind+1 else res, ind+1
-					) ([], 0) params)
+					if (symmetric_version return) then
+						(* the params with kind < 0 don't need consideration *) 
+						fst (List.fold_left (fun (res, ind) param -> match param with
+							| Predicate.Reach (t, _) when not (isreturn t) -> res @ [ind], ind+1
+							| otherwise ->
+								if (kind_of param < 0) then res @ [ind], ind+1 else res, ind+1
+						) ([], 0) params)
+					else
+						fst (List.fold_left (fun (res, ind) param -> match param with
+							| Predicate.Link _ -> res @ [ind], ind+1
+							| param when (List.mem (Datatype.forall_vvar) (Predicate.vars param)) -> res @ [ind], ind+1
+							| _ -> if (kind_of param < 0) then res @ [ind], ind+1 else res, ind+1
+						) ([], 0) params)
 				else (* drop all predicate that is u * v *) 
 					(*fst (List.fold_left (fun (res, ind) param ->
 						if (kind_of param = 0) && (List.for_all (fun var ->
@@ -784,23 +729,17 @@ let solve_shape_constraints pure table params returns =
 							(Predicate.vars param))
 						then res @ [ind], ind+1 else res, ind+1
 					) ([], 0) params) *) []
-			| return when (kind_of return = 0) -> assert false
-				(*match return with
-					| Predicate.Atom (_,Predicate.Eq,_) -> assert false
-					| return -> (* Learning data invaraint *)
-						if (List.exists (fun var ->
-							 not (Path.same var Datatype.forall_uvar || Path.same var Datatype.forall_vvar)) 
-							(Predicate.vars return)) then (* drop all the links *)
-							fst (List.fold_left (fun (res, ind) param -> match param with
-									| Predicate.Link _ -> res @ [ind], ind+1
-									| _ -> res, ind+1
-									) ([], 0) params)	
-						else (* drop all the reaches *)
-							fst (List.fold_left (fun (res, ind) param -> match param with
-									| Predicate.Reach _ -> res @ [ind], ind+1
-									| _ -> res, ind+1
-									) ([], 0) params)	
-					*)
+			| return when (kind_of return = 0) -> (* This is useful to learn treemax t = r *)
+				(match return with
+					| Predicate.Atom (_,Predicate.Eq,_) -> 
+						(assert pure;
+						(* the params with kind < 0 don't need consideration *) 
+						fst (List.fold_left (fun (res, ind) param -> match param with
+							| Predicate.Reach (t, _) when symmetric_version return && not (isreturn t) -> res @ [ind], ind+1
+							| otherwise ->
+								if (kind_of param < 0) then res @ [ind], ind+1 else res, ind+1
+						) ([], 0) params))
+					| return -> assert false)
 			| return -> (* kind_of return = -1 *)
 				(* the params with kind >= 0 don't need consideration *)
 				fst (List.fold_left (fun (res, ind) param -> 
@@ -812,9 +751,9 @@ let solve_shape_constraints pure table params returns =
 			List.map (fun pos_sample -> remove_nth pos_sample rminds) pos_samples) in
 		let neg_samples = Common.remove_duplicates (
 			List.map (fun neg_sample -> remove_nth neg_sample rminds) neg_samples) in 
-		(**  Important --> Complete the negative samples for shape properties only *)	
+		(**  Important --> Complete the unreachable samples for shape properties only *)	
 		let additionals = 
-			if (kind_of return > 0 && pure) then 
+			if (kind_of return >= 0 && pure) then 
 				Misc.lflap (List.map (fun param -> 
 				match param with
 					| Predicate.Link (_,_,_,u,v) when 
@@ -838,47 +777,26 @@ let solve_shape_constraints pure table params returns =
 						Misc.mapi (fun a i -> if i = reachind then 1 else a) additional
 						) additionals 
 					) reachinds))
+			| Predicate.Reach _ when pure && symmetric_version return ->
+				let reachinds = fst (List.fold_left (fun (res, ind) param -> match param with
+					| Predicate.Reach (_, u) when (u = Datatype.forall_uexpr || u = Datatype.forall_vexpr) -> 
+						res @ [ind], ind+1
+					| Predicate.Atom _ when kind_of param = 0 -> res @ [ind], ind+1
+					| _ -> res, ind+1
+					) ([], 0) params) in
+				(List.flatten (List.map (fun reachind -> 
+					List.map (fun additional -> (* the element in reachind is set to 1 *)
+						Misc.mapi (fun a i -> if i = reachind then 1 else a) additional
+						) additionals 
+					) reachinds)) 
 			| _ -> additionals in
-		let neg_samples = neg_samples @ additionals in			
+		let neg_samples = neg_samples @ additionals in	
 		(**  Negative samples are completed *)					
 		let pos_set = of_list pos_samples in
 		let neg_set = of_list neg_samples in
 		let inter_set = SampleSet.inter pos_set neg_set in
-		(*let foralls = match return with
-			| Predicate.Link _ -> [Datatype.forall_uvar; Datatype.forall_vvar]
-			| Predicate.Reach _ when (kind_of return = 1) -> [Datatype.forall_uvar] 
-			| return when (kind_of return = 0) ->
-				(match return with
-					| Predicate.Atom (_,Predicate.Eq,_) -> assert false
-					| return -> 
-						if (List.exists (fun var ->
-							 not (Path.same var Datatype.forall_uvar || Path.same var Datatype.forall_vvar)) 
-							(Predicate.vars return)) then [Datatype.forall_uvar]
-						else [Datatype.forall_uvar; Datatype.forall_vvar]
-				)
-			| _ -> [] in*)
+		
 		let separators =
-			(*if (SampleSet.cardinal neg_set = 0) then
-				(* Could only be possible if type_kind return < 0 *)
-				let _ = List.iter (fun param -> 
-					Format.fprintf Format.std_formatter "param = %a@." Predicate.pprint param) params in
-				let _ = List.iter (fun s -> (
-					List.iter (fun v -> Format.fprintf Format.std_formatter "%d " v) s; 
-					Format.fprintf Format.std_formatter "@.")) pos_samples in
-				(* Translate to boolean samples for CDNF *)
-				let pos_samples = List.map (fun pos_sample -> 
-					Array.of_list (false :: 
-						(List.map (fun v -> if v > 0 then true else false) pos_sample))
-				) pos_samples in
-				let separator = Cdnflearn.learn 
-					(List.length params)
-					(is_member pos_samples) 
-					(is_equivalent params pos_samples) in
-				let separator = BoolFormula.from_boolformula_t separator in
-				let separator = interpret_cdnf params separator in
-				[separator]*)
-			(*let _ = Format.fprintf Format.std_formatter "pos len = %d@." (List.length pos_samples) in
-			let _ = Format.fprintf Format.std_formatter "neg len = %d@." (List.length neg_samples) in*)
 			(* 4. check if there exsits duplicates in the poss and negs *)	
 			if (SampleSet.cardinal neg_set = 0) then
 				(* This is tailored for reach (t, u) or reach (t, x) *)
@@ -914,7 +832,7 @@ let solve_shape_constraints pure table params returns =
 				let pos_samples1 = SampleSet.elements pos_set in
 				let neg_samples1 = SampleSet.elements neg_set in
 				let solutions1 = 
-					if pure then
+					if pure && not (symmetric_version return) then
 						mini_invariants params pos_samples1 neg_samples 
 					else [] in
 				let solutions2 = mini_invariants params pos_samples neg_samples1 in
@@ -928,6 +846,20 @@ let solve_shape_constraints pure table params returns =
 				let separators2 = 
 					List.map (fun solution ->
 						let pre = interprete solution params pos_samples neg_samples1 in
+						let pre = match return with
+							| Predicate.Atom (u, Eq, _) when u = Datatype.forall_uexpr ->
+								let boundv = Predicate.Not (List.find (fun param -> match param with
+									| Predicate.Reach (_, v) when v = Datatype.forall_vexpr -> true
+									| _ -> false) params) in
+								Predicate.Or (boundv,
+									Predicate.Or (Predicate.Atom (Datatype.forall_uexpr, 
+																Predicate.Eq, Datatype.forall_vexpr), pre))
+							| Predicate.Atom (v, Eq, _) when v = Datatype.forall_vexpr ->
+								let boundu = Predicate.Not (List.find (fun param -> match param with
+									| Predicate.Reach (_, u) when u = Datatype.forall_uexpr -> true
+									| _ -> false) params) in
+								Predicate.Or (boundu, pre)
+							| return -> pre in
 						let foralls = find_quantifiers pre in
 						Predicate.Forall (foralls, 
 						Predicate.implies (returnpred, pre))
@@ -955,35 +887,22 @@ let heap_cdnf_learn path heap_samples tbl enforces env fr udt_table =
 	(*1. Construct a set of atomic predicates*)
 	let _ = Format.fprintf Format.std_formatter "the size of heap_samples = %d@." (List.length heap_samples) in
 	let oallbindings = Frame.get_fun_bindings env fr in
-	let isretrecord = ref false in
 	let allbindings = Common.expand (fun (p, f) -> match f with
 		| Frame.Frecord (_,ts,_) -> 
-			(if (Path.same (Predicate.exp_var p) Frame.returnpath) then isretrecord := true else ();
-			(List.map (fun (t, field, _) -> (Predicate.Field (field, p), t)) ts, []))
+			((List.map (fun (t, field, _) -> (Predicate.Field (field, p), t)) ts, []))
 		| Frame.Ftuple (ts, _) -> 
-			(if (Path.same (Predicate.exp_var p) Frame.returnpath) then isretrecord := true else ();
-				(Misc.mapi (fun t i -> (Predicate.Proj (i, p), t)) ts, []))
+			((Misc.mapi (fun t i -> (Predicate.Proj (i, p), t)) ts, []))
 		| Frame.Fconstr _ 
 		| Frame.Fvar _ -> ([], [(p, f)])
 		| _ -> ([], [])
 		) (List.map (fun (p, f) -> (Predicate.Var p, f)) oallbindings) [] in
 	let allbindings = List.rev allbindings in
-	(** He: Add a customized isreturn ...  *)
-	(*let isreturn p = 
-		(* if this function returns a record and there is only one data structure input, do  ... *)
-		if (!isretrecord) then
-			 let ps = List.find_all (fun (p, f) -> 
-				not (Path.same p Frame.returnpath) && (
-					match f with 
-						| Frame.Fconstr (ty,_,_,_,_) 
-							when (Hashtbl.mem udt_table ty || Path.same ty Predef.path_list) -> true 
-						| _ -> false)) oallbindings in
-				if (List.length ps = 1) then (
-					let (p',_) = List.hd ps in
-					List.mem p' (Predicate.exp_vars p)
-					)
-				else isreturn p
-		else isreturn p in*)
+	let is_heap_prog = List.exists (fun (_, f) -> match f with
+		| Frame.Fconstr (ty, _, _, _, _) -> 
+				(Hashtbl.mem udt_table ty || Path.same ty Predef.path_list)
+		| f -> false) allbindings in
+	if not is_heap_prog then []
+	else
 	let (params, returns, _, plains) = 
 		List.fold_left (fun (resparams, resreturns, resobjs, resscalars) (p, f) -> 
 		match f with
@@ -1021,8 +940,15 @@ let heap_cdnf_learn path heap_samples tbl enforces env fr udt_table =
 						(resparams, (List.map (fun (cstrname, index) -> 
 						Predicate.Link ((*Predicate.Var*) p, String.lowercase cstrname, index, 
 							Datatype.forall_uexpr, Datatype.forall_vexpr)
-						) alllinks) @ ((Predicate.Reach ((*Predicate.Var*) p, Datatype.forall_uexpr))::
-						((List.map (fun s -> (Predicate.Reach (p, s))) resscalars) @ resreturns)), resobjs @ [p], resscalars)
+						) alllinks) @ (
+							(** if p is of record type, then we generate the symmtric version *)
+							(match p with
+								| Predicate.Field _
+								| Predicate.Proj _ -> [Predicate.Reach ((*Predicate.Var*) p, Datatype.forall_uexpr);
+																			Predicate.Reach ((*Predicate.Var*) p, Datatype.forall_vexpr)]
+								| _ -> [Predicate.Reach ((*Predicate.Var*) p, Datatype.forall_uexpr)]
+							) @ 
+							((List.map (fun s -> (Predicate.Reach (p, s))) resscalars) @ resreturns)), resobjs @ [p], resscalars)
 					else
 					(((List.map (fun (cstrname, index) -> 
 						Predicate.Link ((*Predicate.Var*) p, String.lowercase cstrname, index, 
@@ -1047,15 +973,21 @@ let heap_cdnf_learn path heap_samples tbl enforces env fr udt_table =
 				if (isreturn p && enforces = []) then (resparams, resreturns, resobjs, resscalars)
 				else 
 					if isreturn p then
-						(resparams, resreturns @ [
-							Predicate.Atom (Datatype.forall_uexpr,Predicate.Eq,(*Predicate.Var*) p);
-							] @ (List.map (fun obj -> Predicate.Reach (obj, p)) resobjs), resobjs, resscalars @ [p])
+						(resparams, resreturns @ (
+							(** if p is of record type, then we generate the symmtric version *)
+							match p with
+								| Predicate.Field _
+								| Predicate.Proj _ -> [Predicate.Atom (Datatype.forall_uexpr,Predicate.Eq,(*Predicate.Var*) p);
+																				Predicate.Atom (Datatype.forall_vexpr,Predicate.Eq,(*Predicate.Var*) p)]
+								| _ -> [Predicate.Atom (Datatype.forall_uexpr,Predicate.Eq,(*Predicate.Var*) p);]
+							) @ (List.map (fun obj -> Predicate.Reach (obj, p)) resobjs), resobjs, resscalars @ [p])
 					else
 						(resparams @ [
 							Predicate.Atom (Datatype.forall_uexpr,Predicate.Eq,(*Predicate.Var*) p);
 							Predicate.Atom (Datatype.forall_vexpr,Predicate.Eq,(*Predicate.Var*) p)] @
 							(List.map (fun obj -> Predicate.Reach (obj, p)) resobjs), resreturns, resobjs, resscalars @ [p])
-		) ([], [], [], []) allbindings in	
+		) 
+		([], [], [], []) allbindings in	
 	let atomics = params @ returns in
 	(* we also use the scalar variables to construct a set of data predicates*)
 	let datapreds = 
@@ -1221,7 +1153,7 @@ let heap_cdnf_learn path heap_samples tbl enforces env fr udt_table =
 		Format.fprintf Format.std_formatter "@.")
 		) datasamples in *)
 	let separators1 = solve_shape_constraints true samples params returns in
-	let separators1 = List.map (fun sep -> Predicate.approximate_inequlities sep) separators1 in
+	let separators1 = List.map (fun sep -> Predicate.approximate sep) separators1 in
 	
 	(******************* For Learning Shaple and Data Property *********************)
 	let separators2 = 
@@ -1231,6 +1163,7 @@ let heap_cdnf_learn path heap_samples tbl enforces env fr udt_table =
 			let rminds = fst (List.fold_left (fun (res, ind) atomic -> match atomic with
 				| Predicate.Link (_,_,i,v,_) 
 				(*| Predicate.Reach (_, v)*) when v = Datatype.forall_vexpr || i > 9 -> res @ [ind], ind+1
+				| Predicate.Reach (r, v) when isreturn r && v = Datatype.forall_vexpr -> res @ [ind], ind+1
 				| _ -> if (kind_of atomic < 1) then res @ [ind], ind+1 else res, ind+1
 				) ([], 0) atomics) in
 			let atomics = remove_nth atomics rminds in

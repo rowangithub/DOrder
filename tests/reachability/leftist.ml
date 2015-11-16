@@ -26,9 +26,8 @@
         else 
 					makeT y a2 (merge h1 b2)
 
-  let insert x heap = 
+  let insert heap x = 
 		merge (T (1, x, E, E)) heap
-	let harness0 () = insert 0 E
 	
 	
   let find_min heap =
@@ -40,4 +39,4 @@
 		match heap with
 			(*| E -> raise Empty *)
 			| T (rank, x, a, b) -> (x, merge a b)
-	let harness1 () = delete_min E
+	let harness1 () = (delete_min E; insert E 0)

@@ -1,5 +1,0 @@
-(*qualif Inv(res) : forall (u). (-.reach (res, u) or (reach (xs, u) or reach (ys, u)))
-qualif Inv(res) : forall (u). (-.(reach (xs, u) or reach (ys, u)) or reach (res, u))
-
-qualif Inv(res) : forall (u v ). ((-. link (res, cons, 1, u, v)) or (reach (ys, u) and reach (ys, v)) or ((reach (xs, u) and reach (xs, v)) or ((reach (ys, v)) and (reach (xs, u)))) or ((reach (ys, u)) and (reach (xs, v))))
-*)

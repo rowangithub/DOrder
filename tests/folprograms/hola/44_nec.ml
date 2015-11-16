@@ -23,5 +23,5 @@ let main k flag =
 	loop i j k n flag
 	
 
-let _ = main (-1) (4)
-let _ = main (-2) (-1)
+let _ = main (-1) (2)
+let _ = main 2 (-1)

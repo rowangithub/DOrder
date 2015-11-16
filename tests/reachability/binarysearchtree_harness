@@ -1,10 +1,5 @@
 let main () =	
-	let ns = [24;18;17;21;11;14;10;20;23;16;25;13] in	
-	(*let t = E in	
-	let t = Array.fold_left (fun t k -> 
-		let _ = fprintf outch "env:newtest\t\n" in
-		insert k t
-		) t ns in*)
+	let ns = [19;13;16;6;22;11;20;8;1;14;21] in
 	let _ = fprintf outch "env:newtest\t\n" in
 	let t = set_of_list ns in
 	let _ = fprintf outch "env:newtest\t\n" in	
@@ -15,7 +10,7 @@ let main () =
 	let _ = pre_order t in
 	let _ = fprintf outch "env:newtest\t\n" in
 	let _ = in_order t in
-	let ns = [21;16;13;20;18;24;11;23;14;25;17;10] in
+	let ns = [21;14;1;8;20;11;22;6;16;13;19] in
 	let _ = List.fold_left (fun t x -> 
 		let _ = fprintf outch "env:newtest\t\n" in
 		delete x t

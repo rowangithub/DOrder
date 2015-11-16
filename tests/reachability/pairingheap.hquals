@@ -1,0 +1,1 @@
+qualif Inv(res) : forall (u v ). (-. link (h, t, 1, u, v) or (u = res.0 and reach (res.1, v)) or link (res.1, t, 1, u, v))

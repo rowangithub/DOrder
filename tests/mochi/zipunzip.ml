@@ -12,4 +12,4 @@ let rec zip x y =
     
 let main n = unzip n zip
 
-let _ = main 1
+let _ = main 0

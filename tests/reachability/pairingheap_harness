@@ -3,7 +3,7 @@ let main () =
 	let t = E in	
 	let t = Array.fold_left (fun t k -> 
 		let _ = fprintf outch "env:newtest\t\n" in
-		insert k t
+		insert t k
 		) t ns in
 	let _ = Array.fold_left (fun t _ -> 
 		let _ = fprintf outch "env:newtest\t\n" in

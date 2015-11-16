@@ -572,6 +572,11 @@ let rec split p = match p with
 	| And (p1, p2) -> (split p1) @ (split p2)  
 	| _ -> [p]
 
+(* Decompose the pred into a disjunction of smaller predicates *)
+let rec split_or p = match p with
+	| Or (p1, p2) -> (split_or p1) @ (split_or p2)  
+	| _ -> [p]
+
 (* Fully decompose the pred *)
 let rec fullsplit p = match p with
 	| True -> [p]
@@ -795,11 +800,98 @@ let find_instantiable_variables preds = []
 		) [] preds in
 	Common.remove_duplicates res*)
 	
-(* This is a crazy idea -- Fix me. *)	
-let approximate_inequlities pred = 
+(* Crazy heuristc -- Fix me. *)	
+let approximate pred = 		
 	if (is_link pred) then
-	map_pred (fun pred -> match pred with
-		| Not (Atom (Var _, Eq, Var _)) -> True
-		| pred -> pred
-		) pred
+		let pred = match pred with
+			| Forall (foralls, Or (p, q)) ->
+				Forall (foralls, Or (p, map_pred (fun pred -> match pred with
+					| Not (Atom (Var _, Eq, Var _)) -> True
+					| pred -> pred
+					) q))
+			| pred -> pred in
+		match pred with
+		| Forall (foralls, Or ((Not (Link _)) as l, composites)) ->
+			let composites = split_or composites in
+			let linkcomposites, reachcomposites = 
+				List.partition (fun composite -> 
+					match composite with | Link _ -> true | _ -> false
+					) composites in
+			(* Working with tree sturctures *)
+			if (List.length linkcomposites >= 3) then 
+				(* May not get enough samples *)
+				if (List.length reachcomposites = 1) then
+					let composite = (List.hd reachcomposites) in
+					let missingcomposite = match composite with
+						| And (Reach (t, u), Atom (v, Eq, x)) 
+						| And (Atom (v, Eq, x), Reach (t, u)) -> 
+							Some (And (Reach (t, v), Atom (u, Eq, x)))
+						| _ -> None in
+					match missingcomposite with
+						| Some missingcomposite ->
+							Forall (foralls, Or (l, big_or (linkcomposites @ [composite; missingcomposite]) ))
+						| None -> pred
+				else pred
+			else (* Translate uncheckable to checkable *)
+				let trans_c = ref 0 in
+				let composites = List.map (fun composite -> 
+					let conjs = split composite in
+					let rconjs = List.filter (fun conj -> 
+						match conj with | Reach _ -> true | _ -> false
+						) conjs in
+					let lconjs = List.filter (fun conj ->
+						match conj with | Not (Link _) -> true | _ -> false
+						) conjs in
+					if (List.length rconjs = 2 && lconjs <> [] &&
+						List.length conjs = List.length rconjs + List.length lconjs) then
+							try
+								let rconj1 = List.nth rconjs 0 in
+								let rconj2 = List.nth rconjs 1 in
+								let r1, r2 = (match rconj1, rconj2 with 
+									| Reach (m, u), Reach (n, v) when u <> v -> m, n | _ -> assert false) in
+								let _ = assert (r1 = r2) in
+								let cs = Hashtbl.create 2 in
+													
+								(* Do a constructor by constructor analysis *)
+								let _ = List.iter (fun lconj -> match lconj with
+									| Not (Link (_,c,_,_,_)) ->
+										if (Hashtbl.mem cs c) then 
+											Hashtbl.replace cs c (lconj::(Hashtbl.find cs c))
+										else Hashtbl.replace cs c [lconj]
+									| _ -> assert false
+									) lconjs in
+								let all = Hashtbl.fold (fun c lconjs res -> 
+									let u, v = match List.hd lconjs with Not (Link (_,_,_,u,v)) -> u, v | _ -> assert false in
+									let lconjs = Common.map_partial (fun lconj -> match lconj with
+										| Not (Link (l, c', index, u, v)) when index < 10 -> 
+											let _ = assert (l = r1 && c' = c) in
+											Some (c', index, u, v) 
+										| Not (Link (l, c', _, _, _)) -> (assert (l = r1 && c' = c); None)
+										| _ -> None
+										) lconjs in
+									(* ######## The translation only supports trees now. Fixme. ##########*)
+									let _ = assert (List.length lconjs = 2) in
+									let ind1 = List.fold_left (fun res (_, i, _, _) -> 
+										if i < res then i else res
+										) (10) lconjs in
+									let _ = assert (ind1 < 10) in
+									let ind2 = List.fold_left (fun res (_, i, _, _) -> 
+										if i > res then i else res
+										) (-1) lconjs in
+									let _ = assert (ind2 > (-1) && ind1 < ind2) in
+									let ind3 = ind2 * 10 + ind1 in
+									let all = [(c, ind1, u, v); (c, ind1, v, u); (c, ind2, u, v); (c, ind2, v, u); (c, ind3, u, v); (c, ind3, v, u)] in
+									let all = List.filter (fun a -> List.for_all (fun l -> l <> a) lconjs) all in
+									let _ = trans_c := !trans_c + 1 in
+									res @ all
+									) cs [] in
+								big_or (
+									List.map (fun (c, ind, u, v) -> Link (r1, c, ind, u, v)
+										) all
+									)
+								with _ -> composite
+					else composite
+					) composites in
+				if !trans_c > 1 then Forall (foralls, Or (l, big_or (composites) )) else pred
+		| _ -> pred
 	else pred

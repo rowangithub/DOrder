@@ -33,5 +33,5 @@ let rec to_heap xs =
 		| [] -> E
 		| x::xs' -> merge (t x E E) (to_heap xs')
  
-let heapsort xs = 
-	to_list (to_heap xs)
+let heapsort ls = 
+	to_list (to_heap ls)

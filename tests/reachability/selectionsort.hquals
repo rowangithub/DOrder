@@ -1,12 +1,1 @@
-qualif Inv19(res) : forall (u v). (-. (link (res, cons, 1, u, v)) or -. (u = v)) 
-(*qualif Inv19(res) : reach (xs, res)
-qualif Inv19(res) : reach (res, m)
-qualif Inv19(res) : forall (u v). (-. link (res, cons, 1, u, v) or ( (-. (u = m) and -. (v = m))))
-qualif Inv19(res) : forall (u v). (-. (link (xs, cons, 1, u, v) and (-. u = m and -. v = m)) or link (res, cons, 1, u, v))
-qualif Inv19(res) : -. reach (res, m)
-
-qualif Inv19(res) : forall (u). (-.reach (res, u) or (-. u = m))
-qualif Inv5(res) : forall (u). (-. reach (xs, u) or reach (res, u))
-qualif Inv6(res) : forall (u). (-. reach (res, u) or reach (xs, u))
-qualif Inv7(res) : forall (u). (((-.((reach (xs, u)) and (-. (u = m)))) or  (reach (res, u))) and ((-. (reach (res, u))) or ((reach (xs, u)) and (-. (u = m)))))
-*)
+qualif Inv19(res) : forall (u v). (-. (link (res, cons, 1, u, v)) or -. (u = v))

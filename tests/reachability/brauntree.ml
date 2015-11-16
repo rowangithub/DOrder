@@ -23,8 +23,8 @@
         let x, l = extract l in
         x, Node (n, y, l)	
 							
-	let rec replace_min x t = 
-		match t with
+	let rec replace_min x tr = 
+		match tr with
 			(*| Leaf -> assert false*)
 			| Node (l, value, n) ->
 				(value, match l, n with
@@ -52,6 +52,7 @@
 							Node (l, nx, n')
 				)
 		
+		
 	(* merges two Braun trees [l] and [r],
  	with the assumption that [size r <= size l <= size r + 1] *)
   let rec merge l n = match l, n with
@@ -66,11 +67,11 @@
     (*| Leaf, _ ->
         assert false (* contradicts the assumption *) *)
 
-  let extract_min t =
-		match t with 
+  let extract_min tx =
+		match tx with 
     (*| Leaf ->
         raise Empty *)
     | Node (l, x, r) ->
         x, merge l r
-	let harness() = extract_min Leaf
+	let harness() = extract_min Leaf 
     

@@ -3,7 +3,6 @@ let rec rev_append l1 l2 =
     [] -> l2
   | a :: l -> rev_append l (a :: l2)
 
-let rev l = rev_append l []
 
 let rec merge_aux acc (ul1, ul2) =
 	match ul1, ul2 with 
@@ -52,13 +51,3 @@ let harness () = (union [] []; inter [] []; diff [] [])
 
 let main () = ()
 let _ = main ()
-(*let rec compare_list (l1, l2) = 
-	match l1, l2 with
-    | [], [] -> true
-    | [], l2 -> false
-    | l1, [] -> false
-    | x1 :: r1, x2 :: r2 ->
-			if x1 = x2 then 
-				compare_list r1 r2
-			else if x1 < x2 then false
-			else false*)

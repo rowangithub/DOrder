@@ -5,19 +5,19 @@
 
   (*let empty = Empty*)
 
-  let rec add x heap =
+  let rec add heap x =
 		match heap with
     | Empty ->
         Same (Empty, x, Empty)
     (* insertion to the left *)
     | Same (l, y, n) ->
-        if x > y then Diff (add y l, x, n) else Diff (add x l, y, n)
+        if x > y then Diff (add l y, x, n) else Diff (add l x, y, n)
     (* insertion to the right *)
     | Diff (l, y, n) ->
-        if x > y then Same (l, x, add y n) else Same (l, y, add x n)
+        if x > y then Same (l, x, add n y) else Same (l, y, add n x)
 
-  let maximum heap : int =
-		match heap with
+  let maximum (phantom:bool) mheap : int =
+		match mheap with
     (*| Empty -> raise EmptyHeap*)
     | Same (l, x, n) -> x
 		| Diff (l, x, n) -> x
@@ -37,37 +37,37 @@
     (*| Empty ->
         assert false*)
     | Same (l, x', n) ->
-			(match l, n with
+			(x', match l, n with
 				| Empty, Empty -> 
 					(Same (Empty, x, Empty))
 				| l, n ->	
-	        let ml = maximum l in
-	        let mr = maximum n in
+	        let ml = maximum true l in
+	        let mr = maximum true n in
 	        if x > ml && x > mr then
 	          (Same (l, x, n))
 	        else
 	          if ml > mr then
-							let (l) = descent x l in
+							let (value, l) = descent x l in
 	            (Same (l, ml, n))
 	          else
-							let (n) = descent x n in
+							let (value, n) = descent x n in
 	            (Same (l, mr, n)) )
     | Diff (l, x', n) ->
-			(match l, n with
+			(x', match l, n with
 				| Same (Empty, z, Empty), Empty -> 
 					if x > z then (Diff (Same (Empty, z, Empty), x, Empty))
         	else (Diff (Same (Empty, x, Empty), z, Empty))
 				| l, n ->
-	        let ml = maximum l in
-	        let mr = maximum n in
+	        let ml = maximum true l in
+	        let mr = maximum true n in
 	        if x > ml && x > mr then
 	          (Diff (l, x, n))
 	        else
 	          if ml > mr then
-							let (l) = descent x l in 
+							let (value, l) = descent x l in 
 	            (Diff (l, ml, n))
 	          else
-							let (n) = descent x n in
+							let (value, n) = descent x n in
 	            (Diff (l, mr, n)) )
 
   let remove h = 
@@ -75,7 +75,11 @@
     (*| Empty -> raise EmptyHeap*)
     | Same (Empty, x, Empty) -> (Empty)
     | Same (a,b,c) -> 
-			let y,h' = extract_last h in descent y h'
+			let y,h' = extract_last h in 
+			let value, result = descent y h' in
+			result
 		| Diff (a,b,c) ->
-			let y,h' = extract_last h in descent y h'
+			let y,h' = extract_last h in 
+			let value, result = descent y h' in
+			result
 	let harness () = remove Empty

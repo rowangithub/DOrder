@@ -3,22 +3,23 @@ let main () =
 	let t = E in	
 	let t = Array.fold_left (fun t k -> 
 		let _ = fprintf outch "env:newtest\t\n" in
-		insert k t
+		insert t k
 		) t ns in
 	let ns2 = [|19;16;22;25;21;18;24;20;7;17;23|]in		
 	let t2 = E in	
 	let t2 = Array.fold_left (fun t k -> 
 		let _ = fprintf outch "env:newtest\t\n" in
-		insert k t
+		insert t k
 		) t2 ns2 in	
 	let _ = fprintf outch "env:newtest\t\n" in
-	let _ = merge t t2 in
+	let _ = merge t t2 in 
 	let _ = Array.fold_left (fun t _ -> 
 		let _ = fprintf outch "env:newtest\t\n" in
-		(*if (Random.bool ()) then (ignore (find_min t); t)
-		else*) (delete_min t)
+		delete_min t
 		) t ns in
 	let _ = fprintf outch "env:newtest\t\n" in	
 	let _ = find_min true t in
+	let _ = fprintf outch "env:newtest\t\n" in	
+	let _ = find_min true t2 in
 	()
 let _ = main () 

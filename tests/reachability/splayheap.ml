@@ -30,10 +30,10 @@
                 let small, big = partition pivot a1 in
                 small, T (big, y, T (a2, x, b))
 
-  let insert x t = 
+  let insert t x = 
 		let a, b = partition x t in 
 		T (a, x, b)
-	let harness () = insert 0 E 
+	let harness () = insert E 0 
 
   let rec merge s t = 
 		match s, t with
@@ -42,14 +42,14 @@
         let ta, tb = partition x t in
         T (merge ta a, x, merge tb b) 
 
-  let rec find_min (phantom:bool) t : int = 
-		match t with
+  let rec find_min (phantom:bool) tr : int = 
+		match tr with
     (*| E -> raise Empty*)
     | T (E, x, b) -> x
-    | T (a, x, b) -> find_min phantom a
+    | T (a, x, b) -> find_min phantom a 
 
-  let rec delete_min t = 
-		match t with
+  let rec delete_min heap = 
+		match heap with
     (*| E -> raise Empty*)
     | T (E, x, b) -> (b)
     | T (T (E, x, b), y, c) -> (T (b, y, c))

@@ -18,22 +18,19 @@ let main () =
 		insert k t
 		) t ns in	
 		
-		
 	let _ = Array.fold_left (fun t _ -> 
 		let _ = fprintf outch "env:newtest\t\n" in
-		(*if (Random.bool ()) then (ignore (find_min t); t)
-		else*) snd (deleteMin t)
+		snd (deleteMin t)
 		) t1 ns1 in 
 	let _ = Array.fold_left (fun t _ -> 
 		let _ = fprintf outch "env:newtest\t\n" in
-		(*if (Random.bool ()) then (ignore (find_min t); t)
-		else*) snd (deleteMin t)
+		snd (deleteMin t)
 		) t2 ns2 in 
 	let _ = Array.fold_left (fun t _ -> 
 		let _ = fprintf outch "env:newtest'''\t\n" in
-		(*if (Random.bool ()) then (ignore (find_min t); t)
-		else*) snd (deleteMin t)
+		snd (deleteMin t)
 		) t ns in
+	
 	let _ = fprintf outch "env:newtest\t\n" in	
 	let _ = findMin true t in
 	()

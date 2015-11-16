@@ -23,60 +23,73 @@
   let rec splay (k:int) t =
 		match t with
 			| Node (l, value, n) -> 
-			if k = value then (l, value, n)
-				else if k < value then
-					match l with
-						| Empty -> (l, value, n) (* not found *)
-						| Node (ll, lv, ln) -> 
-							(if k = lv then (ll, lv, Node (ln, value, n)) (* 1: zig *)
-							else if k < lv then 
-								(match ll with
-									| Empty -> (Empty, lv, Node (ln, value, n)) (* not found *)
-									| Node (x, y, z) -> (* 2: zig-zig *)
-										let (lll, llv, lln) = splay k ll in
-										(lll,llv,Node (lln,lv,Node(ln,value,n)))
-									)
-							else
-								(match ln with
-									| Empty -> (ll, lv, Node (Empty, value, n))
-									| Node (x, y, z) -> (* 3: zig-zag *)
-										let (lnl, lnv, lnn) = splay k ln in
-		                (Node(ll,lv,lnl),lnv,Node(lnn,value,n)) 
-									)
+			if k = value then 
+				(l, value, n)
+			else if k < value then
+				match l with
+					| Empty -> 
+						(l, value, n) (* not found *)
+					| Node (ll, lv, ln) -> 
+						(if k = lv then 
+							(ll, lv, Node (ln, value, n)) (* 1: zig *)
+						else if k < lv then 
+							(match ll with
+								| Empty -> 
+									(Empty, lv, Node (ln, value, n)) (* not found *)
+								| Node (x, y, z) -> (* 2: zig-zig *)
+									let (lll, llv, lln) = splay k ll in
+									(lll,llv,Node (lln,lv,Node(ln,value,n)))
 								)
+						else
+							(match ln with
+								| Empty -> 
+									(ll, lv, Node (Empty, value, n))
+								| Node (x, y, z) -> (* 3: zig-zag *)
+									let (lnl, lnv, lnn) = splay k ln in
+	                (Node(ll,lv,lnl),lnv,Node(lnn,value,n)) 
+								)
+							)
 				else 
 					match n with
-						| Empty -> (l, value, n) (* not found *)
+						| Empty -> 
+							(l, value, n) (* not found *)
 						| Node (nl, nv, nn) -> 
-							if k = nv then (Node (l,value,nl),nv,nn) (* 1: zag *)
+							if k = nv then 
+								(Node (l,value,nl),nv,nn) (* 1: zag *)
 							else if k > nv then
 								(match nn with
-									| Empty -> (Node(l,value,nl),nv,nn) (* not found *)
+									| Empty -> 
+										(Node(l,value,nl),nv,nn) (* not found *)
 									| Node (x, y, z) -> (* 3: zag-zag *)
 										let (nnl, nnv, nnn) = splay k nn in
 										(Node (Node (l,value,nl),nv,nnl),nnv,nnn)
 										)
 							else
 								(match nl with
-									| Empty -> (Node (l,value,nl),nv,nn) (* not found *)
+									| Empty -> 
+										(Node (l,value,nl),nv,nn) (* not found *)
 									| Node (x, y, z) -> (* 2: zag-zig *)
 										let (nll, nlv, nln) = splay k nl in
 										(Node (l,value,nll),nlv,Node(nln,nv,nn))
 									)					
-					
+		
+				
 	let lookup t k =
 		match t with
-			| Empty -> false
+			| Empty -> 
+				false
 			| Node (x, y, z) ->
 				let (l, value, n) = splay k t in
 				if k = value then true
 				else false
 	
-	let delete x t =
-    match t with
-			| Empty -> Empty
+	
+	let delete x tr =
+    match tr with
+			| Empty -> 
+				Empty
       | Node (a, b, c) ->
-	  		let (l, y, n) = splay x t in
+	  		let (l, y, n) = splay x tr in
 	  		if (y = x) then
 					match l, n with
 						| Empty, n -> n
@@ -87,13 +100,17 @@
 								| Empty ->
 									Node (newL, newV, n)
 							)
-				else Node (l, y, n)	
+				else 
+					Node (l, y, n)	
 	
-	let rec add_tree x t = 
-		match t with
-			| Empty -> Node (Empty, x, Empty)
+	
+	let rec add_tree x t' = 
+		match t' with
+			| Empty -> 
+				Node (Empty, x, Empty)
 			| Node (l, value, n) ->
-				if value = x then Node (l, value, n)
+				if value = x then 
+					Node (l, value, n)
 				else if value > x then
 					let n' = add_tree x l in
 					(Node (n', value, n))
@@ -108,7 +125,9 @@
 			| Node (l, value, n) -> 
 				let (l, value, n) = splay x tree in
 				Node (l, value, n)	
+	
 	let harness2 () = (
-		add 0 (Node (Empty, 0, Empty));
-		delete 0 (Node (Empty, 0, Empty));
+		let t = Node (Empty, 0, Empty) in
+		add 0 t;
+		delete 0 t;
 		lookup Empty 0)	

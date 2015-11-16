@@ -118,4 +118,4 @@ val deduct_datastructure_proof : t -> t
 val inst_datastruture_proof: t -> pexpr list -> t	
 val find_instantiable_variables : t list -> pexpr list		
 val is_shape_pred : t -> bool	
-val approximate_inequlities : t -> t		
+val approximate : t -> t		

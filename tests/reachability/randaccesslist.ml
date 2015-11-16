@@ -43,6 +43,7 @@ let rec reverse xs =
 			Even (reverse ys, reverse xs)
 		| (Odd (xs, ys)) -> 
 			Odd (reverse xs, reverse ys) 
+			
 
 let rec update i x xs =
 	match xs with

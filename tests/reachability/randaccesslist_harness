@@ -1,5 +1,5 @@
 let main () =	
-	let ns = [|31;45;44;32;43;42;36;39;35;34;40;33;41;38|] in	
+	let ns = [|31;45;44;32;43;42;36;39;35;34;40;33;41;38|] in
 	let t = Nil in	
 	let t = Array.fold_left (fun t k -> 
 		let _ = fprintf outch "env:newtest\t\n" in
@@ -13,6 +13,10 @@ let main () =
 	let _ = lookup 5 t in
 	let _ = fprintf outch "env:newtest\t\n" in	
 	let _ = reverse t in
+	let _ = fprintf outch "env:newtest\t\n" in		
+	let _ = reverse (One 10) in
+	let _ = fprintf outch "env:newtest\t\n" in	
+	let _ = reverse Nil in
 	let _ = Array.fold_left (fun t _ -> 
 		let _ = fprintf outch "env:newtest\t\n" in
 		snd (uncons t)

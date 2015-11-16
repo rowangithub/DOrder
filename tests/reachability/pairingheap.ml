@@ -13,10 +13,9 @@ let merge h1 h2 =
         if x <= y then T (x, h2 :: hs1)
         else T (y, h1 :: hs2)
 
-let insert x h =
+let insert hp x =
 	let em = ([]: ('a heap) list) in 
-	merge (T (x, em)) h
-let harness1 () = insert 0 E
+	merge (T (x, em)) hp
 
 
 let rec merge_pairs heap =
@@ -39,4 +38,4 @@ let delete_min h =
 	match h with
     (*| E -> raise Empty *)
     | T (x, hs) -> (x, merge_pairs hs)
-let harness2 () = delete_min E 
+let harness2 () = (delete_min E; insert E 0)

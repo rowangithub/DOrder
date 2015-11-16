@@ -22,16 +22,16 @@
 			| Node (d, l, x, n) -> d
       | Leaf -> 0
 
-  let balanceLL node = 
-    match node with 
+  let balanceLL nodea = 
+    match nodea with 
 		(Node (d, Node (lmax, ll, xl, rl), x, n)) ->
 	  	let rmax = max (depth rl) (depth n) + 1 in 
 			let cmax = max rmax (depth ll) + 1
 	  	in Node (cmax, ll, xl, Node (rmax, rl, x, n))
     (*| _ -> failwith "Impossible"*)
 
-  let balanceLR node =
-    match node with 
+  let balanceLR nodeb =
+    match nodeb with 
 		(Node (d, Node (dl, ll, y, Node (dlr, lrl, z, lrr)), x, n)) -> 
 	  	let lmax = max (depth ll) (depth lrl) + 1 in
 			let rmax = max (depth lrr) (depth n) + 1 in 
@@ -39,16 +39,16 @@
 			Node (cmax, Node (lmax, ll, y, lrl), z, Node (rmax, lrr, x, n))
     (*| _ -> failwith "Impossible"*)
 
-  let balanceRR node = 
-		match node with
+  let balanceRR nodec = 
+		match nodec with
     (Node (d, l, x, Node (dr, lr, xr, rr))) ->
 			let lmax = max (depth l) (depth lr) + 1 in 
 			let cmax = max lmax (depth rr) + 1 in 
 			Node (cmax, Node (lmax, l, x, lr), xr, rr)
     (*| _ -> failwith "Impossible"*)
 
-  let balanceRL node =
-    match node with 
+  let balanceRL noded =
+    match noded with 
 		(Node (d, l, x, Node (dr, Node (drl, rll, z, rlr), y, rr))) ->
 	  	let lmax = max (depth l) (depth rll) + 1 in 
 			let rmax = max (depth rlr) (depth rr) + 1 in 
@@ -114,7 +114,7 @@
 			| Node (h, l, x, n) -> 
 				(match l with
 					| Leaf -> x
-					| Node (lh, ll, lx, ln) -> min phantom ll)
+					| Node (lh, ll, lx, ln) -> min phantom l)
 			(*| Leaf _ -> failwith "Impossible"*)
       
   
@@ -128,8 +128,8 @@
 			| Node (h, l, x, n) -> depth n
       (*| Leaf -> failwith "Impossible"*)
 
-  let rec delete e t = 
-   match t with
+  let rec delete e tr = 
+   match tr with
 		Node (h, l, x, n) ->
 	  (if e = x then
 				 (match (l, n) with

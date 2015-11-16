@@ -1,0 +1,59 @@
+let uniques n = 
+	let rec loop i ns = 
+		if i >= n then ns
+		else
+			let v = Random.int 1000 in
+			if (List.exists (fun n -> n = v) ns) then
+				loop i ns
+			else loop (i+1) (v::ns) in
+	loop 0 [] 
+
+let main () =		 
+	let ns = uniques 20 in	
+	let t = Empty in	
+	let t = List.fold_left (fun t k -> 
+		let _ = fprintf outch "env:newtest\t\n" in
+		add t k
+		) t ns in
+	let ns0 = uniques 20 in	
+	let t0 = Empty in	
+	let t0 = List.fold_left (fun t k -> 
+		let _ = fprintf outch "env:newtest\t\n" in
+		add t k
+		) t0 ns0 in
+	
+	let _ = List.fold_left (fun t k -> 
+		let _ = fprintf outch "env:newtest\t\n" in
+		remove k t
+		) t ns in
+	let _ = List.fold_left (fun t k -> 
+		let _ = fprintf outch "env:newtest\t\n" in
+		remove k t
+		) t0 ns0 in	
+	
+	let _ = List.fold_left (fun t _ -> 
+		match t with
+		| Empty -> t
+		| _ ->
+			let _ = fprintf outch "env:newtest\t\n" in
+			snd (remove_min_binding t)
+		) t ns in
+		
+	let _ = fprintf outch "env:newtest\t\n" in
+	let _ = min_elt true t in
+	
+	let _ = fprintf outch "env:newtest\t\n" in
+	let _ = max_elt true t in
+	
+	let _ = fprintf outch "env:newtest\t\n" in
+	let _ = mem 500 t in
+	let _ = fprintf outch "env:newtest\t\n" in
+	let _ = mem (-1) t in
+			
+	let _ = fprintf outch "env:newtest\t\n" in
+	let _ = elements t in
+	
+	let _ = fprintf outch "env:newtest\t\n" in
+	let _ = cons_enum t End in
+	()
+let _ = main () 
