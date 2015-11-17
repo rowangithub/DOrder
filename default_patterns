@@ -19,4 +19,5 @@ qualif Big1v_rel_big2v(_V) : Bigarray.Array2.dim1 _V { * * } Bigarray.Array2.dim
 qualif Av_rel_big1(_V)(A:('a, 'b, 'c) Bigarray.Array2.t) : Array.length _V { * * } Bigarray.Array2.dim1 ~A
 qualif Av_rel_big2(_V)(A:('a, 'b, 'c) Bigarray.Array2.t) : Array.length _V { * * } Bigarray.Array2.dim2 ~A
 qualif A_rel_big1v(_V)(A:'a array) : Array.length ~A { * * } Bigarray.Array2.dim1 _V
-qualif A_rel_big2v(_V)(A:'a array) : Array.length ~A { * * } Bigarray.Array2.dim2 _V*)
+qualif A_rel_big2v(_V)(A:'a array) : Array.length ~A { * * } Bigarray.Array2.dim2 _V
+*)

@@ -72,7 +72,7 @@ def main():
   fn = sys.argv[len(sys.argv) - 1]
   gen_succ = gen_quals(fn, bare, False, 4)
   if (gen_succ != 0):
-    print "Qualifier generation failed"
+    print "Remove Unnecessary Anno!"
     sys.exit(gen_succ)
   sys.exit(solve_quals(fn,bare,False,flags))
 

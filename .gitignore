@@ -3,7 +3,7 @@
 *.cmx
 *.o
 *.cmo
+*_instru.ml
+*.quals
 *.svn-work
 *.svn-base
-*.quals
-*_instru.ml

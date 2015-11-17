@@ -1729,5 +1729,5 @@ echo "The \"labltk\" library: not supported"
 fi
 
 echo
-echo "** Objective Caml configuration completed successfully **"
+echo "** Configuration completed successfully **"
 echo
