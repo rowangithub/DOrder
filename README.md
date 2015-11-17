@@ -1,34 +1,25 @@
 SpecLearn (DOrder)
 ==================
 
-Update: fix the errors in Makefile. If you have any problem with compiling SpecLearn (DOrder),
-send an email to rowangithub@yahoo.com (without having to identify your name and institution)
-and I will try to make it right for you.
+For any problem with compiling SpecLearn (DOrder),
+send an email to rowangithub@yahoo.com
+and I will try to help you use our tool.
 
-SpecLearn is a tool that automatically infers useful invariants for
-(higher-order) programs. SpecLearn finds invariants from program samples
-and represents invariants into refinement types.
+SpecLearn (DOrder) is a framework that automatically infers useful specifications for
+(higher-order) functional programs. SpecLearn (DOrder) finds specifications from 
+program tests and represents inferred specifications as refinement types.
 
-SpecLearn is not dedicated to higher-order functional programs. It can
-infer and verify useful properties for array programs (with side-effects). 
+SpecLearn (DOrder) is not dedicated to higher-order functional programs. It can
+infer and verify useful properties for stateful programs as well. 
 
-A recent extension of SpecLearn is able to prove the safety properties of over 200 loop programs and 
-a suite of recursive programs (collected from relate tools), using numeric invariants.
+SpecLearn (DOrder) can automatically infer expressive shape specifications 
+for arbitrary user-defined inductive data structures, going well beyond the scope of 
+competing tools.
 
-Another extension of SpecLearn, which we call DOrder, can automatically infer expressive
-shape specifications beyond the scope of competing tools.
+SpecLearn (DOrder) is still under very active development. Our next effort is to develop
+SpecLearn (Imp), which targets on (imperative) heap-manipulating programs and array programs.
 
-SpecLearn is still under very active development. Our next effort is
-to enable SpecLearn to verify (imperative) heap-manipulating programs.
-
-Virtual Machine
-===========
-
-A very old version of the virtual machine of SpecLearn is available at <a href="https://www.dropbox.com/s/jm3obb9zmq0m9y1/SpecLearn.ova?dl=0">this link</a>.
-
-We will update the VM to reflect our progress on data structure verification soon.
-
-Notes for Reviewers
+Quick Start
 ===========
 
 1. The loop (numeric) program benchmarks are included in ./tests/folprograms/ directory.
@@ -36,8 +27,8 @@ Notes for Reviewers
         To try an example, run ./msolve.py -no_hoflag ./tests/folprograms/misc/popl07.ml
 
 
-2. The recursive (numeric) program benchmarks are included in ./tests/recursive/ directory and ./tests/dml/. 
-The latter directory contains benchmarks for learning numeric properties over data structure programs.
+2. The recursive (numeric) program benchmarks are included in ./tests/recursive/ directory and ./tests/dml/ directory. 
+The latter directory contains benchmarks for learning numeric specifications for data structure programs.
 
 		To try an example, run ./msolve.py -no_hoflag ./tests/dml/bdd.ml
 
@@ -47,19 +38,19 @@ The latter directory contains benchmarks for learning numeric properties over da
 		To try an example, run ./msolve.py -hoflag ./tests/mochi/amax.ml
 
 
-4. The data structure program benchmarks, for DOrder implementation, are included in ./tests/reachability/ directory.
+4. The data structure program benchmarks, for SpecLearn (DOrder) implementation, are included in ./tests/reachability/ directory.
+We can infer and verify rich containment and ordering specifications (e.g. in-order relation of a binary tree). 
 
-		To try an example, run ./msolve.py -reachability -no_hoflag ./tests/reachability/reverselist.ml or
+		To try an example, run ./msolve.py -reachability -no_hoflag ./tests/reachability/binarytree.ml or
 							   ./msolve.py -no_hoflag -reachability ./tests/reachability/avl2.ml or
 						 	   ./msolve.py -no_hoflag -reachability ./tests/reachability/redblackset.ml
 		
 
-At this stage, we are improving the algorithms for checking array programs.
+At this stage, we are developing SpecLearn (Imp) for checking array programs.
 As a result, the evaluation on benchmarks under ./tests/array/ is not stable.
-However, this part is not included in the paper, and the rest of the directories 
-are also just for our own research purpose.
+The rest of the directories are also just for our own research purposes.
 
-Compiling SpecLearn
+Compiling SpecLearn (DOrder)
 ================
 
 SpecLearn requires OCaml 3.12 and Z3 4.3.
@@ -69,12 +60,14 @@ Currently, the source code of SpecLearn can only be complied and run in Mac OS
 
 The tool has some troubles to be compatible with OCaml 4.0+. We will improve our code soon.
 
+To detect whether your machine supports SpecLearn (DOrder), 
+		Run ./configure
+
 In order to make sure that you have Z3 ready for the tool, we require users to manually 
 
 		Go into external/z3/ocaml, and run ./build-lib.sh /usr/local/lib/ocaml/
-		please adjust the path to Ocaml library and install CamlIDL if necessary.
 		
-If you encounter any error, please follow ReadMe provided under external/z3/ocaml
+If you encounter any problem, please follow the ReadMe provided under external/z3/ocaml
 to install Z3. You are also required to put libz3.dylib (you need to compile Z3 to get this
 file) under external/z3/lib.
 
@@ -83,10 +76,10 @@ Then, to compile SpecLearn (DOrder), from the top directory:
 
         Run make libs && make
 
-Note that our makefile assumes CamlIDL is installed under /usr/local/lib/ocaml. Please
-make adjustment if necessary.
+Note that our makefile assumes that CamlIDL is installed under /usr/local/lib/ocaml. You
+should modify the configurations in the makefile if necessary.
 
-Running SpecLearn
+Running SpecLearn (DOrder)
 ==============
 
 Example programs are included in tests/.
@@ -108,18 +101,16 @@ Example programs are included in tests/.
 
 		./msolve.py -no_hoflag [ML source file]
 		
-
 		
-4. By default, the tool does not check order and reach properties, to infer shape specifications on top
-of order and reach properties for data structure programs, run
-		
-		./msolve.py -no_hoflag -reachability [ML source file] 
-		
-		
-		
-5. If you are interested in the performance of our tool in learning numeric invariants over both pure
+4. If you are interested in the performance of our tool in learning numeric invariants over both pure
 numeric programs and data structure programs, run (with -no_hoflag)
 		
 		./msolve.py -no_hoflag [ML source file]
+		
+	
+5. By default, the tool does not try to infer ordering and containment specifications, to infer shape 
+specifications on top of ordering and containment properties for data structure programs, run
+
+		./msolve.py -no_hoflag -reachability [ML source file]
 
 You can observe the inferred function type from the terminal (standard output).
