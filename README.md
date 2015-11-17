@@ -115,4 +115,4 @@ specifications on top of ordering and containment properties for data structure 
 
 		./msolve.py -no_hoflag -reachability [ML source file]
 
-You can observe the inferred function type from the terminal (standard output).
+You can observe the inferred function specifications from the terminal (standard output).
