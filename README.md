@@ -28,18 +28,19 @@ Quick Start
 
 
 2. The recursive (numeric) program benchmarks are included in ./tests/recursive/ directory and ./tests/dml/ directory. 
-The latter directory contains benchmarks for learning numeric specifications for data structure programs.
+The latter directory contains benchmarks for learning numeric specifications for inductive data types.
 
 		To try an example, run ./msolve.py -no_hoflag ./tests/dml/bdd.ml
 
 
-3. The higher-order program benchmarks are included in ./tests/mochi/ ./tests/lists/ and ./tests/popl13/ directories.
+3. The higher-order (numeric) program benchmarks are included in ./tests/mochi/ ./tests/lists/ and ./tests/popl13/ directories.
 
-		To try an example, run ./msolve.py -hoflag ./tests/mochi/amax.ml
+		To try an example, run ./msolve.py -hoflag ./tests/mochi/ainit.ml
 
 
-4. The data structure program benchmarks, for SpecLearn (DOrder) implementation, are included in ./tests/reachability/ directory.
-We can infer and verify rich containment and ordering specifications (e.g. in-order relation of a binary tree). 
+4. The inductive data structure program benchmarks, for Data-Driven Shape Specification Inference, are included in ./tests/reachability/ directory.
+We can infer and verify specifications involving rich containment and ordering properties of data structures 
+(e.g. in-order relation of a binary tree). 
 
 		To try an example, run ./msolve.py -reachability -no_hoflag ./tests/reachability/binarytree.ml or
 							   ./msolve.py -no_hoflag -reachability ./tests/reachability/avl2.ml or
@@ -61,6 +62,7 @@ Currently, the source code of SpecLearn can only be complied and run in Mac OS
 The tool has some troubles to be compatible with OCaml 4.0+. We will improve our code soon.
 
 To detect whether your machine supports SpecLearn (DOrder), 
+		
 		Run ./configure
 
 In order to make sure that you have Z3 ready for the tool, we require users to manually 
