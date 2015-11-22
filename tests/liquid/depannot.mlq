@@ -1,1 +1,0 @@
-val test: a: int -> {v: int | v < a} -> unit

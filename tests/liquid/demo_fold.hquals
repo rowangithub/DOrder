@@ -1,5 +1,0 @@
-qualif POS(x): x >= 0 
-qualif NEG(x): x <= 0 
-qualif LEQ(x)(A:int) : x <= ~A
-qualif GEQ(x)(A:int) : ~A <= x    
-qualif IT_V(x): x.0 <= x.1 

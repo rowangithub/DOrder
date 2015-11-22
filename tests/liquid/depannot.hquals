@@ -1,4 +1,0 @@
-qualif LTA(b): b < a
-qualif EQA(x): x = a
-qualif EQB(x): x = b
-qualif T(x): true

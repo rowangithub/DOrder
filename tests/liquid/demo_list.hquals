@@ -1,3 +1,0 @@
-qualif POS(_V): _V >= 0 
-qualif NEG(_V): _V <= 0 
-qualif GEQ(_V)(A:int): _V >= ~A 

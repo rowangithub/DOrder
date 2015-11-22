@@ -1,4 +1,0 @@
-for i in `ls *.dml`
-do
-  mv $i ${i/\.dml/}".ml" 
-done
