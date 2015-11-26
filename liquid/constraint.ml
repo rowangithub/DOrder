@@ -1516,9 +1516,9 @@ let make_further_solution cs sri spec qs s horefs horeturnrefs unknows unknowret
 			| None -> true
 		)) qs in
 		let qs = List.map snd qs in
-		let qs = 
+		(*let qs = 
 			if !(Clflags.no_hoflag) then qs 
-			else Bstats.time "removedups" (Common.remove_customized_duplicates (Qualifier.equals)) qs in
+			else Bstats.time "removedups" (Common.remove_customized_duplicates (Qualifier.equals)) qs in*)
 		let pre_qs = Sol.find s k in
 		(* only want new qualifiers to be added; and, more importantly, pre- and post-invairant are not mixed *)
 		let qs = Bstats.time "filter2" (List.filter (fun q -> 

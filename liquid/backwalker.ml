@@ -1134,7 +1134,7 @@ let drive_new_test env se_env preinvs str =
 			try 
 				let line = List.fold_left (fun res (p, fr) -> 
 					if (Path.same p Frame.returnpath) then res
-					else res ^ " " ^ (Pervasives.string_of_int (Hashtbl.find solution p))	
+					else res ^ " (" ^ (Pervasives.string_of_int (Hashtbl.find solution p)) ^ ")"	
 				) "" allbindings 
 				in (true, [line])
 			with _ -> (Format.fprintf Format.std_formatter "Main function inputs are ill-typed@."; assert false)

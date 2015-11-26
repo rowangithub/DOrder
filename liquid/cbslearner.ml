@@ -1290,9 +1290,14 @@ let fast_cdnf_learn ni flag path atomics assertions terminations pos_samples neg
 			(if (Hashtbl.length partitions > 1 && ni = 2) then (
 				let samples = Hashtbl.fold (fun _ samples res -> res @ samples) partitions [] in
 				let samples = Common.remove_duplicates samples in
-				let _ = Format.fprintf Format.std_formatter "octagon ... @." in
+				let res = Cpredmine.synthesize 1 path samples cranges dranges tbl enforces in
+				if List.for_all (fun p -> match p with Atom (_, Eq, _) -> true | _ -> false) res then 
+					Cpredmine.synthesize_octagon path samples cranges dranges tbl enforces
+				else 
+					res
+				(*let _ = Format.fprintf Format.std_formatter "octagon ... @." in
 				let res = Cpredmine.synthesize_octagon path samples cranges dranges tbl enforces in
-				let _ = Format.fprintf Format.std_formatter "octagon ed ...@." in res
+				let _ = Format.fprintf Format.std_formatter "octagon ed ...@." in res*)
 				) else [])
 			@ defaults @ 
 			(let res = 
@@ -1332,7 +1337,7 @@ let fast_cdnf_learn ni flag path atomics assertions terminations pos_samples neg
 					) (Predicate.vars atomic)
 			) sourceatomics in			
 			
-		let source_p = trans_preds tbl source_p in
+		let source_p = [] in
 		let atomics = trans_preds tbl atomics in
 		let source_r = trans_preds tbl source_r in
 		let atomics_inf = trans_preds tbl atomics_inf in
@@ -1352,7 +1357,8 @@ let fast_cdnf_learn ni flag path atomics assertions terminations pos_samples neg
 		let returns = genAtomicPredicates flag path tbl enforces (source_r @ atomics_inf @ assertions) in	
 		(*-- remove the returns that are equal to param --*)
 		let returns = List.filter (fun return -> 
-			List.for_all (fun param -> comparePred return param = false) params	
+			List.for_all (fun param -> comparePred return param = false &&
+										comparePred return (Predicate.Not param) = false) params
 		) returns in 
 		
 		let params, returns = 
