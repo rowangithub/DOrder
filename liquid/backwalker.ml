@@ -13,6 +13,7 @@ open Format
 
 exception Datatype
 let data_structure_dealing_flag = ref false
+let array_dealing_flag = ref false
 
 let qual_test_var = Path.mk_ident "KAPA"
 let qual_test_expr = Predicate.Var qual_test_var
@@ -1068,77 +1069,89 @@ let get_coeffs fpath =
 		constants
 	else [0; 1]	
 	
-let random_tests args =
-	let cs = get_constants (!main_function_path) in	
-	let maxc = List.fold_left (fun res c -> if (res < c) then c else res) 0 cs in
-	let maxc = 
-		if (maxc <= 10) then 10 
-		else maxc in
-	let minc = (-3) in
-	let n = List.length args in
-	if (n = 0) then [[]]
-	else if (n = 1) then
-		[[maxc + (Random.int maxc)]; [(Random.int maxc)]; [(-1) * (Random.int ((-1)*minc))]]
-	(*else if (n = 2) then
-		[[(maxc); (maxc-1)]; [(maxc-1); maxc]; [minc; (minc-1)]; 
-		(let v1 = Random.int maxc in
-		let v3 = Random.int maxc in
-		let _ = Format.fprintf Format.std_formatter "--- v1 = %d and v2 = %d --- @." v1 v3 in
-		[v1; v3])]*)
-	else 
-		let set0 = Array.init (n) (fun _ -> 
-			(List.map (fun arg -> maxc + (Random.int maxc)) args)) in
-		let set1 = Array.init (n) (fun _ -> 
-			(List.map (fun arg -> (Random.int maxc)) args)) in
-		(Array.to_list set0) @
-		(Array.to_list set1) @ [List.map (fun arg -> (-1) * (Random.int ((-1)*minc))) args]
-		
-		
-(* Return indicates if new tests are derivable *)	
-let drive_new_test env se_env preinvs str = 
-	(* hoflag is not set --> It is great to try randoming testing *)
-	if not (!hoflag) && not (!data_structure_dealing_flag) then 
-		let _ = assert (String.compare (Path.name !main_function_path) "main" = 0) in
-		let funframe = Hashtbl.find (se_env.funframebindings) !main_function_path in
-		let allbindings = Frame.get_fun_bindings env funframe in
-		let args = List.fold_left (fun res (p, _) -> 
-			if (Path.same p Frame.returnpath) then res
-			else res @ [p]) [] allbindings in
-		let args = random_tests args in
-		let lines = List.fold_left (fun res args -> 
-			res @ 
-				(if (args = []) then [" (" ^ ")"]
-				else [(List.fold_left (fun res arg -> 
-				res ^ "  (" ^ (Pervasives.string_of_int arg) ^ ")"	
-				) "" args)])
-			) [] args in	
-		(true, lines)	
-	(* Sample for higher-order programs *)	
-	else if (Hashtbl.length preinvs > 0) then
-		let _ = itercall := true in
-		let _ = Hashtbl.iter (fun a b -> Hashtbl.replace prefails a b) preinvs in
-		let _ = symb_exe_structure se_env str in
-		let _ = itercall := false in
-		let _ = Hashtbl.clear prefails in
-		let _ = Hashtbl.clear conditionals in
-		(* Find the invariant for the main function *)
-		let fcost = Hashtbl.find (se_env.badbindings) !main_function_path in
-		let _ = assert (String.compare (Path.name !main_function_path) "main" = 0) in
-		(* Ask the solver to provide a new test for main *)
-		let solution = TheoremProver.model fcost.pre 1 in
-		if (solution = []) then (false, [""])
-		else
-			let solution = List.hd solution in
+	let random_tests args =
+		let cs = get_constants (!main_function_path) in	
+		let maxc = List.fold_left (fun res c -> if (res < c) then c else res) 0 cs in
+		let maxc = 
+			if (maxc <= 10) then 10 
+			else maxc in
+		let minc = (-3) in
+		let n = List.length args in
+		if (n = 0) then [[]]
+		else if (n = 1) then
+			[[maxc + (Random.int maxc)]; [(Random.int maxc)]; [(-1) * (Random.int ((-1)*minc))]]
+		(*else if (n = 2) then
+			[[(maxc); (maxc-1)]; [(maxc-1); maxc]; [minc; (minc-1)]; 
+			(let v1 = Random.int maxc in
+			let v3 = Random.int maxc in
+			let _ = Format.fprintf Format.std_formatter "--- v1 = %d and v2 = %d --- @." v1 v3 in
+			[v1; v3])]*)
+		else 
+			let set0 = Array.init (n) (fun _ -> 
+				(List.map (fun arg -> maxc + (Random.int maxc)) args)) in
+			let set1 = Array.init (n) (fun _ -> 
+				(List.map (fun arg -> 
+					if Random.bool () then (Random.int maxc)
+					else (-1) * (Random.int maxc)) args)) in
+			(Array.to_list set0) @
+			(Array.to_list set1) @ 
+			[List.map (fun arg -> (-1) * (Random.int ((-1)*minc))) args]
+
+	let random_array len =
+		let arr = Array.init (Pervasives.abs len) (fun _ -> 
+			if (Random.bool ()) then Random.int 15
+			else (-1) * (Random.int 15)) in	
+		Array.fold_left (fun res a -> res ^ (Pervasives.string_of_int a) ^ ";") "" arr	
+
+	(* Return indicates if new tests are derivable *)	
+	let drive_new_test env se_env preinvs str = 
+		(* hoflag is not set --> It is great to try randoming testing *)
+		if not (!hoflag) && not (!data_structure_dealing_flag) then 
+			let _ = assert (String.compare (Path.name !main_function_path) "main" = 0) in
 			let funframe = Hashtbl.find (se_env.funframebindings) !main_function_path in
 			let allbindings = Frame.get_fun_bindings env funframe in
-			try 
-				let line = List.fold_left (fun res (p, fr) -> 
-					if (Path.same p Frame.returnpath) then res
-					else res ^ " (" ^ (Pervasives.string_of_int (Hashtbl.find solution p)) ^ ")"	
-				) "" allbindings 
-				in (true, [line])
-			with _ -> (Format.fprintf Format.std_formatter "Main function inputs are ill-typed@."; assert false)
-	else (false, [""])
+			let args = List.fold_left (fun res (p, fr) -> 
+				if (Path.same p Frame.returnpath) then res
+				else res @ [(p, fr)]) [] allbindings in
+			let values = random_tests args in
+			let lines = List.fold_left (fun res values -> 
+				res @ 
+					(if (values = []) then [" (" ^ ")"]
+					else [(List.fold_left2 (fun res value (_, fr) -> 
+						(match fr with
+							| Frame.Fconstr (p,_,_,_,_) when Path.same p Predef.path_array -> 
+								let arr = random_array value in
+								res ^ "  [|" ^ arr ^ "|]" 
+							| _ -> res ^ "  (" ^ (Pervasives.string_of_int value) ^ ")"	)
+					) "" values args)])
+				) [] values in	
+			(true, lines)	
+		(* Sample for higher-order programs *)	
+		else if (Hashtbl.length preinvs > 0) then
+			let _ = itercall := true in
+			let _ = Hashtbl.iter (fun a b -> Hashtbl.replace prefails a b) preinvs in
+			let _ = symb_exe_structure se_env str in
+			let _ = itercall := false in
+			let _ = Hashtbl.clear prefails in
+			let _ = Hashtbl.clear conditionals in
+			(* Find the invariant for the main function *)
+			let fcost = Hashtbl.find (se_env.badbindings) !main_function_path in
+			let _ = assert (String.compare (Path.name !main_function_path) "main" = 0) in
+			(* Ask the solver to provide a new test for main *)
+			let solution = TheoremProver.model fcost.pre 1 in
+			if (solution = []) then (false, [""])
+			else
+				let solution = List.hd solution in
+				let funframe = Hashtbl.find (se_env.funframebindings) !main_function_path in
+				let allbindings = Frame.get_fun_bindings env funframe in
+				try 
+					let line = List.fold_left (fun res (p, fr) -> 
+						if (Path.same p Frame.returnpath) then res
+						else res ^ " (" ^ (Pervasives.string_of_int (Hashtbl.find solution p)) ^ ")"
+					) "" allbindings 
+					in (true, [line])
+				with _ -> (Format.fprintf Format.std_formatter "Main function inputs are ill-typed@."; assert false)
+		else (false, [""])
 	
 (* Analyze the program text to find constants that atomic predicates should use *)	
 (* Heuristic: add important program branching information to helping learning *)

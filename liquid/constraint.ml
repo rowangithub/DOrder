@@ -1632,135 +1632,134 @@ let userqs atomics qs fs =
 	) atomicpreds) in
 	(spec, spec)
 
-(* Use is_higher_order to exclude encoding for named functions *)
-(* qs is the provided qualifiers while qs' are inferred *)
-let solve functions is_higher_order query_atomics query_pos_samples query_neg_samples learn_from_samples gen_inv qs cs = 
-	let atomics = Hashtbl.create 7 in
-	let (qs, spec) = userqs atomics qs functions in
-	let horefs = ho_param_refinements cs in
-	let horeturnrefs = ho_return_refinements cs in
-	let (unknows, unknowreturns) = f_params_return_refinements cs in
-	let _ = functional_unknows := unknows in
-	(*let _ = List.iter (fun u -> Format.fprintf Format.std_formatter "unknow = %s@." (Path.unique_name u)) unknows in*)
-	let arrayrefs = array_refinements cs in
-	let horeturnrefs = horeturnrefs @ arrayrefs in
-  let cs = if !Cf.simpguard then List.map simplify_fc cs else cs in
-  let sri = make_ref_index (split cs) in
-  let s = make_initial_solution cs sri qs unknows in
-	(*let _ = Sol.iter (fun k qs -> Format.fprintf Format.std_formatter "k as %s = qs@." (Path.unique_name k)) s in*)
-  let _ = dump_solving qs sri s 0  in 
-  let _ = Bstats.time "solving wfs" (solve_wf (fun _ _ -> false) sri) s in
-	(*let _ = Sol.iter (fun k qs -> Format.fprintf Format.std_formatter "first k as %s = qs@." (Path.unique_name k)) s in*)
-  let _ = dump_solving qs sri s 1 in
-  let w = make_initial_worklist sri in
-	(** Important: Register local type *)
-	let _ = Frame.register_unfound (local_types is_higher_order sri (solution_map s)) in
-  let _ = Bstats.time "solving sub" (solve_sub (fun _ _ -> false) sri s) w in
-	(*let _ = Sol.iter (fun k qs -> Format.fprintf Format.std_formatter "second k as %s = qs@." (Path.unique_name k)) s in*)
-  let _ = dump_solving qs sri s 2 in
-  let _ = TP.reset () in
-	(*let _ = Sol.iter (fun k qs -> Format.fprintf Format.std_formatter "third k as %s = qs@." (Path.unique_name k)) s in*)
-  let _ = Format.fprintf Format.std_formatter "###########Validation############@." in
-	let unsat = Bstats.time "testing solution" (unsat_constraints (fun _ _ -> false) sri) s in
-	let count_samples neg_samples = 
-		Hashtbl.fold (fun _ {spre = presamples; spost = postsamples} res -> 
-			res + List.length presamples + List.length postsamples
-			) neg_samples 0 in 
-	(** An iterative solving procedure to incrementally build valid samples *)
-	let array_inv_tried = ref (not (List.length arrayrefs > 0)) in
-	let eager_termination = ref false in
-	let _ = if (!array_inv_tried) then (Clflags.gen_inv := false) in
-	let iter_count = ref 1 in
-	let rec loop pos_samples prev_neg_samples prev_failed_invariant allquals unsat prev_s = 
-		let _ = (iter_count := (!iter_count) + 1) in
-		let _ = Format.fprintf Format.std_formatter "%d-ith incremental iteration...@." (!iter_count) in
-		if (!eager_termination) then (unsat, prev_s, prev_failed_invariant) else
-		let neg_samples = Bstats.time "query_neg_samples" 
-				query_neg_samples prev_failed_invariant pos_samples in 
-		if ((not !Clflags.reachability && count_samples neg_samples = 0) && (not !Clflags.gen_inv)) 
-				|| (!iter_count >= 5 && not !(Backwalker.hoflag)) 
-		(* if hoflag is set, iteratively generate more negative samples *)
-		then 
-			(unsat, prev_s, prev_failed_invariant)	
-		else
-			let _ = 
-				Hashtbl.iter (fun path s ->
-					if (Hashtbl.mem prev_neg_samples path) then
-						let record = Hashtbl.find prev_neg_samples path in 
-						Hashtbl.replace neg_samples path (
-							{spre = record.spre @ s.spre;
-							spost = record.spost @ s.spost}
-							)	
-				) neg_samples in
-			let (invariants, qualifiers) = 
-				if (!array_inv_tried) then
+	(* Use is_higher_order to exclude encoding for named functions *)
+	(* qs is the provided qualifiers while qs' are inferred *)
+	let solve functions is_higher_order query_atomics query_pos_samples query_neg_samples learn_from_samples gen_inv qs cs = 
+		let atomics = Hashtbl.create 7 in
+		let (qs, spec) = userqs atomics qs functions in
+		let horefs = ho_param_refinements cs in
+		let horeturnrefs = ho_return_refinements cs in
+		let (unknows, unknowreturns) = f_params_return_refinements cs in
+		let _ = functional_unknows := unknows in
+		(*let _ = List.iter (fun u -> Format.fprintf Format.std_formatter "unknow = %s@." (Path.unique_name u)) unknows in*)
+		let arrayrefs = array_refinements cs in
+		let horeturnrefs = horeturnrefs @ arrayrefs in
+	  let cs = if !Cf.simpguard then List.map simplify_fc cs else cs in
+	  let sri = make_ref_index (split cs) in
+	  let s = make_initial_solution cs sri qs unknows in
+		(*let _ = Sol.iter (fun k qs -> Format.fprintf Format.std_formatter "k as %s = qs@." (Path.unique_name k)) s in*)
+	  let _ = dump_solving qs sri s 0  in 
+	  let _ = Bstats.time "solving wfs" (solve_wf (fun _ _ -> false) sri) s in
+		(*let _ = Sol.iter (fun k qs -> Format.fprintf Format.std_formatter "first k as %s = qs@." (Path.unique_name k)) s in*)
+	  let _ = dump_solving qs sri s 1 in
+	  let w = make_initial_worklist sri in
+		(** Important: Register local type *)
+		let _ = Frame.register_unfound (local_types is_higher_order sri (solution_map s)) in
+	  let _ = Bstats.time "solving sub" (solve_sub (fun _ _ -> false) sri s) w in
+		(*let _ = Sol.iter (fun k qs -> Format.fprintf Format.std_formatter "second k as %s = qs@." (Path.unique_name k)) s in*)
+	  let _ = dump_solving qs sri s 2 in
+	  let _ = TP.reset () in
+		(*let _ = Sol.iter (fun k qs -> Format.fprintf Format.std_formatter "third k as %s = qs@." (Path.unique_name k)) s in*)
+	  let _ = Format.fprintf Format.std_formatter "###########Validation############@." in
+		let unsat = Bstats.time "testing solution" (unsat_constraints (fun _ _ -> false) sri) s in
+		let count_samples neg_samples = 
+			Hashtbl.fold (fun _ {spre = presamples; spost = postsamples} res -> 
+				res + List.length presamples + List.length postsamples
+				) neg_samples 0 in 
+		(** An iterative solving procedure to incrementally build valid samples *)
+		(*let array_inv_tried = ref (*(not (List.length arrayrefs > 0))*) true in*)
+		let _ = Backwalker.array_dealing_flag := (List.length arrayrefs > 0) in
+		let _ = if not !(Backwalker.array_dealing_flag) then (Clflags.gen_inv := false) in
+		let iter_count = ref 1 in
+		let rec loop pos_samples prev_neg_samples prev_failed_invariant allquals unsat prev_s = 
+			let _ = (iter_count := (!iter_count) + 1) in
+			let _ = Format.fprintf Format.std_formatter "%d-ith incremental iteration...@." (!iter_count) in
+			let neg_samples = Bstats.time "query_neg_samples" 
+					query_neg_samples prev_failed_invariant pos_samples in 
+			if ((not !Clflags.reachability && count_samples neg_samples = 0)) 
+					|| (!iter_count >= 5 && not !(Backwalker.hoflag)) 
+			(* if hoflag is set, iteratively generate more negative samples *)
+			then 
+				(unsat, prev_s, prev_failed_invariant)	
+			else
+				let _ = 
+					Hashtbl.iter (fun path s ->
+						if (Hashtbl.mem prev_neg_samples path) then
+							let record = Hashtbl.find prev_neg_samples path in 
+							Hashtbl.replace neg_samples path (
+								{spre = record.spre @ s.spre;
+								spost = record.spost @ s.spost}
+								)	
+					) neg_samples in
+				let (invariants, qualifiers) = 
 					let atomics' = (query_atomics ()) in
 					let _ = userqs atomics atomics' functions in
-					Bstats.time "leanr_from_samples" (learn_from_samples atomics pos_samples) neg_samples
-				else (eager_termination := true; Bstats.time "gen_inv" (gen_inv (Hashtbl.create 0) pos_samples) neg_samples) in	
-			let qualifiers = Bstats.time "remove_duplication" (Common.remove_customized_duplicates (fun q1 q2 -> match (q1, q2) with
-				| ((Some k1, ((_, valu1, p1) as q1')), (Some k2, ((_, valu2, p2) as q2'))) -> 
-					let b1 = List.exists (fun horef -> Path.same horef k1) horefs in
-					let b2 = List.exists (fun horef -> Path.same horef k2) horefs in
-					(b1 = b2 && Qualifier.equals q1' q2')
-				| ((None, ((_, valu1, p1) as q1')), (None, ((_, valu2, p2) as q2'))) -> 
-					Qualifier.equals q1' q2'
-				| _ -> false
-			)) (qualifiers) in
-			(*let qualifiers = [List.nth qualifiers 0; List.nth qualifiers 1; List.hd (List.rev qualifiers)] in*)
-			let _ = Format.fprintf Format.std_formatter "Number of qualifiers after remove duplication %d@." (List.length qualifiers) in
-			(*let _ = List.iter (fun (_, (path, valu, pred)) ->
-				fprintf std_formatter "Function %s with qualifier %a @." (Path.name path)
-				Predicate.pprint' pred
-			) qualifiers in*)
-			if (Hashtbl.length invariants = 0 && (!array_inv_tried)) then (unsat, prev_s, prev_failed_invariant)
-			else if (Hashtbl.length invariants = 0 && (not (!array_inv_tried))) then
-				(array_inv_tried := true; (Clflags.gen_inv := false);
-				loop pos_samples (Hashtbl.create 0) (Hashtbl.create 0) qualifiers unsat prev_s)
-			else 
-				(*let _ = assert (not (!array_inv_tried)) in*)
-				let clean_s = Sol.copy s in
-				let s = Bstats.time "make_further_solution" 
-								(make_further_solution cs sri spec (qualifiers) clean_s horefs horeturnrefs unknows) unknowreturns in
-				let _ = dump_solving qualifiers sri s 0  in 
-			  let _ = Bstats.time "solving wfs" (solve_wf is_higher_order sri) s in
-			  let _ = dump_solving qualifiers sri s 1 in
-			  let w = make_initial_worklist sri in
-				(** Important: Register local type *)
-				let _ = Frame.register_unfound (local_types is_higher_order sri (solution_map s)) in
-			  let _ = Bstats.time "solving sub" (solve_sub is_higher_order sri s) w in
-			  let _ = dump_solving qualifiers sri s 2 in
-			  let _ = TP.reset () in
-			  let unsat = Bstats.time "testing solution" (unsat_constraints is_higher_order sri) s in
-				if (List.length unsat > 0) then 
-					(* Fixedme. Required a failed subset from the invariants *)
-					if (!array_inv_tried) then 
+					let (i, q) = Bstats.time "leanr_from_samples" (learn_from_samples atomics pos_samples) neg_samples in
+					if (not !(Backwalker.hoflag) && !(Clflags.gen_inv)) then
+						let _, q' = (Bstats.time "gen_inv" (gen_inv (Hashtbl.create 0) pos_samples) neg_samples) in 
+						(i, q@q') 
+					else i, q in	
+				let qualifiers = Bstats.time "remove_duplication" (Common.remove_customized_duplicates (fun q1 q2 -> match (q1, q2) with
+					| ((Some k1, ((_, valu1, p1) as q1')), (Some k2, ((_, valu2, p2) as q2'))) -> 
+						let b1 = List.exists (fun horef -> Path.same horef k1) horefs in
+						let b2 = List.exists (fun horef -> Path.same horef k2) horefs in
+						(b1 = b2 && Qualifier.equals q1' q2')
+					| ((None, ((_, valu1, p1) as q1')), (None, ((_, valu2, p2) as q2'))) -> 
+						Qualifier.equals q1' q2'
+					| _ -> false
+				)) (qualifiers) in
+				let qualifiers = 
+					if !(Backwalker.array_dealing_flag) then 
+						(None, (Path.mk_ident "", qual_test_var, (* Necessary for array bound checking *)
+							Predicate.Atom (qual_test_expr, Predicate.Ge, Predicate.PInt 0)))::qualifiers 
+					else qualifiers in
+				(*let qualifiers = [List.nth qualifiers 0; List.nth qualifiers 1; List.hd (List.rev qualifiers)] in*)
+				let _ = Format.fprintf Format.std_formatter "Number of qualifiers after remove duplication %d@." (List.length qualifiers) in
+				(*let _ = List.iter (fun (_, (path, valu, pred)) ->
+					fprintf std_formatter "Function %s with qualifier %a @." (Path.name path)
+					Predicate.pprint' pred
+				) qualifiers in*)
+				if (Hashtbl.length invariants = 0) then (unsat, prev_s, prev_failed_invariant)
+				else 
+					(*let _ = assert (not (!array_inv_tried)) in*)
+					let clean_s = Sol.copy s in
+					let s = Bstats.time "make_further_solution" 
+									(make_further_solution cs sri spec (qualifiers) clean_s horefs horeturnrefs unknows) unknowreturns in
+					let _ = dump_solving qualifiers sri s 0  in 
+				  let _ = Bstats.time "solving wfs" (solve_wf is_higher_order sri) s in
+				  let _ = dump_solving qualifiers sri s 1 in
+				  let w = make_initial_worklist sri in
+					(** Important: Register local type *)
+					let _ = Frame.register_unfound (local_types is_higher_order sri (solution_map s)) in
+				  let _ = Bstats.time "solving sub" (solve_sub is_higher_order sri s) w in
+				  let _ = dump_solving qualifiers sri s 2 in
+				  let _ = TP.reset () in
+				  let unsat = Bstats.time "testing solution" (unsat_constraints is_higher_order sri) s in
+					if (List.length unsat > 0) then 
+						(* Fixedme. Required a failed subset from the invariants *)
 						loop pos_samples neg_samples invariants qualifiers unsat s
-					else 
-						(array_inv_tried := true; (Clflags.gen_inv := false);
-						loop pos_samples (Hashtbl.create 0) (Hashtbl.create 0) qualifiers unsat s)
-				else (unsat, s, invariants) in
-	(* An outer loop that iteratively tests the program for more postive samples *)	
-	let testcounter = ref 0 in		
-	let rec testloop unsat s invariants = 			
-		if (List.length unsat > 0 || (!Clflags.gen_inv) || !testcounter = 0) (*&& (!testcounter < 2)*) then 
-			let _ = testcounter := (!testcounter + 1) in
-			let pos_samples = Bstats.time "query_pos_samples" query_pos_samples invariants in
-			if (Hashtbl.length pos_samples = 0) then (unsat, s)
-			else (* Proceeds with more samples *)
-				let (unsat, s, invariants) = 
-					loop pos_samples (Hashtbl.create 0) (Hashtbl.create 0) [] unsat s in
-				let _ = if not !(Backwalker.hoflag) then (iter_count := 1) in
-				(*if !(Backwalker.hoflag) (* if hoflag is set, iteratively generate more positive samples *)
-				then*) testloop unsat s invariants (*else (unsat, s)*)
-		else (unsat, s) in
-	let (unsat, s) = testloop unsat s (Hashtbl.create 0) (*
-		if (List.length unsat > 0 || (!Clflags.gen_inv)) then 
-			let pos_samples = Bstats.time "query_pos_samples" query_pos_samples () in
-			loop pos_samples (Hashtbl.create 0) (Hashtbl.create 0) [] unsat s
-		else (unsat, s) 
-	*) in
-  (*(if List.length unsat > 0 then 
-    C.cprintf C.ol_solve_error "@[Ref_constraints@ still@ unsatisfied:@\n@]";
-    List.iter (fun (c, b) -> C.cprintf C.ol_solve_error "@[%a@.@\n@]" (pprint_ref None) c) unsat);*)
-  (solution_map s, (List.map (fun (a, b) -> b)  unsat), !iter_count)
+					else (unsat, s, invariants) in
+		(* An outer loop that iteratively tests the program for more postive samples *)	
+		let testcounter = ref 0 in		
+		let rec testloop unsat s invariants = 			
+			if (List.length unsat > 0 || !testcounter = 0) (*&& (!testcounter < 2)*)  then 
+				let _ = testcounter := (!testcounter + 1) in
+				let pos_samples = Bstats.time "query_pos_samples" query_pos_samples invariants in
+				if (Hashtbl.length pos_samples = 0) then (unsat, s)
+				else (* Proceeds with more samples *)
+					let (unsat, s, invariants) = 
+						loop pos_samples (Hashtbl.create 0) (Hashtbl.create 0) [] unsat s in
+					let _ = if not !(Backwalker.hoflag) then (iter_count := 1) in
+					(*if !(Backwalker.hoflag) (* if hoflag is set, iteratively generate more positive samples *)
+					then*) testloop unsat s invariants (*else (unsat, s)*)
+			else (unsat, s) in
+		let (unsat, s) = testloop unsat s (Hashtbl.create 0) (*
+			if (List.length unsat > 0 || (!Clflags.gen_inv)) then 
+				let pos_samples = Bstats.time "query_pos_samples" query_pos_samples () in
+				loop pos_samples (Hashtbl.create 0) (Hashtbl.create 0) [] unsat s
+			else (unsat, s) 
+		*) in
+	  (*(if List.length unsat > 0 then 
+	    C.cprintf C.ol_solve_error "@[Ref_constraints@ still@ unsatisfied:@\n@]";
+	    List.iter (fun (c, b) -> C.cprintf C.ol_solve_error "@[%a@.@\n@]" (pprint_ref None) c) unsat);*)
+	  (solution_map s, (List.map (fun (a, b) -> b)  unsat), !iter_count)

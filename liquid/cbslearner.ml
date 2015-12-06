@@ -1337,7 +1337,7 @@ let fast_cdnf_learn ni flag path atomics assertions terminations pos_samples neg
 					) (Predicate.vars atomic)
 			) sourceatomics in			
 			
-		let source_p = [] in
+		let source_p = trans_preds tbl source_p in
 		let atomics = trans_preds tbl atomics in
 		let source_r = trans_preds tbl source_r in
 		let atomics_inf = trans_preds tbl atomics_inf in
@@ -1472,7 +1472,7 @@ let cdnf_learn ni path atomics assertions terminations
 	neg_samples 
 	tbl enforces env fr measures = 
 	if !(Clflags.reachability) then []
-	else if not (!Backwalker.data_structure_dealing_flag) then 	
+	else if not (!Backwalker.data_structure_dealing_flag) && not (!Backwalker.array_dealing_flag) then 	
 		let pos_samples = List.map (fun pos_samples -> 
 			List.filter (fun (k, v) -> Hashtbl.mem tbl k) pos_samples) pos_samples in
 		let pos_samples = Common.remove_duplicates pos_samples in	
@@ -1828,7 +1828,11 @@ let dump_small_goods goods names =
 		let _ = List.iter (fun l -> Format.fprintf Format.std_formatter "---good--- = %s@." l) ls in
 		Format.fprintf Format.std_formatter "\\\\@." 
 		) goods in*)
-	
+		
+	let names = List.filter (fun name -> 
+		not ((Common.str_contains name Instrument.tempt_arr_prefix) || 
+			(Common.str_contains name Instrument.tempt_arr_prefix))
+		) names in
 	let outch = open_out ("./good.mat") in
 	let set = ref [] in
 	match (List.fold_left (fun res (locals, _) -> 

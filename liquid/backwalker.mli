@@ -8,6 +8,7 @@ val qual_test_var : Path.t
 val qual_test_expr : Predicate.pexpr
 
 val data_structure_dealing_flag : bool ref
+val array_dealing_flag : bool ref
 val assertEqual : bool ref
 
 val hoflag : bool ref

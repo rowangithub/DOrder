@@ -1365,8 +1365,18 @@ let from_invariant b env measures invariant funpath funframe tbl return_repr com
 							Some (F.get_refinement_variable destfr, (funpath, valu, invariant))
 						else assert false
 					else None	 
-				else assert false (* This should be dealed as well with higher order function (above) *)
-				)
+				else (
+					(** Consider if the invariant is for array length *)
+					let vars = Predicate.vars invariant in
+					try (let destp_repr = ((Path.name destp) ^ "_l") in
+					let inv_var = Hashtbl.find tbl destp_repr in
+					if (List.exists (fun iv -> Path.same inv_var iv) (vars)) then 
+						let invariant = Predicate.subst (Predicate.FunApp ("Array.length", [pvalu])) inv_var invariant in 
+						let invariant = normalize measures invariant candidates tbl (Path.name destp) return_repr in
+						Some (F.get_refinement_variable destfr, (funpath, valu, invariant))
+					else None)	
+					with Not_found -> None
+				))
 			| _ -> 
 				let vars = Predicate.vars invariant in
 				(* Translate invariant over itself *)
@@ -1416,232 +1426,234 @@ let rec permutation list =
 
 (* The query of negative samples may depend upon positive samples *)	
 let ease_bad_condition path allbindings badc pos_samples = 
-	let store = Hashtbl.create 5 in
-	let get_subs_from_store store = (
-		Hashtbl.fold (fun p i res -> match (p, i) with
-			| (Predicate.Var p, Some i) -> res @ [(p, Predicate.PInt (int_of_string i))]
-			| _ -> res
-		) store []	
-	) in
-	let badvars = Common.remove_duplicates (Predicate.vars badc.post) in
-	let goodlocaldumps localdumps = 
-		try let (pbadvars, envbadvars) = List.partition (fun badvar -> 
-			List.mem_assoc badvar allbindings
-		) badvars in
-		let pvalues = Common.map_partial (fun dump -> 
-			let name = Str.split (Str.regexp ":") dump in
-			try let (name_name, name_value) = (List.hd name, List.nth name 1) in
-			if not (String.contains name_value '#') && 
-						List.exists (fun badvar -> String.compare name_name (Path.name badvar) = 0) badvars
-			then Some (name_name, name_value)
-			else None with _ -> None (* Fixme. Probably OK *)
-		) (fst localdumps) in
-		let envvalues = Common.map_partial (fun dump -> 
-			let name = Str.split (Str.regexp ":") dump in
-			try let (name_name, name_value) = (List.hd name, List.nth name 1) in
-			if not (String.contains name_value '#') && 
-						List.exists (fun badvar -> String.compare name_name (Path.name badvar) = 0) badvars
-			then Some (name_name, name_value)
-			else None with _ -> None (* Fixme. Probably OK *)
-		) (snd localdumps) in
-		let pms = List.fold_left (fun res pbadvar -> 
-			try
-				let (_, value) = List.find (fun (name, v) -> String.compare name (Path.name pbadvar) = 0) pvalues in
-				if (Path.same pbadvar Frame.returnpath) then res
-				else res @ [Predicate.Atom (Predicate.Var pbadvar, Predicate.Eq, Predicate.PInt (int_of_string value))	]
-			with Not_found -> res
-			) [] pbadvars in
-		let envms = List.fold_left (fun res envbadvar -> 
-			try
-				let (_, value) = List.find (fun (name, v) -> String.compare name (Path.name envbadvar) = 0) envvalues in
-				res @ [Predicate.Atom (Predicate.Var envbadvar, Predicate.Eq, Predicate.PInt (int_of_string value))	]
-			with Not_found -> res
-			) [] envbadvars in	
-		let ms = pms @ envms in
-		let _ = List.iter (fun pred -> match pred with
-			| Predicate.Atom (Predicate.Var path, Predicate.Eq, Predicate.PInt v) -> 
-				Hashtbl.replace store (Predicate.Var path) (Some (string_of_int v))
-			| _ -> assert false
-			) ms in
-		let f = Predicate.big_and (badc.post::ms) in
-		(*let _ = Format.fprintf Format.std_formatter "f = %a@." Predicate.pprint f in*)
-		let r = TheoremProver.sat f in 
-		(*let _ = Format.fprintf Format.std_formatter "checkr = %b@." r in*)
-		r with _ -> (false) in
-	let random_pos_sample () = 
-		(** Pick a postive sample. Randomly? A function is called in a location more than once? *)
-		(* 1. find all logs for path; 2. find the log collected from the non-recursive call site; *)
-		let localdumpss = (Hashtbl.fold (fun lineno (name, dumpings) res ->
-			if (String.compare name (Path.name path) = 0) then
-				(*let _ = Format.fprintf Format.std_formatter "At line no %s with %d times@." lineno (List.length dumpings) in*)
-				res @ [(*List.map fst*) dumpings]
-			else res 
-		) pos_samples []) in
-		let min = List.fold_left (fun res dumplings -> 
-			if (res > List.length dumplings) then List.length dumplings
-			else res	
-		) Pervasives.max_int localdumpss in
-		let localdumpss = List.filter (fun dumplings -> 
-			(List.length dumplings) = min
-		) localdumpss in
-	  let localdumpss = List.flatten localdumpss in
-		(*let localdumpss = (Hashtbl.fold (fun _ (name, dumpings) res ->
-			if (String.compare name (Path.name path) = 0) && (List.length dumpings = 1) then
-				res @ ((*List.map fst*) dumpings)
-			else res 
-		) pos_samples []) in*)
-		(assert (List.length localdumpss > 0);
-		(*let _ = Format.fprintf Format.std_formatter "List.length localdumpss = %d@." (List.length localdumpss) in*)
-		let localdumpss = permutation localdumpss in
-		try List.find (fun localdumps -> 
-			goodlocaldumps localdumps) localdumpss with _ ->
-		List.nth localdumpss ( Random.int (List.length localdumpss))) in
-	let localdumps = ref ([], []) in
-	let readlog sequences b = (* b indicates where to retrieve. In env or in def?? *)
-		(*let _ = List.iter (fun sequence -> Format.fprintf Format.std_formatter "seq=%s@." sequence) sequences in*)
-		let _ = if (!localdumps = ([], [])) then (localdumps := random_pos_sample ()) in
-		let localdumps = !localdumps in
-		let localdumps = if (b) then fst localdumps else snd localdumps in
-		(*let _ = List.iter (fun local -> Format.fprintf Format.std_formatter "local=%s@." local) localdumps in*)
-		let key = List.hd sequences in
-		let args = List.tl sequences in
-		let values = Common.map_partial (fun dump -> 
-			let name = Str.split (Str.regexp ":") dump in
-			try let (name_name, name_value) = (List.hd name, List.nth name 1) in
-			if (String.compare key name_name = 0) then Some (name_value)
-			else None with _ -> None (* Fixme. Probably OK *)
-		) localdumps in 
-		List.fold_left (fun res value -> match res with
-			| Some value -> ( Some value)
-			| None -> (*Fixme. Not general*)
-				if (List.length args = 0) then Some value
-				else if (String.contains value '#') then
-					let sub_locals = Str.split (Str.regexp ",") value in
-					let sub_locals = List.map (fun sub_local -> 
-						let sub_name = Str.split (Str.regexp "#") sub_local in
-						(List.hd sub_name, List.nth sub_name 1)
-						) sub_locals in
-					let sub_locals = List.rev sub_locals in
-					let (uf_r, uf_args) = (List.hd sub_locals, List.rev (List.tl sub_locals)) in
-					if (List.length uf_args = List.length args) then
-						if (List.for_all2 (fun (k, v) arg -> v = arg) uf_args args) then
-							Some (snd uf_r)
-						else None (* Do not find the right record *) 
-					else assert false (* Do not match the record *)
-				else assert false (* Cannot be reached *)
-		) None values in
-	let rec get_value b e = ((* b = true => read from def /\ b = false => read from env *)
-		(*let _ = Format.fprintf Format.std_formatter "get_value=%a@." Predicate.pprint_pexpr e in*)
-		if (Hashtbl.mem store e) then Hashtbl.find store e
-		else 
-			(*let _ = Format.fprintf Format.std_formatter "lookup from the logs@." in*)
-			let value = match e with
-				| Predicate.FunApp (fn, es) ->
-					if (String.compare "UF" fn = 0) then
-						let hd = List.hd es in match hd with
-							| Predicate.Var hd -> 
-								let es = Common.map_partial (get_value b) (List.tl es) in
-								readlog ((Path.name hd)::(es)) b 
-							| _ -> assert false
-					else assert false
-				| Predicate.Var p -> readlog [(Path.name p)] b
-				| _ -> assert false in
-			(*let _ = Format.fprintf Format.std_formatter "Value = %s@." 
-			(match value with Some value -> value | None -> "None") in*)
-			(Hashtbl.replace store e value; value)
-	) in
-	let map_uf_to_val e = 
-		match e with
-		| Predicate.FunApp (fn, es) ->
-			if (String.compare "UF" fn = 0) then
-				match get_value true e with
-					| Some value -> let value = int_of_string value in Predicate.PInt value 
-					| None -> (
-						Format.fprintf Format.std_formatter "Did not record %a in logc!!!@." Predicate.pprint_pexpr e; 
-						assert false) (* Did not record it in the logc!!! *)
-			else e  
-		| _ -> e in
-	(** If a post-bad condition refers to variable out of scope, we may substitute it with a real value *)
-	let instantiate_bad_condition bad = 
-		(*let _ = Format.fprintf Format.std_formatter "&&&&&&bad=%a@." Predicate.pprint bad in*)
-		let outofscope_vars = ref [] in
-		let outofscope_ho_params = ref [] in
-		let inscope_vars = Common.map_partial (fun (p, f) -> match f with
-			| Frame.Fconstr (x,_,_,_,_) when x = Predef.path_int && not (Path.same p Frame.returnpath) -> Some p
-			| Frame.Fconstr (x,_,_,_,_) when x = Predef.path_list && not (Path.same p Frame.returnpath) ->
-				(** retrieve list length only *)
-				let stamp = Path.stamp p in
-				let path = Path.Pident (Ident.create_with_stamp ((Path.name p)^"_l") stamp) in Some path 
-			| Frame.Fvar _ when not (Path.same p Frame.returnpath)-> Some p
-			| _ -> None) allbindings in
-		(* If a variable is out-of-scope but used as parameter to ho function, do not need substitution *)
-		(* However, if an out-of-scope variable is used as parameter, consider substitution for safe bad sample *)
-		let _ = Predicate.map_expr_from_top (fun expr -> match expr with
-			| Predicate.Var var ->
-				if (List.for_all (fun (p, f) -> not (Path.same var p)) allbindings && (* Measures should be exclued *)
-						(List.for_all (fun (p, f) -> 
-							let name = List.hd (Str.split (Str.regexp "_") (Path.name var)) in
-							let stamp = Path.stamp var in
-							let var = Path.Pident (Ident.create_with_stamp name stamp) in
-							not (Path.same var p)) allbindings) && (* Records should be exclued *)
-						(List.for_all (fun (p, f) ->
-							let name = List.hd (Str.split (Str.regexp "\\.") (Path.name var)) in
-							let stamp = Path.stamp var in
-							let var = Path.Pident (Ident.create_with_stamp name stamp) in
-							not (Path.same var p)) allbindings)) then
-					(outofscope_vars := var::(!outofscope_vars); expr)
-				else expr
-			| Predicate.FunApp _ -> 
-				let vars = Predicate.exp_vars expr in
-				(outofscope_ho_params := 
-					(List.filter (fun var -> List.for_all (fun (p, _) -> 
-						not (Path.same var p)) allbindings) vars)@(!outofscope_ho_params); expr)
-			| _ -> expr
-		) bad in
-		let outofscope_vars = Common.remove_duplicates (List.filter (fun var -> 
-			List.for_all (fun hp -> not (Path.same var hp)) (!outofscope_ho_params)
-			) (!outofscope_vars)) in
-		let _ = List.iter (fun var -> 
-			try ignore(get_value false (Predicate.Var var)) with _ -> ()
-		) outofscope_vars in
-		(* subsititute inscope_vars and outofscope_vars with real samples *)
-		if (List.length outofscope_vars > 0) then
-			(List.iter (fun var -> 
-				try ignore(get_value true (Predicate.Var var)) with _ -> ()) inscope_vars;
-			let subs = get_subs_from_store store in
-			let subspred = List.map (fun (p, pe) -> 
-				Predicate.Atom (Predicate.Var p, Predicate.Eq, pe)	
-			) subs in
-			(*let _ = Format.fprintf Format.std_formatter "subspred = %a for %s@." Predicate.pprint (Predicate.big_and subspred) (Path.name path) in*)
-			Predicate.big_and (bad::subspred))
-		else bad in
-	(** Now functional code *)	
-	let pre = Predicate.map_expr (fun pexpr -> match pexpr with
-		| Predicate.FunApp (fn, es) ->
-			if (String.compare "UF" fn = 0) then 
-				let hd = List.hd es in
-				let es = List.map map_uf_to_val (List.tl es) in
-				Predicate.FunApp (fn, hd::es)
-			else pexpr
-		| _ -> pexpr
-	) badc.pre in
-	let post = Predicate.map_expr (fun pexpr -> match pexpr with
-		| Predicate.FunApp (fn, es) ->
-			if (String.compare "UF" fn = 0) then 
-				let hd = List.hd es in
-				let es = List.map map_uf_to_val (List.tl es) in
-				Predicate.FunApp (fn, hd::es)
-			else pexpr
-		| _ -> pexpr
-	) badc.post in
-	let subs = get_subs_from_store store in
-	let subspred = List.map (fun (p, pe) -> 
-		Predicate.Atom (Predicate.Var p, Predicate.Eq, pe)	
-	) subs in
-	{pre = Predicate.big_and ((Predicate.apply_substs subs pre)::subspred); 
-	post = instantiate_bad_condition (* Now out-of-scope variable is not a worry *)
-		(Predicate.big_and ((Predicate.apply_substs subs post)::subspred))
-	} 
+	if !(Clflags.hoflag) then
+		let store = Hashtbl.create 5 in
+		let get_subs_from_store store = (
+			Hashtbl.fold (fun p i res -> match (p, i) with
+				| (Predicate.Var p, Some i) -> res @ [(p, Predicate.PInt (int_of_string i))]
+				| _ -> res
+			) store []	
+		) in
+		let badvars = Common.remove_duplicates (Predicate.vars badc.post) in
+		let goodlocaldumps localdumps = 
+			try let (pbadvars, envbadvars) = List.partition (fun badvar -> 
+				List.mem_assoc badvar allbindings
+			) badvars in
+			let pvalues = Common.map_partial (fun dump -> 
+				let name = Str.split (Str.regexp ":") dump in
+				try let (name_name, name_value) = (List.hd name, List.nth name 1) in
+				if not (String.contains name_value '#') && 
+							List.exists (fun badvar -> String.compare name_name (Path.name badvar) = 0) badvars
+				then Some (name_name, name_value)
+				else None with _ -> None (* Fixme. Probably OK *)
+			) (fst localdumps) in
+			let envvalues = Common.map_partial (fun dump -> 
+				let name = Str.split (Str.regexp ":") dump in
+				try let (name_name, name_value) = (List.hd name, List.nth name 1) in
+				if not (String.contains name_value '#') && 
+							List.exists (fun badvar -> String.compare name_name (Path.name badvar) = 0) badvars
+				then Some (name_name, name_value)
+				else None with _ -> None (* Fixme. Probably OK *)
+			) (snd localdumps) in
+			let pms = List.fold_left (fun res pbadvar -> 
+				try
+					let (_, value) = List.find (fun (name, v) -> String.compare name (Path.name pbadvar) = 0) pvalues in
+					if (Path.same pbadvar Frame.returnpath) then res
+					else res @ [Predicate.Atom (Predicate.Var pbadvar, Predicate.Eq, Predicate.PInt (int_of_string value))	]
+				with Not_found -> res
+				) [] pbadvars in
+			let envms = List.fold_left (fun res envbadvar -> 
+				try
+					let (_, value) = List.find (fun (name, v) -> String.compare name (Path.name envbadvar) = 0) envvalues in
+					res @ [Predicate.Atom (Predicate.Var envbadvar, Predicate.Eq, Predicate.PInt (int_of_string value))	]
+				with Not_found -> res
+				) [] envbadvars in	
+			let ms = pms @ envms in
+			let _ = List.iter (fun pred -> match pred with
+				| Predicate.Atom (Predicate.Var path, Predicate.Eq, Predicate.PInt v) -> 
+					Hashtbl.replace store (Predicate.Var path) (Some (string_of_int v))
+				| _ -> assert false
+				) ms in
+			let f = Predicate.big_and (badc.post::ms) in
+			(*let _ = Format.fprintf Format.std_formatter "f = %a@." Predicate.pprint f in*)
+			let r = TheoremProver.sat f in 
+			(*let _ = Format.fprintf Format.std_formatter "checkr = %b@." r in*)
+			r with _ -> (false) in
+		let random_pos_sample () = 
+			(** Pick a postive sample. Randomly? A function is called in a location more than once? *)
+			(* 1. find all logs for path; 2. find the log collected from the non-recursive call site; *)
+			let localdumpss = (Hashtbl.fold (fun lineno (name, dumpings) res ->
+				if (String.compare name (Path.name path) = 0) then
+					(*let _ = Format.fprintf Format.std_formatter "At line no %s with %d times@." lineno (List.length dumpings) in*)
+					res @ [(*List.map fst*) dumpings]
+				else res 
+			) pos_samples []) in
+			let min = List.fold_left (fun res dumplings -> 
+				if (res > List.length dumplings) then List.length dumplings
+				else res	
+			) Pervasives.max_int localdumpss in
+			let localdumpss = List.filter (fun dumplings -> 
+				(List.length dumplings) = min
+			) localdumpss in
+		  let localdumpss = List.flatten localdumpss in
+			(*let localdumpss = (Hashtbl.fold (fun _ (name, dumpings) res ->
+				if (String.compare name (Path.name path) = 0) && (List.length dumpings = 1) then
+					res @ ((*List.map fst*) dumpings)
+				else res 
+			) pos_samples []) in*)
+			(assert (List.length localdumpss > 0);
+			(*let _ = Format.fprintf Format.std_formatter "List.length localdumpss = %d@." (List.length localdumpss) in*)
+			let localdumpss = permutation localdumpss in
+			try List.find (fun localdumps -> 
+				goodlocaldumps localdumps) localdumpss with _ ->
+			List.nth localdumpss ( Random.int (List.length localdumpss))) in
+		let localdumps = ref ([], []) in
+		let readlog sequences b = (* b indicates where to retrieve. In env or in def?? *)
+			(*let _ = List.iter (fun sequence -> Format.fprintf Format.std_formatter "seq=%s@." sequence) sequences in*)
+			let _ = if (!localdumps = ([], [])) then (localdumps := random_pos_sample ()) in
+			let localdumps = !localdumps in
+			let localdumps = if (b) then fst localdumps else snd localdumps in
+			(*let _ = List.iter (fun local -> Format.fprintf Format.std_formatter "local=%s@." local) localdumps in*)
+			let key = List.hd sequences in
+			let args = List.tl sequences in
+			let values = Common.map_partial (fun dump -> 
+				let name = Str.split (Str.regexp ":") dump in
+				try let (name_name, name_value) = (List.hd name, List.nth name 1) in
+				if (String.compare key name_name = 0) then Some (name_value)
+				else None with _ -> None (* Fixme. Probably OK *)
+			) localdumps in 
+			List.fold_left (fun res value -> match res with
+				| Some value -> ( Some value)
+				| None -> (*Fixme. Not general*)
+					if (List.length args = 0) then Some value
+					else if (String.contains value '#') then
+						let sub_locals = Str.split (Str.regexp ",") value in
+						let sub_locals = List.map (fun sub_local -> 
+							let sub_name = Str.split (Str.regexp "#") sub_local in
+							(List.hd sub_name, List.nth sub_name 1)
+							) sub_locals in
+						let sub_locals = List.rev sub_locals in
+						let (uf_r, uf_args) = (List.hd sub_locals, List.rev (List.tl sub_locals)) in
+						if (List.length uf_args = List.length args) then
+							if (List.for_all2 (fun (k, v) arg -> v = arg) uf_args args) then
+								Some (snd uf_r)
+							else None (* Do not find the right record *) 
+						else assert false (* Do not match the record *)
+					else assert false (* Cannot be reached *)
+			) None values in
+		let rec get_value b e = ((* b = true => read from def /\ b = false => read from env *)
+			(*let _ = Format.fprintf Format.std_formatter "get_value=%a@." Predicate.pprint_pexpr e in*)
+			if (Hashtbl.mem store e) then Hashtbl.find store e
+			else 
+				(*let _ = Format.fprintf Format.std_formatter "lookup from the logs@." in*)
+				let value = match e with
+					| Predicate.FunApp (fn, es) ->
+						if (String.compare "UF" fn = 0) then
+							let hd = List.hd es in match hd with
+								| Predicate.Var hd -> 
+									let es = Common.map_partial (get_value b) (List.tl es) in
+									readlog ((Path.name hd)::(es)) b 
+								| _ -> assert false
+						else assert false
+					| Predicate.Var p -> readlog [(Path.name p)] b
+					| _ -> assert false in
+				(*let _ = Format.fprintf Format.std_formatter "Value = %s@." 
+				(match value with Some value -> value | None -> "None") in*)
+				(Hashtbl.replace store e value; value)
+		) in
+		let map_uf_to_val e = 
+			match e with
+			| Predicate.FunApp (fn, es) ->
+				if (String.compare "UF" fn = 0) then
+					match get_value true e with
+						| Some value -> let value = int_of_string value in Predicate.PInt value 
+						| None -> (
+							Format.fprintf Format.std_formatter "Did not record %a in logc!!!@." Predicate.pprint_pexpr e; 
+							assert false) (* Did not record it in the logc!!! *)
+				else e  
+			| _ -> e in
+		(** If a post-bad condition refers to variable out of scope, we may substitute it with a real value *)
+		let instantiate_bad_condition bad = 
+			(*let _ = Format.fprintf Format.std_formatter "&&&&&&bad=%a@." Predicate.pprint bad in*)
+			let outofscope_vars = ref [] in
+			let outofscope_ho_params = ref [] in
+			let inscope_vars = Common.map_partial (fun (p, f) -> match f with
+				| Frame.Fconstr (x,_,_,_,_) when x = Predef.path_int && not (Path.same p Frame.returnpath) -> Some p
+				| Frame.Fconstr (x,_,_,_,_) when x = Predef.path_list && not (Path.same p Frame.returnpath) ->
+					(** retrieve list length only *)
+					let stamp = Path.stamp p in
+					let path = Path.Pident (Ident.create_with_stamp ((Path.name p)^"_l") stamp) in Some path 
+				| Frame.Fvar _ when not (Path.same p Frame.returnpath)-> Some p
+				| _ -> None) allbindings in
+			(* If a variable is out-of-scope but used as parameter to ho function, do not need substitution *)
+			(* However, if an out-of-scope variable is used as parameter, consider substitution for safe bad sample *)
+			let _ = Predicate.map_expr_from_top (fun expr -> match expr with
+				| Predicate.Var var ->
+					if (List.for_all (fun (p, f) -> not (Path.same var p)) allbindings && (* Measures should be exclued *)
+							(List.for_all (fun (p, f) -> 
+								let name = List.hd (Str.split (Str.regexp "_") (Path.name var)) in
+								let stamp = Path.stamp var in
+								let var = Path.Pident (Ident.create_with_stamp name stamp) in
+								not (Path.same var p)) allbindings) && (* Records should be exclued *)
+							(List.for_all (fun (p, f) ->
+								let name = List.hd (Str.split (Str.regexp "\\.") (Path.name var)) in
+								let stamp = Path.stamp var in
+								let var = Path.Pident (Ident.create_with_stamp name stamp) in
+								not (Path.same var p)) allbindings)) then
+						(outofscope_vars := var::(!outofscope_vars); expr)
+					else expr
+				| Predicate.FunApp _ -> 
+					let vars = Predicate.exp_vars expr in
+					(outofscope_ho_params := 
+						(List.filter (fun var -> List.for_all (fun (p, _) -> 
+							not (Path.same var p)) allbindings) vars)@(!outofscope_ho_params); expr)
+				| _ -> expr
+			) bad in
+			let outofscope_vars = Common.remove_duplicates (List.filter (fun var -> 
+				List.for_all (fun hp -> not (Path.same var hp)) (!outofscope_ho_params)
+				) (!outofscope_vars)) in
+			let _ = List.iter (fun var -> 
+				try ignore(get_value false (Predicate.Var var)) with _ -> ()
+			) outofscope_vars in
+			(* subsititute inscope_vars and outofscope_vars with real samples *)
+			if (List.length outofscope_vars > 0) then
+				(List.iter (fun var -> 
+					try ignore(get_value true (Predicate.Var var)) with _ -> ()) inscope_vars;
+				let subs = get_subs_from_store store in
+				let subspred = List.map (fun (p, pe) -> 
+					Predicate.Atom (Predicate.Var p, Predicate.Eq, pe)	
+				) subs in
+				(*let _ = Format.fprintf Format.std_formatter "subspred = %a for %s@." Predicate.pprint (Predicate.big_and subspred) (Path.name path) in*)
+				Predicate.big_and (bad::subspred))
+			else bad in
+		(** Now functional code *)	
+		let pre = Predicate.map_expr (fun pexpr -> match pexpr with
+			| Predicate.FunApp (fn, es) ->
+				if (String.compare "UF" fn = 0) then 
+					let hd = List.hd es in
+					let es = List.map map_uf_to_val (List.tl es) in
+					Predicate.FunApp (fn, hd::es)
+				else pexpr
+			| _ -> pexpr
+		) badc.pre in
+		let post = Predicate.map_expr (fun pexpr -> match pexpr with
+			| Predicate.FunApp (fn, es) ->
+				if (String.compare "UF" fn = 0) then 
+					let hd = List.hd es in
+					let es = List.map map_uf_to_val (List.tl es) in
+					Predicate.FunApp (fn, hd::es)
+				else pexpr
+			| _ -> pexpr
+		) badc.post in
+		let subs = get_subs_from_store store in
+		let subspred = List.map (fun (p, pe) -> 
+			Predicate.Atom (Predicate.Var p, Predicate.Eq, pe)	
+		) subs in
+		{pre = Predicate.big_and ((Predicate.apply_substs subs pre)::subspred); 
+		post = instantiate_bad_condition (* Now out-of-scope variable is not a worry *)
+			(Predicate.big_and ((Predicate.apply_substs subs post)::subspred))
+		}
+	else badc
 
 (** Relax list/data structure in bad condition *)
 let destruct_list_access bad = 

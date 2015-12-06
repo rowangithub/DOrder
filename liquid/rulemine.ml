@@ -815,7 +815,7 @@ let generate_template arr_info arrs plains arr_indices arr_cmps pred
 					if (Hashtbl.mem arrcells apath) then (* revisited array *)
 						let cell = Hashtbl.find arrcells apath in
 						let localplains = Hashtbl.find arr_indices apath in
-						(* But the variable not bounded is excluded. Updated in 1/10 by He Zhu *)
+						(* But the variable not bounded is excluded. Updated in 1/10 *)
 						let plains = List.filter (fun localplain -> 
 							List.exists (fun plain -> Path.same localplain plain) plains) localplains in
 						(*if (ex_assertion_flag) then
@@ -1221,7 +1221,7 @@ let infer_template ispost effcons symb_pre arrs plains allplains =
 					let (arr_indices, arr_cmps) = preprocess_template arrs n_pred in      
 					let arr_cmps = Hashtbl.fold (fun v _ res -> res @ [v]) arr_cmps [] in 
 					if (List.for_all (fun cmp -> List.exists (fun plain -> Path.same cmp plain) plains) arr_cmps) 
-					then (* updated in 1/10 by He Zhu. We dont want arr_cmps contains unbounded variables *)	
+					then (* updated in 1/10. We dont want arr_cmps contains unbounded variables *)	
 						if (!Clflags.preservation) then
 							let arr_cmps = get_all_cmps arrs symb_pre in
 							(templates := 
@@ -1407,6 +1407,8 @@ let opt_plains samples =
 			
 (* Mine array invariant from positives only *) 
 let mine_template ispost goods names env fr effcons symb_pre =	
+	(* Filtering out a_l *)
+	let names = List.filter (fun name -> not (Common.str_contains name "_l")) names in
 	let allbindings = Frame.get_fun_bindings env fr in
 	let tbl = Hashtbl.create 5 in
 	let _ = List.iter (fun (p, f) -> Hashtbl.replace tbl (Path.name p) p) allbindings in

@@ -695,7 +695,13 @@ let rec dump formatter env fenv measures pat frame bad_constraint locals defs al
 						(fun ppf unit -> pp ppf "@[%s@]" "done"
 							) ()) in
 					(** Print the tempt array and result array respectively *)
-					(print_arr (tempt_arr_prefix^x) (tempt_arr_prefix^x) x; print_arr x (tempt_arr_postfix^x)) x
+					(print_arr (tempt_arr_prefix^x) (tempt_arr_prefix^x) x; print_arr x (tempt_arr_postfix^x) x;
+					(pp formatter "@;@[%a@]"
+						(** print the length of  *)
+							(fun ppf unit -> 
+								pp ppf "@;@[in let _ = if (!callflag) then fprintf outch (\"%s:%s\\t\") ((Array.length %s)) @]" (x ^ "_l") "%d" xv
+								) ())
+					)
 				| Fconstr (y,_,_,_,_) when Hashtbl.mem measures y -> (* User defined data type *)
 					let measures = Hashtbl.find measures y in
 					(List.iter (fun (m, recflag) -> 
@@ -908,5 +914,4 @@ let read_dumpings pos_samples =
 	
 				
 
-		
 		

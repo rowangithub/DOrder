@@ -6,8 +6,10 @@ let rec diff i (n:int) (a: int array) (b: int array) (c : int array) =
 	
 let main a b = 
 	let n = Array.length a in
-	let c = Array.make n 0 in
-	diff 0 n a b c
+	if (n = Array.length b) then
+		let c = Array.make n 0 in
+		diff 0 n a b c
+	else ()
 	
 let vec1 = [|-100; -200; -300; 350; 370|]
 let vec2 = [|-200; -400; -500; 150; 70|]

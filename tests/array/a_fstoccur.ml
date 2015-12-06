@@ -9,10 +9,10 @@ let rec find e l u (n:int) (a:int array) =
 	else ()
 	
 let main e ith n (vec:int array) = 
-	(find e 0 n n vec;
-	if (0 <= ith && ith < (n-1)) then
+	(find e 0 n n vec;)
+	(*if (0 <= ith && ith < (n-1)) then
 		assert (Array.get vec (ith) <= Array.get vec (1+ith))
-	else ())
+	else ()*)
 	
 let vec1 = [|-800; -100; 100; 200; 400|]
 let vec2 = [|-100; -40; 10; 20; 30|]
