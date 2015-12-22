@@ -1,24 +1,49 @@
+let uniques n = 
+	let rec loop i ns = 
+		if i >= n then ns
+		else
+			let v = Random.int 1000 in
+			if (List.exists (fun n -> n = v) ns) then
+				loop i ns
+			else loop (i+1) (v::ns) in
+	loop 0 [] 
+
 let main () =		 
-	let ns = [|1;15;24;14;2;18;13;17;12;6;25;9;5;21;20;4;10;3;23;11;8;16|] in
-	(*let ns = [|19;13;12;16;6;9;22;5;25;4;15;18;24;11;20;8;1;14;21;2;7;10;3;17;23|] in*)	
-	
+	let ns = uniques 20 in	
 	let t = Empty in	
-	let t = Array.fold_left (fun t k -> 
+	let t = List.fold_left (fun t k -> 
 		let _ = fprintf outch "env:newtest\t\n" in
 		add k t
 		) t ns in
+	let ns0 = uniques 20 in	
+	let t0 = Empty in	
+	let t0 = List.fold_left (fun t k -> 
+		let _ = fprintf outch "env:newtest\t\n" in
+		add k t
+		) t0 ns0 in
 	
 	let _ = fprintf outch "env:newtest\t\n" in
+	let _ = mem 500 t in
+	let _ = fprintf outch "env:newtest\t\n" in
+	let _ = mem (-1) t in	
+		
+	let _ = fprintf outch "env:newtest\t\n" in
 	let _ = elements t in
+	
 	let _ = fprintf outch "env:newtest\t\n" in
-	let _ = mem 5 t in
-	let _ = fprintf outch "env:newtest\t\n" in
-	let _ = mem 30 t in
-	let _ = fprintf outch "env:newtest\t\n" in
-	let _ = enum t End in
-	let _ = Array.fold_left (fun t k -> 
+	let _ = enum t End in	
+		
+	let _ = List.fold_left (fun t k -> 
+		let _ = fprintf outch "env:newtest\t\n" in
+		let _ = remove_min t in
 		let _ = fprintf outch "env:newtest\t\n" in
 		remove k t
-		) t ns in 
-	() 
-let _ = main () 
+		) t ns in
+	let _ = List.fold_left (fun t k -> 
+		let _ = fprintf outch "env:newtest\t\n" in
+		let _ = remove_min t in
+		let _ = fprintf outch "env:newtest\t\n" in
+		remove k t
+		) t0 ns0 in
+	()
+let _ = main ()
