@@ -2,7 +2,7 @@ SpecLearn (DOrder)
 ==================
 
 For any problem with compiling SpecLearn (DOrder),
-send an email to rowangithub@yahoo.com
+send an email to zhu103 AT myuniversity
 and I will try to help you use our tool.
 
 SpecLearn (DOrder) is a framework that automatically infers useful specifications for
