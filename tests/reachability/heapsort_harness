@@ -1,4 +1,14 @@
+let list n = 
+	let rec loop i ns = 
+		if i >= n then ns
+		else
+			let v = Random.int 1000 in
+			if (List.exists (fun n -> n = v) ns) then
+				loop i ns
+			else loop (i+1) (v::ns) in
+	loop 0 [] 
+
 let main () = 
 	let _ = fprintf outch "env:newtest\t\n" in
-	heapsort [19;13;12;16;6;9;22;5;25;4;15;18;24;11;]
+	heapsort (list 15)
 let _ = main ()

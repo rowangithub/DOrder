@@ -236,5 +236,5 @@ let main () =
   process_sourcefile !filename
 
 let _ = 
-  Printf.printf "MSolve 0.1: © Copyright 2015 Anonymized Univerisity, All rights reserved \n";
+  Printf.printf "MSolve 1.0: © Copyright 2016 Purdue Univerisity, All rights reserved \n";
   main (); exit 0
