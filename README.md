@@ -165,12 +165,14 @@ For example, if we are interested in cases where the
 value u appears “before” (according to a specified order) v,
 we could either have that: 
 
-		(i) the value v occurs in the first (left) subtree from a tree node containing u, described by the notation link (h, t, 1, 2, u, v), 
+		(i) the value v occurs in the first (left) subtree from a tree node containing u, 
+		described by the notation link (h, t, 1, 2, u, v), 
 
 		(ii) the value v occurs in the second (right) subtree, described by the notation link (h, t, 1, 3, u, v),
 
 		(iii) both values are in the tree, but u is found in a subtree that is disjoint from the subtree where v occurs. 
-		Suppose there exists a node whose first subtree contains u and whose second subtree contains v. This is denoted as link (h, t, 2, 3, u, v). 
+		Suppose there exists a node whose first subtree contains u and whose second subtree contains v. 
+		This is denoted as link (h, t, 2, 3, u, v). 
 		
 The symmetric cases are obvious,
 and we do not describe them. Notice that in this description
