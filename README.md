@@ -58,11 +58,11 @@ To run DOrder,
 1. In MacOS, be sure that the files in external/Z3/lib are in your library path (not required in Ubuntu).  
 One way to do this is to run, from the top directory,
 	
-	export DYLD_LIBRARY_PATH="external/z3/lib/:$DYLD_LIBRARY_PATH"
+			export DYLD_LIBRARY_PATH="external/z3/lib/:$DYLD_LIBRARY_PATH"
 
 2. To test whether DOrder is successfully complied, run
 
-	./msolve.py ./tests/recursive/mcCarthy91.ml
+			./msolve.py ./tests/recursive/mcCarthy91.ml
 	
 Ideally, a precise specification for the well-known mcCarthy91 function should be
 displayed. For any other problem with compiling DOrder, send an email to zhu103 AT myuniversity.
@@ -204,7 +204,7 @@ input heap h1 and h2.
 DOrder also outputs _shape-data_ specifications. For example, for the _heapsort_ function,
 the following specification is synthesized:
 
-function heapsort with type ls: 'a list ->
+	function heapsort with type ls: 'a list ->
         {'a list | forall (u v ). ((-. link (V, cons, 1, u, v)) or  (v <= u)) /\ ...}
 
 In the result type, we see that the output list is correctly sorted, where _cons_
