@@ -151,7 +151,9 @@ _heap_ provied in the _heapsort_ program.
 		| T of int * 'a * 'a heap * 'a heap
 		
 We first consider possible containment predicates for trees.
-reach (h, u) represents a certain value u is present in a tree h.
+
+		reach (h, u) represents a certain value u is present in a tree h.
+		
 A more interesting predicate class is one that establishes
 ordering relations between two elements of a data structure,
 u and v. Recall that in the heap definition only T constructors
