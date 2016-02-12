@@ -10,19 +10,19 @@ specifications for OCaml data structure programs with <em>no</em> user-annotatio
 It only requires a <strong>small</strong> number of <strong>simple tests</strong>
 to bootstrap synthesis. 
 
-Below, we provide a guide for fun things you can play with the demon, with
+Below, we provide a guide for fun things you can play with DOrder, with
 pointers to the paper for further information.
 
 <h3>DOrder Virtual Machine</h3>
 
 Before directly accessing DOrder's source code, we recommend a <a href="">VM version</a> of DOrder.
-DOrder is already complied and ready to be played in the VM version.
+DOrder is complied and ready to be played in the VM version.
 
 <h3>DOrder Source Code</h3>
 
 You can git-clone the source code of DOrder:
 
-	git clone https://github.com/rowangithub/DOrder.git
+		git clone https://github.com/rowangithub/DOrder.git
 	
 System requirements:
 
@@ -34,7 +34,8 @@ System requirements:
 	
 2. Z3 4.3:
 
-	DOrder requires Z3 to be installed. Download and install Z3 following all instructions provided here. 
+	DOrder requires Z3 to be installed. Download and install Z3 following all instructions provided 
+	<a href="https://github.com/Z3Prover/z3">here</a>. 
 	We strongly recommend Z3 4.3. To bind Z3 to DOrder, we require users to manually 
 
 			Go into external/z3/ocaml, and run ./build-lib.sh /usr/local/lib/ocaml/
@@ -45,7 +46,7 @@ System requirements:
 	
 3. CamlIDL:	
 
-	CamlIDL can be downloaded from here.
+	CamlIDL can be downloaded from <a href="http://caml.inria.fr/pub/old_caml_site/camlidl/">here</a>.
 	
 	
 To detect whether an operating system supports DOrder, 
@@ -67,15 +68,16 @@ One way to do this is to run, from the top directory,
 
 			./msolve.py ./tests/recursive/mcCarthy91.ml
 	
-Ideally, a precise specification for the well-known mcCarthy91 function should be
-displayed. For any other problem with compiling DOrder, send an email to zhu103 AT myuniversity.
+A precise specification for the well-known mcCarthy91 function should be
+displayed. For any other problem with compiling DOrder, 
+send an email to zhu103 AT myuniversity.
 
 
 Overview
 ===========
 
 Abstractly, DOrder implements a general framework that 
-automatically synthesizes useful specifications as _refinement type_
+automatically synthesizes useful specifications as _refinement types_
 for (higher-order) functional programs from test outcome.
 
 Concretely, DOrder presents a novel automated procedure for discovering
@@ -99,6 +101,7 @@ Run the benchmarks from the paper
 ===========
 
 <h3>Benchmark location:</h3>
+		
 		./tests/reachability/
 
 <h3>How to:</h3>
@@ -116,25 +119,27 @@ We support arbitrary user-defined algebra data types. Examples include AVL tree,
 							
 						 	   ./msolve.py -no_hoflag -reachability ./tests/reachability/redblackset.ml
 
-2. For the above benchmarks, we also support the inference and verification of shape-data specifications. For example, we can infer and verify functional
-correctness specifications for classic list sorting algorithms (e.g. quicksort, mergesort and heapsort) or balanced tree structures (e.g. AVL and Redblack),
+2. We also support the inference and verification of shape-data specifications. For example, we can infer and verify functional
+correctness specifications for classic list sorting algorithms (e.g. quicksort, mergesort and heapsort) or 
+balanced tree data structure programs (e.g. AVL and Redblack),
 proving lists are correctly sorted or trees correctly satisfy BST properties.
-Running our tool using the above commands will also display all the shape-data specifications for the examples.
+Running our tool using the above commands will also display all the synthesized shape-data specifications.
 
 
-<h3>Assumption made by DOrder:</h3>
+<h3>Assumptions made by DOrder:</h3>
 
 For any data structure program _prog_,
 DOrder assumes test inputs to _prog_ are provided in a file <em>prog_harness</em>.
 These test inputs can be generated from automated tools like _quickcheck_.
 In fact, all test inputs from _harness_ files are in _quickcheck_ style.
-They are all very simple.
-If the programmer would like to synthesize specification for some new data structure, 
-she need to create a new _harness_ file for the data structure.
-She can simply reuse many existing tests in the repository. 
+They are all very _simple_.
+If used to synthesize specifications for some new data structure, 
+make sure a new _harness_ file for the data structure is created.
+Many existing _harness_ test files in the repository are reusable. 
 
 For example, consider the _heapsort_ program under ./test/reachability.
-<em>heapsort_harness</em> contains the following code:
+Its test inputs are described in <em>heapsort_harness</em>, 
+which contains the following code:
 
 	let list n = _random a sequence of numbers_
 
@@ -143,16 +148,21 @@ For example, consider the _heapsort_ program under ./test/reachability.
 		heapsort (list 15)
 	let _ = main ()
 
+The line "let _ = fprintf outch "env:newtest\t\n" in" is used to tell
+DOrder to collect input-output behaviors of the function below (e.g. _heapsort_).
+
 <h3>DOrder output explanation:</h3> 
 
 Synthesized specifications are boolean combinations of a set of atomic 
 predicates inferred _per-datatype_. For example, consider the data type 
-_heap_ provied in the _heapsort_ program.
+_heap_ provided in the _heapsort_ program.
 
 	type 'a heap = 
 		| E 
 		| T of int * 'a * 'a heap * 'a heap
 		
+A number of atomic predicates are created from this data type
+(following Section.2 of the paper).
 We first consider possible containment predicates for trees.
 
 		reach (h, u) represents a certain value u is present in a tree h.
@@ -165,7 +175,7 @@ inductively defined subtrees, there are several cases to consider
 when establishing an ordering relation among values
 found within a tree h. We use link (h, t, i, j, u, v) to represent
 the ordering relations u is in the i-th component and v is in the j-th
-component of constructor t in h.
+component of constructor T in h.
 For example, if we are interested in cases where the
 value u appears “before” (according to a specified order) v,
 we could either have that: 
@@ -182,7 +192,16 @@ we could either have that:
 The symmetric cases are obvious,
 and we do not describe them. Notice that in this description
 we have exhausted all possible relations between any two
-values in a tree.
+values in a tree. 
+
+_Simplification:_ Given a predicate link (h, t, i, j, u, v), 
+to improve _readability_ of DOrder, if the
+i-th component of constructor T is the only argument of T that is
+not an inductive data type (e.g. the first argument of T in 'a heap 
+definition given above), we simplify the predicate to link (h, t, j, u, v);
+if both i-th component and j-th component are of inductive data type
+(e.g. the second and third arguments of T in 'a heap), we simplify
+the predicate to link (h, t, ij, u, v). 
 
 After synthesizing atomic predicates from datatype definition, 
 DOrder synthesizes specifications for data structure functions. 
@@ -211,16 +230,16 @@ By learning from test outcome, the following specification is synthesized:
 				((reach (h2, u)) and (reach (h1, v))) or
 				((reach (h2, v)) and (reach (h1, u)))) /\ ...}
 
-In the result type, V represents the result heap. The specifications states that
-the parent-child relation (link (V, 1, 2, u, v) where u and v are free) between 
-elements contained in the result heap preserves their parent-child relation in the 
-input heap h1 and h2.
+In the result type, V represents the result heap. The given specification states that
+the parent-child relation (e.g. link (V, 1, 2, u, v) where u and v are free) between 
+elements contained in the result heap preserves their parent-child relation 
+(e.g. link (h2, t, 1, 3, u, v)) in the input heap h1 and h2.
 
 DOrder also outputs _shape-data_ specifications. For example, for the _heapsort_ function,
 the following specification is synthesized:
 
 	function heapsort with type ls: 'a list ->
-        {'a list | forall (u v ). ((-. link (V, cons, 1, u, v)) or  (v <= u)) /\ ...}
+        {'a list | forall (u v ). ((-. link (V, cons, 0, 1, u, v)) or  (v <= u)) /\ ...}
 
 In the result type, we see that the output list is correctly sorted, where _cons_
 represent the Cons data type constructor of list.
@@ -229,7 +248,7 @@ represent the Cons data type constructor of list.
 Learning other specifications beyond the paper
 ===========
 
-3. In addition to the above ordering properties, SpecLearn (DOrder) can also infer and verify inductive numeric specifications for data structures. For example,
+3. In addition to the above ordering properties, DOrder can also infer and verify inductive numeric specifications for data structures. For example,
 we can infer and verify functional correctness specifications for balanced tree structures (e.g. AVL and Redblack), proving trees can be correctly balanced in
 the data structure implementations. The corresponding inductive data structure benchmarks are included in ./tests/dml/ directory. 
 	
@@ -237,7 +256,7 @@ the data structure implementations. The corresponding inductive data structure b
 		 					   
 							   ./moslve.py -no_hoflag ./tests/dml/set.ml
 
-4. SpecLearn (DOrder) not only handles data structure programs, but also can be used to infer specifications for numeric programs.
+4. DOrder not only handles data structure programs, but also can be used to infer specifications for numeric programs.
 	The _loop_ (numeric) program benchmarks are included in ./tests/folprograms/ directory.
 
         To try an example, run ./msolve.py -no_hoflag ./tests/folprograms/misc/popl07.ml
