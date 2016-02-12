@@ -99,7 +99,7 @@ Run the benchmarks from the paper
 ===========
 
 <h3>Benchmark location:</h3>
-./tests/reachability/
+		./tests/reachability/
 
 <h3>How to:</h3>
 
