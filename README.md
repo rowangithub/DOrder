@@ -245,6 +245,7 @@ the following specification is synthesized:
 In the result type, we see that the output list is correctly sorted, where _cons_
 represent the Cons data type constructor of list.
 
+Readers are welcome to validate the experimental results listed in the paper.
  
 <a href="https://www.cs.purdue.edu/homes/zhu103/pubs/example.pdf">
 	More examples on DOrder output (example syntax follows the paper and
