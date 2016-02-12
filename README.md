@@ -95,7 +95,10 @@ types, going well beyond the scope of existing solutions.
 Run the benchmarks from the paper
 ===========
 
-<h3>Usage:</h3>
+<h3>Benchmark location:</h3>
+./tests/reachability/
+
+<h3>How to:</h3>
 
 1. The inductive data structure program benchmarks, for Automatically Learning Shape Specifications, are included in ./tests/reachability/ directory.
 We can infer and verify specifications involving rich ordering properties of data structures 
@@ -122,6 +125,10 @@ For any data structure program _prog_,
 DOrder assumes test inputs to _prog_ are provided in a file <em>prog_harness</em>.
 These test inputs can be generated from automated tools like _quickcheck_.
 In fact, all test inputs from _harness_ files are in _quickcheck_ style.
+They are all very simple.
+If the programmer would like to synthesize specification for some new data structure, 
+she need to create a new _harness_ file for the data structure.
+She can simply reuse many existing tests in the repository. 
 
 For example, consider the _heapsort_ program under ./test/reachability.
 <em>heapsort_harness</em> contains the following code:
@@ -135,9 +142,9 @@ For example, consider the _heapsort_ program under ./test/reachability.
 
 <h3>DOrder output explanation:</h3> 
 
-Synthesized specifications are composed from a set of atomic predicates
-inferred per-datatype. For example, consider the data type _heap_ provied
-in the _heapsort_ program.
+Synthesized specifications are boolean combinations of a set of atomic 
+predicates inferred _per-datatype_. For example, consider the data type 
+_heap_ provied in the _heapsort_ program.
 
 	type 'a heap = 
 		| E 
@@ -156,15 +163,22 @@ the ordering relations u is in the i-th component and v is in the j-th
 component of constructor t in h.
 For example, if we are interested in cases where the
 value u appears “before” (according to a specified order) v,
-we could either have that: (i) the value v occurs in the first
-(left) subtree from a tree node containing u, described by the
-notation link (h, t, 1, 2, u, v), (ii) the value v occurs in the
-second (right) subtree, described by the notation link (h, t, 1, 3, u, v),
-(iii) or both values are in the tree, but u is found in a subtree
-that is disjoint from the subtree where v occurs. Suppose
-there exists a node whose first subtree contains u and whose
-second subtree contains v. This is
-denoted as link (h, t, 2, 3, u, v). The symmetric cases are obvious,
+we could either have that: 
+
+		(i) the value v occurs in the first
+		(left) subtree from a tree node containing u, described by the
+		notation link (h, t, 1, 2, u, v), 
+
+		(ii) the value v occurs in the
+		second (right) subtree, described by the notation link (h, t, 1, 3, u, v),
+
+		(iii) or both values are in the tree, but u is found in a subtree
+		that is disjoint from the subtree where v occurs. Suppose
+		there exists a node whose first subtree contains u and whose
+		second subtree contains v. This is
+		denoted as link (h, t, 2, 3, u, v). 
+		
+The symmetric cases are obvious,
 and we do not describe them. Notice that in this description
 we have exhausted all possible relations between any two
 values in a tree.
