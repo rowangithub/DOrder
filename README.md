@@ -6,7 +6,7 @@ DOrder
 	
 <strong>DOrder</strong> is a specification synthesizer written in OCaml that
 runs on top of the OCaml compiler. It is capable of synthesizing shape 
-specifications for OCaml data structure programs with <em>no</em> user-annotations. 
+specifications for OCaml data structure programs with <strong>no</strong> user-annotations. 
 It only requires a <strong>small</strong> number of <strong>simple tests</strong>
 to bootstrap synthesis. 
 
