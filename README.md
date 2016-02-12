@@ -4,6 +4,10 @@ DOrder
 <a href="https://www.cs.purdue.edu/homes/zhu103/pubs/draft.pdf">
 	Link to the paper on Automatically Learning Shape Specifications.</a>
 	
+This tool is copyrighted by Purdue University.
+
+Author: He Zhu, Gustavo Petri, Suresh Jagannathan.	
+	
 <strong>DOrder</strong> is a specification synthesizer written in OCaml that
 runs on top of the OCaml compiler. It is capable of synthesizing shape 
 specifications for OCaml data structure programs with <strong>no</strong> user-annotations. 
@@ -15,7 +19,7 @@ pointers to the paper for further information.
 
 <h3>DOrder Virtual Machine</h3>
 
-Before directly accessing DOrder's source code, we recommend a <a href="">VM version</a> of DOrder.
+Before directly accessing DOrder's source code, we recommend a <a href="https://www.dropbox.com/s/hrk7nyqbifa25on/PLDI.ova?dl=0">VM version</a> of DOrder.
 DOrder is complied and ready to be played in the VM version.
 
 <h3>DOrder Source Code</h3>
@@ -245,7 +249,7 @@ the following specification is synthesized:
 In the result type, we see that the output list is correctly sorted, where _cons_
 represent the Cons data type constructor of list.
 
-Readers are welcome to validate the experimental results listed in the paper.
+Readers are welcome to validate the experimental results listed in Tab.5 of the paper.
  
 <a href="https://www.cs.purdue.edu/homes/zhu103/pubs/example.pdf">
 	More examples on DOrder output (example syntax follows the paper and
