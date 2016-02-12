@@ -149,7 +149,8 @@ which contains the following code:
 	let _ = main ()
 
 The line "let _ = fprintf outch "env:newtest\t\n" in" is used to tell
-DOrder to collect input-output behaviors of the function below (e.g. _heapsort_).
+DOrder to collect input-output behaviors of the function below it 
+(e.g. _heapsort_).
 
 <h3>DOrder output explanation:</h3> 
 
@@ -222,7 +223,7 @@ By learning from test outcome, the following specification is synthesized:
 	function merge with type h1: {'a heap | some type omitted ... } 
 		-> h2: {'a heap | sometype omitted ... }
 		-> {'a heap |                              			
-				forall (u v ). ((-. link (V, t, 1, 2, u, v)) or 
+				forall (u v ). ((not link (V, t, 1, 2, u, v)) or 
 				link (h2, t, 1, 2, u, v) or
 				link (h2, t, 1, 3, u, v) or
 				(link (h1, t, 1, 3, u, v) or 
@@ -239,10 +240,15 @@ DOrder also outputs _shape-data_ specifications. For example, for the _heapsort_
 the following specification is synthesized:
 
 	function heapsort with type ls: 'a list ->
-        {'a list | forall (u v ). ((-. link (V, cons, 0, 1, u, v)) or  (v <= u)) /\ ...}
+        {'a list | forall (u v ). ((not link (V, cons, 0, 1, u, v)) or  (v <= u)) /\ ...}
 
 In the result type, we see that the output list is correctly sorted, where _cons_
 represent the Cons data type constructor of list.
+
+ 
+<a href="https://www.cs.purdue.edu/homes/zhu103/pubs/example.pdf">
+	More examples on DOrder output (example syntax follows the paper and
+	is directly consistent with link and reach predicates given above).</a> 
         
 
 Learning other specifications beyond the paper
