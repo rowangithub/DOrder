@@ -27,11 +27,13 @@ You can git-clone the source code of DOrder:
 System requirements:
 
 1. OCaml 3.12:
+
 	The tool is currently incompatible with OCaml 4.0+. We hope to improve our code in the future.
 	The following instructions assume OCaml library is installed under /usr/local/lib/ocaml/, which is
 	also the default setting. If not, please make necessary changes according to your machine.
 	
 2. Z3 4.3:
+
 	DOrder requires Z3 to be installed. Download and install Z3 following all instructions provided here. 
 	We strongly recommend Z3 4.3. To bind Z3 to DOrder, we require users to manually 
 
@@ -42,6 +44,7 @@ System requirements:
 	If any problem is encountered, please follow the ReadMe provided under external/z3/ocaml.
 	
 3. CamlIDL:	
+
 	CamlIDL can be downloaded from here.
 	
 	
