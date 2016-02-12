@@ -95,7 +95,7 @@ types, going well beyond the scope of existing solutions.
 Run the benchmarks from the paper
 ===========
 
-Usage:
+<h3>Usage:</h3>
 
 1. The inductive data structure program benchmarks, for Automatically Learning Shape Specifications, are included in ./tests/reachability/ directory.
 We can infer and verify specifications involving rich ordering properties of data structures 
@@ -116,7 +116,7 @@ proving lists are correctly sorted or trees correctly satisfy BST properties.
 Running our tool using the above commands will also display all the shape-data specifications for the examples.
 
 
-Assumption made by DOrder:
+<h3>Assumption made by DOrder:</h3>
 
 For any data structure program _prog_,
 DOrder assumes test inputs to _prog_ are provided in a file <em>prog_harness</em>.
@@ -133,7 +133,7 @@ For example, consider the _heapsort_ program under ./test/reachability.
 		heapsort (list 15)
 	let _ = main ()
 
-DOrder output explanation: 
+<h3>DOrder output explanation:</h3> 
 
 Synthesized specifications are composed from a set of atomic predicates
 inferred per-datatype. For example, consider the data type _heap_ provied
