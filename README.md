@@ -169,7 +169,8 @@ we could either have that:
 
 		(ii) the value v occurs in the second (right) subtree, described by the notation link (h, t, 1, 3, u, v),
 
-		(iii) or both values are in the tree, but u is found in a subtree that is disjoint from the subtree where v occurs. Suppose there exists a node whose first subtree contains u and whose second subtree contains v. This is denoted as link (h, t, 2, 3, u, v). 
+		(iii) both values are in the tree, but u is found in a subtree that is disjoint from the subtree where v occurs. 
+		Suppose there exists a node whose first subtree contains u and whose second subtree contains v. This is denoted as link (h, t, 2, 3, u, v). 
 		
 The symmetric cases are obvious,
 and we do not describe them. Notice that in this description
