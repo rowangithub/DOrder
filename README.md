@@ -145,7 +145,7 @@ For example, consider the _heapsort_ program under ./test/reachability.
 Its test inputs are described in <em>heapsort_harness</em>, 
 which contains the following code:
 
-	let list n = _random a sequence of numbers_
+	let list n = random <em>n</em> integers
 
 	let main () = 
 		let _ = fprintf outch "env:newtest\t\n" in
