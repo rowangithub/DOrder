@@ -1,36 +1,24 @@
+let list n = 
+	let rec loop i ns = 
+		if i >= n then ns
+		else
+			let v = Random.int 1000 in
+			if (List.exists (fun n -> n = v) ns) then
+				loop i ns
+			else loop (i+1) (v::ns) in
+	loop 0 [] 
+
 let main () =	
-	let ns1 = [|19;13;12;16;6;9;5;15;18;11;20;8|] in	
-	let t1 = Leaf in	
-	let t1 = Array.fold_left (fun t k -> 
-		let _ = fprintf outch "env:newtest\t\n" in
-		insert k t
-		) t1 ns1 in
-	let ns2 =  [|1;14;2;7;3;18;11;25;|] in
-	let t2 = Leaf in	
-	let t2 = Array.fold_left (fun t k -> 
-		let _ = fprintf outch "env:newtest\t\n" in
-		insert k t
-		) t2 ns2 in
-	let ns = [|1;15;14;2;13;12;6;9;5;4;10;3;11;8|] in	
+	let ns = list 20 in	
 	let t = Leaf in	
-	let t = Array.fold_left (fun t k -> 
+	let t = List.fold_left (fun t k -> 
 		let _ = fprintf outch "env:newtest\t\n" in
 		insert k t
 		) t ns in	
-		
-	let _ = Array.fold_left (fun t _ -> 
-		let _ = fprintf outch "env:newtest\t\n" in
-		snd (deleteMin t)
-		) t1 ns1 in 
-	let _ = Array.fold_left (fun t _ -> 
-		let _ = fprintf outch "env:newtest\t\n" in
-		snd (deleteMin t)
-		) t2 ns2 in 
-	let _ = Array.fold_left (fun t _ -> 
+	let _ = List.fold_left (fun t _ -> 
 		let _ = fprintf outch "env:newtest'''\t\n" in
 		snd (deleteMin t)
 		) t ns in
-	
 	let _ = fprintf outch "env:newtest\t\n" in	
 	let _ = findMin true t in
 	()

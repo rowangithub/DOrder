@@ -221,6 +221,7 @@ let main () =
 		 "-hoflag", Arg.Set hoflag, "higher-order analysis";
 		 "-no_hoflag", Arg.Set no_hoflag, "do not analyze higher-order functions";
 		 "-reachability", Arg.Set reachability, "reachability analysis";
+		 "-dump_specs", Arg.Set dump_specs, "dump specifications into files";
      "-v", Arg.Int (fun c -> Common.verbose_level := c), 
               "<level> Set degree of analyzer verbosity:\n\
                \032    0      No output\n\

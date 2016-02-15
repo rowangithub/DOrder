@@ -8,23 +8,31 @@ let list n =
 			else loop (i+1) (v::ns) in
 	loop 0 [] 
 
-let main () =
-	let ns = list 25 in
-	let t = Empty in	
+let main () =		 
+	let ns = list 20 in	
+	let t = Leaf in	
 	let t = List.fold_left (fun t k -> 
 		let _ = fprintf outch "env:newtest\t\n" in
-		add k t
+		insert t k
 		) t ns in
 	let _ = List.fold_left (fun t k -> 
-		
 		let _ = fprintf outch "env:newtest\t\n" in
 		delete k t
 		) t ns in
-
-	
+			
+	let ns' = list 20 in	
+	let t' = Leaf in	
+	let t' = List.fold_left (fun t k -> 
+		let _ = fprintf outch "env:newtest\t\n" in
+		insert t k
+		) t' ns' in
+	let _ = List.fold_left (fun t k -> 
+		let _ = fprintf outch "env:newtest\t\n" in
+		delete k t
+		) t' ns' in	
+			
 	let _ = fprintf outch "env:newtest\t\n" in
-	let _ = lookup t 500 in
+	let _ = member 1000 t in
 	let _ = fprintf outch "env:newtest\t\n" in
-	let _ = lookup t 0 in
-	()
+	let _ = member 20 t in	()
 let _ = main () 

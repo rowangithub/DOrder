@@ -2303,9 +2303,19 @@ let qualify_implementation sourcefile fenv ifenv env qs str tystr =
 		inst_qs
 		(*inst_qualifiers*)) cs in
   let _ = post_solve () in
+	
+  let channel, channelname = 
+		if (!Cf.dump_specs) then
+			let filename = "./specifications.txt" in
+			(formatter_of_out_channel (open_out filename), filename)
+		else 
+			let _ = Format.fprintf Format.std_formatter "\nShow specification synthesis result: @." in
+			(std_formatter, "the above command lines") in
 
+	(*let _ = Format.fprintf Format.std_formatter "##Number of iteration: %d##@." iter_count in*)
+	(*let _ = Format.fprintf Format.std_formatter "Number of tests: %d@." !(Backwalker.tests) in*)
 	let nb_invs = Hashtbl.fold (fun p f res -> 
-		let _ = fprintf std_formatter "function %s with type %a @." 
+		let _ = fprintf channel "function %s with type %a @." 
 			(Path.name p) Frame.pprint (Frame.apply_solution s f) in
 		let ks = Frame.all_refinement_vars f in
 		List.fold_left (fun res k -> 
@@ -2317,10 +2327,9 @@ let qualify_implementation sourcefile fenv ifenv env qs str tystr =
 			) res ks
 		) se_env.funframebindings 0 in
 	
-	let _ = Format.fprintf Format.std_formatter "Number of iteration: %d@." iter_count in
-	(*let _ = Format.fprintf Format.std_formatter "Number of tests: %d@." !(Backwalker.tests) in*)
-	let _ = Format.fprintf Format.std_formatter "Number of verified invariants: %d@." nb_invs in
-	let _ = Format.fprintf Format.std_formatter "Size of hypothesis domain: %d@." !(Cbslearner.nb_hypo) in
+	let _ = Format.fprintf Format.std_formatter "@." in		
+	let _ = Format.fprintf Format.std_formatter "##Size of hypothesis domain: %d##@." !(Cbslearner.nb_hypo) in	
+	let _ = Format.fprintf Format.std_formatter "##In total %d specifications were synthesized in %s. QED.@." nb_invs channelname in
 	(*let _ = Format.fprintf Format.std_formatter "Number of verified disjunctive invariants : %d@." (List.length d_invs) in*)
   (*let _ = dump_frames sourcefile (framemap_apply_solution s !flog) in*)
   match cs with [] -> () | _ -> 

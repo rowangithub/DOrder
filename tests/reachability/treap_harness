@@ -1,19 +1,29 @@
+let list n = 
+	let rec loop i ns = 
+		if i >= n then ns
+		else
+			let v = Random.int 1000 in
+			if (List.exists (fun n -> n = v) ns) then
+				loop i ns
+			else loop (i+1) (v::ns) in
+	loop 0 [] 
+
 let main () =	
-	let ns = [|(1,69);(15,63);(24,72);(14,62);(2,66);(18,75);(13,56);(17,73);(12,71);(6,59);
-	(25,67);(9,55);(5,65);(21,53);(20,60);(4,68);(10,54);(3,61);(23,57);(11,70);(8,58);(16,52)|] in	
-	
+	let ns1 = list 25 in
+	let ns2 = list 25 in
+	let ns = List.map2 (fun x y -> (x, y)) ns1 ns2 in
+
 	let t = Leaf in	
-	let t = Array.fold_left (fun t (k, p) -> 
+	let t = List.fold_left (fun t (k, p) -> 
 		let _ = fprintf outch "env:newtest\t\n" in
 		add t k p
 		) t ns in
-	let _ = Array.fold_left (fun t (k, _) -> 
+	let _ = List.fold_left (fun t (k, _) -> 
 		let _ = fprintf outch "env:newtest\t\n" in
-		(*if (Random.bool ()) then (ignore (find_min t); t)
-		else*) (delete t k)
+		delete t k
 		) t ns in
 	let _ = fprintf outch "env:newtest\t\n" in	
-	let _ = find t 13 in
+	let _ = find t 500 in
 	let _ = fprintf outch "env:newtest\t\n" in	
 	let _ = find t 0 in
 	()

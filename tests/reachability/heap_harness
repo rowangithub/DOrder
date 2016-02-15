@@ -1,25 +1,25 @@
+let list n = 
+	let rec loop i ns = 
+		if i >= n then ns
+		else
+			let v = Random.int 1000 in
+			if (List.exists (fun n -> n = v) ns) then
+				loop i ns
+			else loop (i+1) (v::ns) in
+	loop 0 [] 
+
 let main () =	
-	(*let ns1 = [|19;13;12;16;6;9;5;15;18;11;20;8|] in	*)
-	let ns1 = [|19;13;12;16;6;9;22;5;25;4;15;18;24;11;20;8;1;14;21;2;7;10;3;17;23|] in
+	let ns1 = list 25 in
 	let t1 = Empty in	
-	let t1 = Array.fold_left (fun t k -> 
+	let t1 = List.fold_left (fun t k -> 
 		let _ = fprintf outch "env:newtest\t\n" in
 		add t k
 		) t1 ns1 in
-	(*let ns2 =  [|1;14;2;7;3;18;11;25;|] in*)
-	let ns2 = [|1;15;14;2;13;7;12;6;9;5;4;10;3;18;11;8;25|] in
-	let t2 = Empty in	
-	let t2 = Array.fold_left (fun t k -> 
-		let _ = fprintf outch "env:newtest\t\n" in
-		add t k
-		) t2 ns2 in
-	let _ = Array.fold_left (fun t _ -> 
+	
+	let _ = List.fold_left (fun t _ -> 
 		let _ = fprintf outch "env:newtest\t\n" in
 		remove t
 		) t1 ns1 in 
-	let _ = Array.fold_left (fun t _ -> 
-		let _ = fprintf outch "env:newtest\t\n" in
-		remove t
-		) t2 ns2 in 
+	
 	()
 let _ = main () 

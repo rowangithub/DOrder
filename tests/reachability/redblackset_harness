@@ -1,12 +1,22 @@
+let list n = 
+	let rec loop i ns = 
+		if i >= n then ns
+		else
+			let v = Random.int 1000 in
+			if (List.exists (fun n -> n = v) ns) then
+				loop i ns
+			else loop (i+1) (v::ns) in
+	loop 0 [] 
+
 let main () =		 
-	let ns = [|1;15;14;2;13;12;6;9;5;4;10;3;11;8|] in
+	let ns = list 20 in
 	let t = E in	
-	let t = Array.fold_left (fun t k -> 
+	let t = List.fold_left (fun t k -> 
 		let _ = fprintf outch "env:newtest\t\n" in
 		insert t k
 		) t ns in
 	let _ = fprintf outch "env:newtest\t\n" in	
-	let _ = member t 1 in
+	let _ = member t 500 in
 	let _ = fprintf outch "env:newtest\t\n" in
 	let _ = member t 0 in
 	()

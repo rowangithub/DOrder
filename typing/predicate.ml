@@ -178,8 +178,11 @@ let rec pprint ppf = function
 	| Reach (d, u) -> 
 			fprintf ppf "@[(%s@ (%a, %a))@]" "reach" pprint_pexpr d pprint_pexpr u
 	| Link (d, c, f, u, v)	->
-			fprintf ppf "@[%s@ (%a, %s, %d, %a, %a)@]" 
-				"link" pprint_pexpr d c f pprint_pexpr u pprint_pexpr v	
+			let s, t = 
+				if (f >= 10) then (string_of_int (f/10)), (string_of_int (f mod 10))
+				else "_", (string_of_int f) in
+			fprintf ppf "@[%s@ (%a, %s, %s, %s, %a, %a)@]" 
+				"link" pprint_pexpr d c s t pprint_pexpr u pprint_pexpr v	
 	| Forall (ps, p) -> 
 			fprintf ppf "@[forall (%s). %a@]" 
 				(List.fold_left (fun res p -> 

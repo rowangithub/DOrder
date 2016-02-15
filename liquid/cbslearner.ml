@@ -614,13 +614,14 @@ let otherreturns pure allreturns currreturns focusreturn =
 		let suffix = suffixf focusreturn in
 		if List.length currreturns > 1 || suffix < 0 then []
 		else
-			let _ = assert (List.mem Datatype.forall_vvar (Predicate.vars focusreturn)) in
-			let focusreturn = Predicate.subst Datatype.forall_uexpr Datatype.forall_vvar focusreturn in
-			let others = find_similarity pure focusreturn allreturns in
-			List.filter (fun i -> 
-				let other = List.nth allreturns i in
-				let suffix' = suffixf other in
-				(assert (suffix' >= 0); suffix' <> suffix)) others
+			if (List.mem Datatype.forall_vvar (Predicate.vars focusreturn)) then
+				let focusreturn = Predicate.subst Datatype.forall_uexpr Datatype.forall_vvar focusreturn in
+				let others = find_similarity pure focusreturn allreturns in
+				List.filter (fun i -> 
+					let other = List.nth allreturns i in
+					let suffix' = suffixf other in
+					(assert (suffix' >= 0); suffix' <> suffix)) others
+			else [] (* Fixme. This might need to be improved ... *)
 	else 
 		match focusreturn with
 			| Predicate.Reach (x, u) -> 

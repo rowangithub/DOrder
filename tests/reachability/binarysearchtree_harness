@@ -1,16 +1,26 @@
+let list n = 
+	let rec loop i ns = 
+		if i >= n then ns
+		else
+			let v = Random.int 15 in
+			if (List.exists (fun n -> n = v) ns) then
+				loop i ns
+			else loop (i+1) (v::ns) in
+	loop 0 [] 
+
 let main () =	
-	let ns = [19;13;16;6;22;11;20;8;1;14;21] in
+	let ns = list 15 in
 	let _ = fprintf outch "env:newtest\t\n" in
 	let t = set_of_list ns in
 	let _ = fprintf outch "env:newtest\t\n" in	
-	let _ = member 13 t in
+	let _ = member 15 t in
 	let _ = fprintf outch "env:newtest\t\n" in
 	let _ = member 0 t in
 	let _ = fprintf outch "env:newtest\t\n" in
 	let _ = pre_order t in
 	let _ = fprintf outch "env:newtest\t\n" in
 	let _ = in_order t in
-	let ns = [21;14;1;8;20;11;22;6;16;13;19] in
+	let ns = list 15 in
 	let _ = List.fold_left (fun t x -> 
 		let _ = fprintf outch "env:newtest\t\n" in
 		delete x t

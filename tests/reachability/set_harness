@@ -1,4 +1,4 @@
-let create lowerbound number = 
+let buildset lowerbound number = 
 	let ns = Array.init number (fun _ -> lowerbound + Random.int number) in
 	let t = Empty in	
 	let t = Array.fold_left (fun t k -> 
@@ -7,16 +7,15 @@ let create lowerbound number =
 		) t ns in
 	(t, ns)
 	
-let destory t ns = 
+let freeset t ns = 
 	Array.fold_left (fun t k -> 
 		let _ = fprintf outch "env:newtest\t\n" in
 		remove k t
 		) t ns
 	
 let main () =	
-	(*let ns1 = [|19;13;12;16;6;9;22;5;25;4;15;18;24;11;20;8;1;14;21;2;7;10;3;17;23|] in	*)
-	let (t1, ns1) = create 5 15 in
-	let (t2, ns2) = create 5 15 in
+	let (t1, ns1) = buildset 5 15 in
+	let (t2, ns2) = buildset 5 15 in
 	
 	let _ = fprintf outch "env:newtest\t\n" in
 	let _ = union t1 t2 in
@@ -48,8 +47,8 @@ let main () =
 	let _ = cardinal true t1 in
 	
 	let _ = fprintf outch "env:newtest\t\n" in
-	let _ = destory t1 ns1 in
+	let _ = freeset t1 ns1 in
 	let _ = fprintf outch "env:newtest\t\n" in
-	let _ = destory t2 ns2 in
+	let _ = freeset t2 ns2 in
 	()
 let _ = main () 

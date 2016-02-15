@@ -123,3 +123,4 @@ let dlcode = ref true (* not -nodynlink *)
 let hoflag = ref false
 let no_hoflag = ref false
 let reachability = ref false
+let dump_specs = ref false

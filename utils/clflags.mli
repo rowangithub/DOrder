@@ -107,3 +107,4 @@ val dlcode : bool ref
 val hoflag : bool ref
 val no_hoflag : bool ref
 val reachability : bool ref
+val dump_specs : bool ref
