@@ -130,8 +130,13 @@ send an email to zhu103 AT myuniversity.</p>
 <pre><code>    ./tests/reachability/
 </code></pre>
 
+<p>To run a benchmark [bench]:</p>
+
+<pre><code>    ./msolve.py -no_hoflag -reachability ./tests/reachability/[bench]
+</code></pre>
+
 <h3>
-<a id="how-to-run-dorder" class="anchor" href="#how-to-run-dorder" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>How to run DOrder:</h3>
+<a id="more-explanation-about-benchmarks" class="anchor" href="#more-explanation-about-benchmarks" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>More explanation about benchmarks:</h3>
 
 <ol>
 <li>
@@ -286,7 +291,7 @@ states that the parent-child relation (e.g. link (V, t, 1, 2, u, v) where u and 
 between elements contained in the result heap preserves their parent-child relation 
 (e.g. link (h2, t, 1, 2, u, v)) in the input heap h1 and h2. [You might find that
 link (V, t, 1, 2, u, v) is simplified to link (V, t, 2, u, v) in the output due to the 
-<a href="#simplification">simplification</a>.]</p>
+<a href="#simplification">simplification strategy</a>.]</p>
 
 <p>DOrder also outputs <em>shape-data</em> specifications. For example, for the <em>heapsort</em> function,
 the following specification is synthesized:</p>
