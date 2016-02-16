@@ -186,17 +186,19 @@ we could either have that:
 		(iii) both values are in the tree, but u is found in a subtree that is disjoint from the subtree 
 		where v occurs. Suppose there exists a node whose first subtree contains u (indexed by 2) and whose 
 		second subtree contains v (indexed by 3). This is denoted as link (h, t, 2, 3, u, v). 
-		
-The symmetric cases are obvious,
-and we do not describe them. Notice that in this description
-we have exhausted all possible relations between any two
-values in a tree. 
+
+Notice that in this description we have exhausted all possible relations between any two
+values in a tree.		
+The first argument (indexed by 0) to the _T_ constructor is not considered by all atomic predicates 
+because integer is not part of the polymorphic data structure 'a heap (type theory).
+
 
 <strong>Simplification:</strong> Given a predicate link (h, t, i, j, u, v), 
-to improve _readability_ of DOrder, if the
-i-th component of constructor T is the only argument of _T_ that is
-not an inductive data type (e.g. the first argument of _T_ in 'a heap 
-definition given above), we simplify the predicate to link (h, t, _, j, u, v). 
+to improve _readability_ of DOrder, for a polymorphic data structure 'a type,
+if the i-th component of constructor _T_ is the only polymorphic argument of _T_ 
+that is not an inductive data type (e.g. simple list or tree data structure), 
+we simplify the output of the predicate to link (h, t, j, u, v) because 
+i is obvious and hence hidden in this case. 
 
 After synthesizing atomic predicates from datatype definition, 
 DOrder synthesizes specifications for data structure functions. 
@@ -225,7 +227,7 @@ By learning from test outcome, the following specification is synthesized:
 				((reach (h2, u)) and (reach (h1, v))) or
 				((reach (h2, v)) and (reach (h1, u)))) /\ ...}
 
-We only give one predicate in the result of the function for simplicity.
+We only show one predicate in the result of the function for simplicity.
 In the result type, V represents the value of the result heap. The given specification 
 states that the parent-child relation (e.g. link (V, 1, 2, u, v) where u and v are free) 
 between elements contained in the result heap preserves their parent-child relation 
