@@ -170,8 +170,8 @@ contain values. However, since _T_ contains two
 inductively defined subtrees, there are several cases to consider
 when establishing an ordering relation among values
 found within a tree _h_. We use <strong>link (h, t, i, j, u, v)</strong> 
-to represent the ordering relation that u is contained the i-th component and 
-v is in the j-th component of constructor _T_ in _h_ (_T_ is uncapitalized
+to represent the ordering relation that u is contained the <strong>i-th</strong> component and 
+v is in the <strong>j-th</strong> component of constructor _T_ in _h_ (_T_ is uncapitalized
 in the predicate).
 For example, if we are interested in cases where the
 value u appears “before” (according to a specified order) v,
