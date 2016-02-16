@@ -170,7 +170,7 @@ let rec pprint ppf = function
   | Iff (px, q) ->
       fprintf ppf "@[(%a@ <=>@;<1 2>%a)@]" pprint_pexpr px pprint q
   | Not p ->
-      fprintf ppf "@[(-.@ %a)@]" pprint p
+      fprintf ppf "@[(not@ %a)@]" pprint p
   | And (p, q) ->
       fprintf ppf "@[(%a@ and@;<1 2>@;<1 2>%a)@]" flatten_conjuncts p flatten_conjuncts q
   | Or (p, q) ->
@@ -178,11 +178,13 @@ let rec pprint ppf = function
 	| Reach (d, u) -> 
 			fprintf ppf "@[(%s@ (%a, %a))@]" "reach" pprint_pexpr d pprint_pexpr u
 	| Link (d, c, f, u, v)	->
-			let s, t = 
-				if (f >= 10) then (string_of_int (f/10)), (string_of_int (f mod 10))
-				else "_", (string_of_int f) in
-			fprintf ppf "@[%s@ (%a, %s, %s, %s, %a, %a)@]" 
-				"link" pprint_pexpr d c s t pprint_pexpr u pprint_pexpr v	
+			if (f >= 10) then
+				let s, t = (string_of_int (f/10)), (string_of_int (f mod 10)) in
+				fprintf ppf "@[%s@ (%a, %s, %s, %s, %a, %a)@]" 
+					"link" pprint_pexpr d c s t pprint_pexpr u pprint_pexpr v	
+			else
+				fprintf ppf "@[%s@ (%a, %s, %d, %a, %a)@]" 
+					"link" pprint_pexpr d c f pprint_pexpr u pprint_pexpr v
 	| Forall (ps, p) -> 
 			fprintf ppf "@[forall (%s). %a@]" 
 				(List.fold_left (fun res p -> 
