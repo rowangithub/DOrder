@@ -1495,7 +1495,7 @@ let make_further_solution cs sri spec qs s horefs horeturnrefs unknows unknowret
 		(* if k in horefs then set this qualifer for k otherwise do not set *)
 		if (List.exists (fun unknow -> Path.same unknow k) unknows && not (Hashtbl.mem cache k)) then
 		let _ = Hashtbl.replace cache k () in
-		let qs = Bstats.time "filter1" (List.filter (fun (k', q) -> match k' with
+		let qs = (List.filter (fun (k', q) -> match k' with
 			| Some k' ->
 				if (List.exists (fun horef -> Path.same horef k') horefs) then true
 				else 
@@ -1521,7 +1521,7 @@ let make_further_solution cs sri spec qs s horefs horeturnrefs unknows unknowret
 			else Bstats.time "removedups" (Common.remove_customized_duplicates (Qualifier.equals)) qs in*)
 		let pre_qs = Sol.find s k in
 		(* only want new qualifiers to be added; and, more importantly, pre- and post-invairant are not mixed *)
-		let qs = Bstats.time "filter2" (List.filter (fun q -> 
+		let qs = (List.filter (fun q -> 
 			let qname = Path.name (match q with (p,_,_) -> p) in
 			let pre = Str.regexp_string "Pre" in
 			let post = Str.regexp_string "Post" in
@@ -1694,12 +1694,12 @@ let userqs atomics qs fs =
 				let (invariants, qualifiers) = 
 					let atomics' = (query_atomics ()) in
 					let _ = userqs atomics atomics' functions in
-					let (i, q) = Bstats.time "leanr_from_samples" (learn_from_samples atomics pos_samples) neg_samples in
+					let (i, q) = Bstats.time "learn_from_samples" (learn_from_samples atomics pos_samples) neg_samples in
 					if (not !(Backwalker.hoflag) && !(Clflags.gen_inv)) then
 						let _, q' = (Bstats.time "gen_inv" (gen_inv (Hashtbl.create 0) pos_samples) neg_samples) in 
 						(i, q@q') 
 					else i, q in	
-				let qualifiers = Bstats.time "remove_duplication" (Common.remove_customized_duplicates (fun q1 q2 -> match (q1, q2) with
+				let qualifiers = (Common.remove_customized_duplicates (fun q1 q2 -> match (q1, q2) with
 					| ((Some k1, ((_, valu1, p1) as q1')), (Some k2, ((_, valu2, p2) as q2'))) -> 
 						let b1 = List.exists (fun horef -> Path.same horef k1) horefs in
 						let b2 = List.exists (fun horef -> Path.same horef k2) horefs in
@@ -1723,7 +1723,7 @@ let userqs atomics qs fs =
 				else 
 					(*let _ = assert (not (!array_inv_tried)) in*)
 					let clean_s = Sol.copy s in
-					let s = Bstats.time "make_further_solution" 
+					let s = 
 									(make_further_solution cs sri spec (qualifiers) clean_s horefs horeturnrefs unknows) unknowreturns in
 					let _ = dump_solving qualifiers sri s 0  in 
 				  let _ = Bstats.time "solving wfs" (solve_wf is_higher_order sri) s in
