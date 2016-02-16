@@ -178,7 +178,7 @@ value u appears “before” (according to a specified order) v,
 we could either have that: 
 
 		(i) the value v occurs in the first (left) subtree (indexed by 2) from a tree 
-		node containing u ((indexed by 1)), described by the notation link (h, t, 1, 2, u, v), 
+		node containing u (indexed by 1), described by the notation link (h, t, 1, 2, u, v), 
 
 		(ii) the value v occurs in the second (right) subtree (indexed by 3), described by the 
 		notation link (h, t, 1, 3, u, v),
