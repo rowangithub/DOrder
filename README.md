@@ -88,8 +88,12 @@ This section gives an example about how to validate DOrder.
 <h3>Benchmark location:</h3>
 		
 		./tests/reachability/
+		
+To run a benchmark [bench]:
 
-<h3>How to run DOrder:</h3>
+		./msolve.py -no_hoflag -reachability ./tests/reachability/[bench]
+
+<h3>More explanation about benchmarks:</h3>
 
 1. The inductive data structure program benchmarks, for Automatically Learning Shape Specifications, are included in ./tests/reachability/ directory.
 We can infer and verify specifications involving rich ordering properties of data structures 
@@ -233,7 +237,7 @@ states that the parent-child relation (e.g. link (V, t, 1, 2, u, v) where u and 
 between elements contained in the result heap preserves their parent-child relation 
 (e.g. link (h2, t, 1, 2, u, v)) in the input heap h1 and h2. [You might find that
 link (V, t, 1, 2, u, v) is simplified to link (V, t, 2, u, v) in the output due to the 
-<a href="#simplification">simplification</a>.]
+<a href="#simplification">simplification strategy</a>.]
 
 DOrder also outputs _shape-data_ specifications. For example, for the _heapsort_ function,
 the following specification is synthesized:
