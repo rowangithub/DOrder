@@ -26,27 +26,7 @@ Below, we provide a guide for fun things you can play with DOrder, with
 pointers to the <a href="https://www.cs.purdue.edu/homes/zhu103/pubs/draft.pdf">paper</a> 
 for further information.
 
-Abstractly, DOrder implements a general framework that 
-automatically synthesizes useful specifications as _refinement types_
-for (higher-order) functional programs from test outcome.
-
-Concretely, DOrder presents a novel automated procedure for discovering
-expressive shape specifications for sophisticated functional
-data structures. Our approach extracts potential shape
-predicates based on the definition of constructors of arbitrary
-user-defined inductive data types, and combines these
-predicates within an expressive first-order specification language
-using a lightweight data-driven <strong>learning</strong> procedure.
-
-Notably, this technique requires no programmer annotations,
-and is equipped with a type-based decision procedure to verify
-the correctness of discovered specifications. Experimental
-results indicate that our implementation is both efficient
-and effective, capable of automatically synthesizing sophisticated
-shape specifications over a range of complex data
-types, going well beyond the scope of existing solutions.
-
-You can git-clone the source code of DOrder:
+You can also git-clone the source code of DOrder:
 
 		git clone https://github.com/rowangithub/DOrder.git
 	
