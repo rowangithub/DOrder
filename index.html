@@ -29,7 +29,7 @@
     Link to the virtual machine of DOrder.</a>  </p>
 
 <p>To play with the virtual machine, please read the section
-<a href="#AEC">"PLDI'16 AEC: Run the benchmarks from the paper"</a>.</p>
+<a href="#AEC">"PLDI'16 AEC: Run the benchmarks of the paper"</a>.</p>
 
 <h3>
 <a id="overview" class="anchor" href="#overview" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Overview</h3>
@@ -62,7 +62,7 @@ for further information.</p>
 
 <p>The tool is currently incompatible with OCaml 4.0+. We hope to improve our code in the future.
 The following instructions assume OCaml library is installed under /usr/local/lib/ocaml/, which is
-also the default setting. If not, please make necessary changes according to your machine.</p>
+also the default setting. Please make necessary changes according to your machine.</p>
 </li>
 <li>
 <p>Z3 4.3:</p>
@@ -118,7 +118,7 @@ displayed. For any other problem with compiling DOrder,
 send an email to zhu103 AT myuniversity.</p>
 
 <h1>
-<a id="pldi16-aec-run-the-benchmarks-from-the-paper" class="anchor" href="#pldi16-aec-run-the-benchmarks-from-the-paper" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a><a name="AEC">PLDI'16 AEC: Run the benchmarks from the paper</a>
+<a id="pldi16-aec-run-the-benchmarks-of-the-paper" class="anchor" href="#pldi16-aec-run-the-benchmarks-of-the-paper" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a><a name="AEC">PLDI'16 AEC: Run the benchmarks of the paper</a>
 </h1>
 
 <p>This section gives an example about how to validate DOrder. </p>
@@ -136,12 +136,11 @@ send an email to zhu103 AT myuniversity.</p>
 </code></pre>
 
 <h3>
-<a id="more-explanation-about-benchmarks" class="anchor" href="#more-explanation-about-benchmarks" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>More explanation about benchmarks:</h3>
+<a id="more-explanations-about-benchmarks" class="anchor" href="#more-explanations-about-benchmarks" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>More explanations about benchmarks:</h3>
 
 <ol>
 <li>
-<p>The inductive data structure program benchmarks, for Automatically Learning Shape Specifications, are included in ./tests/reachability/ directory.
-We can infer and verify specifications involving rich ordering properties of data structures 
+<p>We can infer and verify specifications involving rich ordering properties of data structures 
 (e.g. in AVL insertion function, the in-order relation of the output binary tree preserves the in-order relations of the input binary tree;
 in list reversal function, the forward-order relation of the output list is equivalent to the backward-order relation of the input list;
 in heap merge function, the parent-child relation of the output heap preserves the parent-child relations of the input heaps). 
@@ -152,7 +151,7 @@ We support arbitrary user-defined algebra data types. Examples include AVL tree,
 </li>
 <li>
 <p>You should be able to observe specifications inferred for each function in <em>binarysearchtree</em> from your command line interface, 
-which will be explained below. If you prefer to observe the output in a file, add "-dump_specs" parameter, you can then read the 
+which will be explained below. If you prefer to observe the output in a file, add "-dump_specs" parameter, you can then read 
 synthesized specifications in a file "./specifications.txt".</p>
 
 <pre><code>e.g. ./msolve.py -no_hoflag -reachability -dump_specs ./tests/reachability/binarysearchtree.ml
@@ -162,7 +161,7 @@ synthesized specifications in a file "./specifications.txt".</p>
 correctness specifications for classic list sorting algorithms (e.g. quicksort, mergesort and heapsort) or 
 balanced tree data structure programs (e.g. AVL and Redblack),
 proving lists are correctly sorted or trees correctly satisfy BST properties.
-Running our tool using the above commands will also display all the synthesized shape-data specifications.</p></li>
+Running our tool using the above commands will also display all synthesized shape-data specifications.</p></li>
 </ol>
 
 <h3>
@@ -210,7 +209,7 @@ predicates inferred <em>per-datatype</em>. For example, consider the data type
     | T of int * 'a * 'a heap * 'a heap
 </code></pre>
 
-<p>A number of atomic predicates are created from this data type,
+<p>A number of atomic predicates are created for this data type,
 which essentially is a tree data structure.
 We will use <em>h</em> to represent an instance of 'a heap.
 Following Section.2 of the paper,
@@ -221,7 +220,7 @@ we first consider possible containment predicates for <em>h</em>:</p>
 
 <p>A more interesting predicate class is one that establishes
 ordering relations between two elements of a data structure,
-u and v. Recall that in the heap definition only <em>T</em> constructors
+u and v. Recall that in <em>'a</em> <em>heap</em> definition only <em>T</em> constructors
 contain values. However, since <em>T</em> contains two
 inductively defined subtrees, there are several cases to consider
 when establishing an ordering relation among values
@@ -247,7 +246,7 @@ we could either have that: </p>
 <p>Notice that in this description we have exhausted all possible relations between any two
 values in a tree.<br>
 The first argument (indexed by 0) to the <em>T</em> constructor is not considered by all atomic predicates 
-because integer is not part of the polymorphic data structure 'a heap (type theory).</p>
+because integer is not part of the polymorphic data structure <em>'a</em> <em>heap</em> (type theory).</p>
 
 <p><strong><a name="simplification">Simplification:</a></strong> Given a predicate link (h, t, i, j, u, v), 
 to improve <em>readability</em> of DOrder, for a polymorphic data structure <em>'a</em> <em>type</em>,
@@ -285,12 +284,12 @@ Consider the <em>merge</em> function in <em>heapsort</em>,</p>
             ((reach (h2, v)) and (reach (h1, u)))) /\ ...}
 </code></pre>
 
-<p>We only show one predicate in the result of the function for simplicity.
+<p>We only show one predicate in the result for simplicity.
 In the result type, V represents the value of the result heap. The given specification 
-states that the parent-child relation (e.g. link (V, t, 1, 2, u, v) where u and v are free) 
+states that the parent-child relation (e.g. link (V, t, 1, 2, u, v) where u and v are quantified) 
 between elements contained in the result heap preserves their parent-child relation 
 (e.g. link (h2, t, 1, 2, u, v)) in the input heap h1 and h2. [You might find that
-link (V, t, 1, 2, u, v) is simplified to link (V, t, 2, u, v) in the output due to the 
+link (V, t, 1, 2, u, v) is simplified to link (V, t, 2, u, v) in the result due to the 
 <a href="#simplification">simplification strategy</a>.]</p>
 
 <p>DOrder also outputs <em>shape-data</em> specifications. For example, for the <em>heapsort</em> function,
@@ -301,15 +300,18 @@ the following specification is synthesized:</p>
 </code></pre>
 
 <p>In the result type, we see that the output list is correctly sorted, where <em>cons</em>
-is the uncapitalized version the Cons data type constructor of list.</p>
+is the uncapitalized version the Cons data type constructor of list. The predicate
+link (V, cons, 0, 1, u, v) encodes that v is in the tail of a list node containing u.</p>
 
 <h3>
 <a id="how-to-validate-dorder" class="anchor" href="#how-to-validate-dorder" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>How to validate DOrder:</h3>
 
-<p>To validate our experimental results, we displayed detailed runtime information in the
+<p>To validate our experimental results, DOrder displays detailed runtime information in the
 command line interface. For example, assume you run DOrder with</p>
 
 <pre><code>&gt;&gt;&gt; ./msolve.py -no_hoflag -reachability -dump_specs ./tests/reachability/heapsort.ml
+
+[ ... ... ]
 
 ##time##
 
@@ -322,12 +324,13 @@ TOTAL                         29.109 s
 </code></pre>
 
 <p>Here the number of atomic predicates in the hypothesis domain of all the functions in <em>heapsort</em>
-is 81 (column H of Tab.5), the number of verified ordering specifications in terms of either input-output or shape-data relations
-is 28 (column I of Tab.5). The total time taken (learning and verification) is 40.653s (column T of Tab.5). 
-The time spent solely on learning (including the time spent in sampling) is 9.160s (column LT of Tab.5).
-Please do not take the time so serious because it depends on the machine we use.
+is 81 (resp. column H of Tab.5), the number of verified ordering specifications in terms of either 
+input-output or shape-data relations is 28 (resp. column I of Tab.5). The total time taken 
+(learning and verification) is 29.109s (resp. column T of Tab.5). 
+The time spent solely on learning (including the time spent in sampling) is 9.160s 
+(resp. column LT of Tab.5).
 Inferred specifications can be found either in command lines or "./specifications.txt" depending on
-whether "-dump_specs" is used in the parameter to call DOrder.  </p>
+whether "-dump_specs" is used as a parameter to call DOrder.    </p>
 
 <p>Readers are welcome to validate the experimental results listed in Tab.5 of the paper,
 following these steps.</p>
@@ -347,7 +350,7 @@ following these steps.</p>
 <li>
 <p>In addition to the above ordering properties, DOrder can also infer and verify inductive numeric specifications for data structures. For example,
 we can infer and verify functional correctness specifications for balanced tree structures (e.g. AVL and Redblack), proving trees can be correctly balanced in
-the data structure implementations. The corresponding inductive data structure benchmarks are included in ./tests/dml/ directory. </p>
+data structure implementations. The corresponding inductive data structure benchmarks are included in ./tests/dml/ directory. </p>
 
 <pre><code>To try an example, run ./msolve.py -no_hoflag ./tests/dml/bdd.ml or
 
