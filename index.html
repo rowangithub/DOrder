@@ -275,7 +275,7 @@ Consider the <em>merge</em> function in <em>heapsort</em>,</p>
 <pre><code>function merge with type h1: {'a heap | some type omitted ... } 
     -&gt; h2: {'a heap | sometype omitted ... }
     -&gt; {'a heap |                                       
-            forall (u v ). ((not link (V, t, 1, 2, u, v)) or 
+            forall (u v ). ((-. link (V, t, 1, 2, u, v)) or 
             link (h2, t, 1, 2, u, v) or
             link (h2, t, 1, 3, u, v) or
             (link (h1, t, 1, 3, u, v) or 
@@ -284,7 +284,8 @@ Consider the <em>merge</em> function in <em>heapsort</em>,</p>
             ((reach (h2, v)) and (reach (h1, u)))) /\ ...}
 </code></pre>
 
-<p>We only show one predicate in the result for simplicity.
+<p>We only show one predicate in the result for simplicity. The operator "-." represents
+logical negation (\neg).
 In the result type, V represents the value of the result heap. The given specification 
 states that the parent-child relation (e.g. link (V, t, 1, 2, u, v) where u and v are quantified) 
 between elements contained in the result heap preserves their parent-child relation 
@@ -296,7 +297,7 @@ link (V, t, 1, 2, u, v) is simplified to link (V, t, 2, u, v) in the result due 
 the following specification is synthesized:</p>
 
 <pre><code>function heapsort with type ls: 'a list -&gt;
-    {'a list | forall (u v ). ((not link (V, cons, 0, 1, u, v)) or  (v &lt;= u)) /\ ...}
+    {'a list | forall (u v ). ((-. link (V, cons, 0, 1, u, v)) or  (v &lt;= u)) /\ ...}
 </code></pre>
 
 <p>In the result type, we see that the output list is correctly sorted, where <em>cons</em>
