@@ -25,7 +25,17 @@
 <p><a href="https://www.cs.purdue.edu/homes/zhu103/pubs/draft.pdf">
     Link to the paper on Automatically Learning Shape Specifications.</a></p>
 
-<p>This tool is copyrighted by Purdue University.</p>
+<p><a href="https://www.dropbox.com/s/hrk7nyqbifa25on/PLDI.ova?dl=0">
+    Link to the virtual machine of DOrder.</a>  </p>
+
+<p>To play with the virtual machine, please read the section
+"PLDI'16 AEC: Run the benchmarks from the paper" given below.</p>
+
+<h3>
+<a id="overview" class="anchor" href="#overview" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Overview</h3>
+    
+
+<p>DOrder is copyrighted by Purdue University.</p>
 
 <p>Author: He Zhu, Gustavo Petri, Suresh Jagannathan.  </p>
 
@@ -36,18 +46,10 @@ It only requires a <strong>small</strong> number of <strong>simple tests</strong
 to bootstrap synthesis. </p>
 
 <p>Below, we provide a guide for fun things you can play with DOrder, with
-pointers to the paper for further information.</p>
+pointers to the <a href="https://www.cs.purdue.edu/homes/zhu103/pubs/draft.pdf">paper</a> 
+for further information.</p>
 
-<h3>
-<a id="dorder-virtual-machine" class="anchor" href="#dorder-virtual-machine" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>DOrder Virtual Machine</h3>
-
-<p>Before directly accessing DOrder's source code, we recommend a <a href="https://www.dropbox.com/s/hrk7nyqbifa25on/PLDI.ova?dl=0">VM version</a> of DOrder.
-DOrder is complied and ready to be played in the VM version.</p>
-
-<h3>
-<a id="dorder-source-code" class="anchor" href="#dorder-source-code" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>DOrder Source Code</h3>
-
-<p>You can git-clone the source code of DOrder:</p>
+<p>You can also git-clone the source code of DOrder:</p>
 
 <pre><code>    git clone https://github.com/rowangithub/DOrder.git
 </code></pre>
@@ -116,30 +118,9 @@ displayed. For any other problem with compiling DOrder,
 send an email to zhu103 AT myuniversity.</p>
 
 <h1>
-<a id="overview" class="anchor" href="#overview" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Overview</h1>
+<a id="pldi16-aec-run-the-benchmarks-from-the-paper" class="anchor" href="#pldi16-aec-run-the-benchmarks-from-the-paper" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>PLDI'16 AEC: Run the benchmarks from the paper</h1>
 
-<p>Abstractly, DOrder implements a general framework that 
-automatically synthesizes useful specifications as <em>refinement types</em>
-for (higher-order) functional programs from test outcome.</p>
-
-<p>Concretely, DOrder presents a novel automated procedure for discovering
-expressive shape specifications for sophisticated functional
-data structures. Our approach extracts potential shape
-predicates based on the definition of constructors of arbitrary
-user-defined inductive data types, and combines these
-predicates within an expressive first-order specification language
-using a lightweight data-driven <strong>learning</strong> procedure.</p>
-
-<p>Notably, this technique requires no programmer annotations,
-and is equipped with a type-based decision procedure to verify
-the correctness of discovered specifications. Experimental
-results indicate that our implementation is both efficient
-and effective, capable of automatically synthesizing sophisticated
-shape specifications over a range of complex data
-types, going well beyond the scope of existing solutions.</p>
-
-<h1>
-<a id="run-the-benchmarks-from-the-paper" class="anchor" href="#run-the-benchmarks-from-the-paper" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Run the benchmarks from the paper</h1>
+<p>This section gives an example about how to validate DOrder. </p>
 
 <h3>
 <a id="benchmark-location" class="anchor" href="#benchmark-location" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Benchmark location:</h3>
@@ -149,7 +130,7 @@ types, going well beyond the scope of existing solutions.</p>
 </code></pre>
 
 <h3>
-<a id="how-to" class="anchor" href="#how-to" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>How to:</h3>
+<a id="how-to-run-dorder" class="anchor" href="#how-to-run-dorder" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>How to run DOrder:</h3>
 
 <ol>
 <li>
@@ -160,11 +141,15 @@ in list reversal function, the forward-order relation of the output list is equi
 in heap merge function, the parent-child relation of the output heap preserves the parent-child relations of the input heaps). 
 We support arbitrary user-defined algebra data types. Examples include AVL tree, Splay tree, Braun tree, Skew heap, Treap, etc.</p>
 
-<pre><code>To try an example, run ./msolve.py -no_hoflag -reachability ./tests/reachability/binarytree.ml or
+<pre><code>To try an example, run ./msolve.py -no_hoflag -reachability ./tests/reachability/binarysearchtree.ml
+</code></pre>
+</li>
+<li>
+<p>You should be able to observe specifications inferred for each function in <em>binarysearchtree</em> from your command line interface, 
+which will be explained below. If you prefer to observe the output in a file, add "-dump_specs" parameter, you can then read the 
+synthesized specifications in a file "./specifications.txt".</p>
 
-                       ./msolve.py -no_hoflag -reachability ./tests/reachability/avl2.ml or
-
-                       ./msolve.py -no_hoflag -reachability ./tests/reachability/redblackset.ml
+<pre><code>e.g. ./msolve.py -no_hoflag -reachability -dump_specs ./tests/reachability/binarysearchtree.ml
 </code></pre>
 </li>
 <li><p>We also support the inference and verification of shape-data specifications. For example, we can infer and verify functional
@@ -200,10 +185,15 @@ let _ = main ()
 
 <p>The line "let _ = fprintf outch "env:newtest\t\n" in" is used to tell
 DOrder to collect input-output behaviors of the function below it 
-(e.g. <em>heapsort</em>).</p>
+(e.g. <em>heapsort</em>). The function is then called with a randomly generated
+list whose length equals 15. </p>
 
 <h3>
-<a id="dorder-output-explanation" class="anchor" href="#dorder-output-explanation" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>DOrder output explanation:</h3> 
+<a id="output-explanation" class="anchor" href="#output-explanation" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Output explanation:</h3>
+
+<p>If "-dump_specs" is used as a parameter to call DOrder, you can
+read synthesized specifications in "./specifications.txt". Otherwise,
+you can directly read synthesized result from the command line interface.</p>
 
 <p>Synthesized specifications are boolean combinations of a set of atomic 
 predicates inferred <em>per-datatype</em>. For example, consider the data type 
@@ -214,34 +204,38 @@ predicates inferred <em>per-datatype</em>. For example, consider the data type
     | T of int * 'a * 'a heap * 'a heap
 </code></pre>
 
-<p>A number of atomic predicates are created from this data type
-(following Section.2 of the paper).
-We first consider possible containment predicates for trees.</p>
+<p>A number of atomic predicates are created from this data type,
+which essentially is a tree data structure.
+We will use <em>h</em> to represent an instance of 'a heap.
+Following Section.2 of the paper,
+we first consider possible containment predicates for <em>h</em>:</p>
 
-<pre><code>    reach (h, u) represents a certain value u is present in a tree h.
+<pre><code>    reach (h, u) represents a certain value u is present in a heap h:
 </code></pre>
 
 <p>A more interesting predicate class is one that establishes
 ordering relations between two elements of a data structure,
-u and v. Recall that in the heap definition only T constructors
-contain values. However, since T contains two
+u and v. Recall that in the heap definition only <em>T</em> constructors
+contain values. However, since <em>T</em> contains two
 inductively defined subtrees, there are several cases to consider
 when establishing an ordering relation among values
-found within a tree h. We use link (h, t, i, j, u, v) to represent
-the ordering relations u is in the i-th component and v is in the j-th
-component of constructor T in h.
+found within a tree <em>h</em>. We use <strong>link (h, t, i, j, u, v)</strong> 
+to represent the ordering relation that u is contained the <strong>i-th</strong> component and 
+v is in the <strong>j-th</strong> component of constructor <em>T</em> in <em>h</em> (<em>T</em> is uncapitalized
+in the predicate).
 For example, if we are interested in cases where the
 value u appears “before” (according to a specified order) v,
 we could either have that: </p>
 
-<pre><code>    (i) the value v occurs in the first (left) subtree from a tree node containing u, 
-    described by the notation link (h, t, 1, 2, u, v), 
+<pre><code>    (i) the value v occurs in the first (left) subtree (indexed by 2) from a tree 
+    node containing u ((indexed by 1)), described by the notation link (h, t, 1, 2, u, v), 
 
-    (ii) the value v occurs in the second (right) subtree, described by the notation link (h, t, 1, 3, u, v),
+    (ii) the value v occurs in the second (right) subtree (indexed by 3), described by the 
+    notation link (h, t, 1, 3, u, v),
 
-    (iii) both values are in the tree, but u is found in a subtree that is disjoint from the subtree where v occurs. 
-    Suppose there exists a node whose first subtree contains u and whose second subtree contains v. 
-    This is denoted as link (h, t, 2, 3, u, v). 
+    (iii) both values are in the tree, but u is found in a subtree that is disjoint from the subtree 
+    where v occurs. Suppose there exists a node whose first subtree contains u (indexed by 2) and whose 
+    second subtree contains v (indexed by 3). This is denoted as link (h, t, 2, 3, u, v). 
 </code></pre>
 
 <p>The symmetric cases are obvious,
@@ -251,12 +245,9 @@ values in a tree. </p>
 
 <p><em>Simplification:</em> Given a predicate link (h, t, i, j, u, v), 
 to improve <em>readability</em> of DOrder, if the
-i-th component of constructor T is the only argument of T that is
-not an inductive data type (e.g. the first argument of T in 'a heap 
-definition given above), we simplify the predicate to link (h, t, j, u, v);
-if both i-th component and j-th component are of inductive data type
-(e.g. the second and third arguments of T in 'a heap), we simplify
-the predicate to link (h, t, ij, u, v). </p>
+i-th component of constructor T is the only argument of <em>T</em> that is
+not an inductive data type (e.g. the first argument of <em>T</em> in 'a heap 
+definition given above), we simplify the predicate to link (h, t, _, j, u, v). </p>
 
 <p>After synthesizing atomic predicates from datatype definition, 
 DOrder synthesizes specifications for data structure functions. 
@@ -287,10 +278,11 @@ Consider the <em>merge</em> function in <em>heapsort</em>,</p>
             ((reach (h2, v)) and (reach (h1, u)))) /\ ...}
 </code></pre>
 
-<p>In the result type, V represents the result heap. The given specification states that
-the parent-child relation (e.g. link (V, 1, 2, u, v) where u and v are free) between 
-elements contained in the result heap preserves their parent-child relation 
-(e.g. link (h2, t, 1, 3, u, v)) in the input heap h1 and h2.</p>
+<p>We only give one predicate in the result of the function for simplicity.
+In the result type, V represents the value of the result heap. The given specification 
+states that the parent-child relation (e.g. link (V, 1, 2, u, v) where u and v are free) 
+between elements contained in the result heap preserves their parent-child relation 
+(e.g. link (h2, t, 1, 2, u, v)) in the input heap h1 and h2.</p>
 
 <p>DOrder also outputs <em>shape-data</em> specifications. For example, for the <em>heapsort</em> function,
 the following specification is synthesized:</p>
@@ -300,9 +292,40 @@ the following specification is synthesized:</p>
 </code></pre>
 
 <p>In the result type, we see that the output list is correctly sorted, where <em>cons</em>
-represent the Cons data type constructor of list.</p>
+is the uncapitalized version the Cons data type constructor of list.</p>
 
-<p>Readers are welcome to validate the experimental results listed in Tab.5 of the paper.</p>
+<h3>
+<a id="how-to-validate-dorder" class="anchor" href="#how-to-validate-dorder" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>How to validate DOrder:</h3>
+
+<p>To validate our experimental results, we displayed detailed runtime information in the
+command line interface. For example, assume you run DOrder with</p>
+
+<pre><code>&gt;&gt;&gt; ./msolve.py -no_hoflag -reachability -dump_specs ./tests/reachability/heapsort.ml
+
+##time##
+
+Time to solve constraints:
+TOTAL                         40.653 s
+    learn_from_samples             9.160 s
+
+##Size of hypothesis domain: 81##
+##In total 28 specifications were synthesized in the above command lines. QED.
+</code></pre>
+
+<p>Here the number of atomic predicates in the hypothesis domain of all the functions in <em>heapsort</em>
+is 81 (column H of Tab.5), the number of verified ordering specifications in terms of either input-output or shape-data relations
+is 28 (column I of Tab.5). The total time taken (learning and verification) is 40.653s (column T of Tab.5). 
+The time spent solely on learning (including the time spent in sampling) is 9.160s (column LT of Tab.5).
+Please do not take the time so serious because it depends on the machine we use.
+Inferred specifications can be found either in command lines or "./specifications.txt" depending on
+whether "-dump_specs" is used in the parameter to call DOrder.  </p>
+
+<p>Readers are welcome to validate the experimental results listed in Tab.5 of the paper,
+following these steps.</p>
+
+<h3>
+<a id="more-examples" class="anchor" href="#more-examples" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>More examples:</h3> 
+ 
 
 <p><a href="https://www.cs.purdue.edu/homes/zhu103/pubs/example.pdf">
     More examples on DOrder output (example syntax follows the paper and
