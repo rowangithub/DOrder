@@ -230,7 +230,7 @@ By learning from test outcome, the following specification is synthesized:
 				((reach (h2, u)) and (reach (h1, v))) or
 				((reach (h2, v)) and (reach (h1, u)))) /\ ...}
 
-We only show one predicate in the result of the function for simplicity.
+We only show one predicate in the result for simplicity.
 In the result type, V represents the value of the result heap. The given specification 
 states that the parent-child relation (e.g. link (V, t, 1, 2, u, v) where u and v are quantified) 
 between elements contained in the result heap preserves their parent-child relation 
