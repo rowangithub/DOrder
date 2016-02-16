@@ -8,7 +8,7 @@ DOrder
 	Link to the virtual machine of DOrder.</a>	
 
 To play with the virtual machine, please read the section
-"PLDI'16 AEC: Run the benchmarks from the paper" given below.
+<a href="#AEC">"PLDI'16 AEC: Run the benchmarks from the paper"</a>.
 	
 <h3>Overview</h3>
 	
@@ -80,7 +80,7 @@ send an email to zhu103 AT myuniversity.
 
 
 
-PLDI'16 AEC: Run the benchmarks from the paper
+<a name="AEC">PLDI'16 AEC: Run the benchmarks from the paper</a>
 ===========
 
 This section gives an example about how to validate DOrder. 
@@ -192,7 +192,7 @@ and we do not describe them. Notice that in this description
 we have exhausted all possible relations between any two
 values in a tree. 
 
-_Simplification:_ Given a predicate link (h, t, i, j, u, v), 
+<strong>Simplification:</strong> Given a predicate link (h, t, i, j, u, v), 
 to improve _readability_ of DOrder, if the
 i-th component of constructor T is the only argument of _T_ that is
 not an inductive data type (e.g. the first argument of _T_ in 'a heap 
