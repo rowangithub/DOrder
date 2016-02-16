@@ -100,11 +100,12 @@ We support arbitrary user-defined algebra data types. Examples include AVL tree,
 
 		To try an example, run ./msolve.py -no_hoflag -reachability ./tests/reachability/binarysearchtree.ml
 		
-2. You should be able to observe some specifications inferred for each function in binarysearchtree.ml from your command line interface, 
-which we will explain below. If you prefer to observe the output in a file, add "-dump_specs" parameters:
+2. You should be able to observe specifications inferred for each function in _binarysearchtree_ from your command line interface, 
+which will be explained below. If you prefer to observe the output in a file, add "-dump_specs" parameter, you can then read the 
+synthesized specifications in a file "./specifications.txt".
 					
-		./msolve.py -no_hoflag -reachability -dump_specs ./tests/reachability/binarysearchtree.ml
-		You then can read the synthesized specifications in a local file "./specifications.txt".		
+		e.g. ./msolve.py -no_hoflag -reachability -dump_specs ./tests/reachability/binarysearchtree.ml
+				
 
 3. We also support the inference and verification of shape-data specifications. For example, we can infer and verify functional
 correctness specifications for classic list sorting algorithms (e.g. quicksort, mergesort and heapsort) or 
