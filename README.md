@@ -250,7 +250,7 @@ command line interface. For example, assume you run DOrder with
 	##time##
 
 	Time to solve constraints:
-	TOTAL                         40.653 s
+	TOTAL                         29.109 s
 		learn_from_samples             9.160 s
 		
 	##Size of hypothesis domain: 81##

@@ -2,7 +2,7 @@ let list n =
 	let rec loop i ns = 
 		if i >= n then ns
 		else
-			let v = Random.int 1000 in
+			let v = Random.int 500 in
 			if (List.exists (fun n -> n = v) ns) then
 				loop i ns
 			else loop (i+1) (v::ns) in
@@ -10,5 +10,5 @@ let list n =
 
 let main () = 
 	let _ = fprintf outch "env:newtest\t\n" in
-	heapsort (list 15)
+	heapsort (list 10)
 let _ = main ()
