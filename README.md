@@ -232,8 +232,8 @@ In the result type, V represents the value of the result heap. The given specifi
 states that the parent-child relation (e.g. link (V, t, 1, 2, u, v) where u and v are free) 
 between elements contained in the result heap preserves their parent-child relation 
 (e.g. link (h2, t, 1, 2, u, v)) in the input heap h1 and h2. [You might find that
-link (V, t, 1, 2, u, v) is simplified to link (V, t, 2, u, v) based on our 
-<a href="#simplification">simplification strategy</a>.]
+link (V, t, 1, 2, u, v) is simplified to link (V, t, 2, u, v) in the output due to the 
+<a href="#simplification">simplification</a>.]
 
 DOrder also outputs _shape-data_ specifications. For example, for the _heapsort_ function,
 the following specification is synthesized:
