@@ -170,7 +170,7 @@ let rec pprint ppf = function
   | Iff (px, q) ->
       fprintf ppf "@[(%a@ <=>@;<1 2>%a)@]" pprint_pexpr px pprint q
   | Not p ->
-      fprintf ppf "@[(not@ %a)@]" pprint p
+      fprintf ppf "@[(-.@ %a)@]" pprint p
   | And (p, q) ->
       fprintf ppf "@[(%a@ and@;<1 2>@;<1 2>%a)@]" flatten_conjuncts p flatten_conjuncts q
   | Or (p, q) ->

@@ -222,7 +222,7 @@ By learning from test outcome, the following specification is synthesized:
 	function merge with type h1: {'a heap | some type omitted ... } 
 		-> h2: {'a heap | sometype omitted ... }
 		-> {'a heap |                              			
-				forall (u v ). ((not link (V, t, 1, 2, u, v)) or 
+				forall (u v ). ((-. link (V, t, 1, 2, u, v)) or 
 				link (h2, t, 1, 2, u, v) or
 				link (h2, t, 1, 3, u, v) or
 				(link (h1, t, 1, 3, u, v) or 
@@ -230,7 +230,8 @@ By learning from test outcome, the following specification is synthesized:
 				((reach (h2, u)) and (reach (h1, v))) or
 				((reach (h2, v)) and (reach (h1, u)))) /\ ...}
 
-We only show one predicate in the result for simplicity.
+We only show one predicate in the result for simplicity. The operator "-." represents
+logical negation (\neg).
 In the result type, V represents the value of the result heap. The given specification 
 states that the parent-child relation (e.g. link (V, t, 1, 2, u, v) where u and v are quantified) 
 between elements contained in the result heap preserves their parent-child relation 
@@ -242,7 +243,7 @@ DOrder also outputs _shape-data_ specifications. For example, for the _heapsort_
 the following specification is synthesized:
 
 	function heapsort with type ls: 'a list ->
-        {'a list | forall (u v ). ((not link (V, cons, 0, 1, u, v)) or  (v <= u)) /\ ...}
+        {'a list | forall (u v ). ((-. link (V, cons, 0, 1, u, v)) or  (v <= u)) /\ ...}
 
 In the result type, we see that the output list is correctly sorted, where _cons_
 is the uncapitalized version the Cons data type constructor of list. The predicate

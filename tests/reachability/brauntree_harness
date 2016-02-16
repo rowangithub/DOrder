@@ -9,7 +9,7 @@ let list n =
 	loop 0 [] 
 	
 let learn () = 
-	let ns = list 20 in
+	let ns = list 15 in
 	let t = Leaf in	
 	let t = List.fold_left (fun t k -> 
 		let _ = fprintf outch "env:newtest\t\n" in
