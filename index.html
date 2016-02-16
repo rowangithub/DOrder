@@ -229,7 +229,7 @@ value u appears “before” (according to a specified order) v,
 we could either have that: </p>
 
 <pre><code>    (i) the value v occurs in the first (left) subtree (indexed by 2) from a tree 
-    node containing u ((indexed by 1)), described by the notation link (h, t, 1, 2, u, v), 
+    node containing u (indexed by 1), described by the notation link (h, t, 1, 2, u, v), 
 
     (ii) the value v occurs in the second (right) subtree (indexed by 3), described by the 
     notation link (h, t, 1, 3, u, v),
@@ -239,16 +239,17 @@ we could either have that: </p>
     second subtree contains v (indexed by 3). This is denoted as link (h, t, 2, 3, u, v). 
 </code></pre>
 
-<p>The symmetric cases are obvious,
-and we do not describe them. Notice that in this description
-we have exhausted all possible relations between any two
-values in a tree. </p>
+<p>Notice that in this description we have exhausted all possible relations between any two
+values in a tree.<br>
+The first argument (indexed by 0) to the <em>T</em> constructor is not considered by all atomic predicates 
+because integer is not part of the polymorphic data structure 'a heap (type theory).</p>
 
-<p><strong>Simplification:</strong> Given a predicate link (h, t, i, j, u, v), 
-to improve <em>readability</em> of DOrder, if the
-i-th component of constructor T is the only argument of <em>T</em> that is
-not an inductive data type (e.g. the first argument of <em>T</em> in 'a heap 
-definition given above), we simplify the predicate to link (h, t, _, j, u, v). </p>
+<p><strong><a name="simplification">Simplification:</a></strong> Given a predicate link (h, t, i, j, u, v), 
+to improve <em>readability</em> of DOrder, for a polymorphic data structure <em>'a</em> <em>type</em>,
+if the i-th component of constructor <em>T</em> is the only polymorphic argument of <em>T</em> 
+that is not an inductive data type (e.g. simple list or tree data structure), 
+we simplify the output of the predicate to link (h, t, j, u, v) because 
+i is obvious and hence hidden in this case. </p>
 
 <p>After synthesizing atomic predicates from datatype definition, 
 DOrder synthesizes specifications for data structure functions. 
@@ -279,11 +280,13 @@ Consider the <em>merge</em> function in <em>heapsort</em>,</p>
             ((reach (h2, v)) and (reach (h1, u)))) /\ ...}
 </code></pre>
 
-<p>We only give one predicate in the result of the function for simplicity.
+<p>We only show one predicate in the result of the function for simplicity.
 In the result type, V represents the value of the result heap. The given specification 
-states that the parent-child relation (e.g. link (V, 1, 2, u, v) where u and v are free) 
+states that the parent-child relation (e.g. link (V, t, 1, 2, u, v) where u and v are free) 
 between elements contained in the result heap preserves their parent-child relation 
-(e.g. link (h2, t, 1, 2, u, v)) in the input heap h1 and h2.</p>
+(e.g. link (h2, t, 1, 2, u, v)) in the input heap h1 and h2. [You might find that
+link (V, t, 1, 2, u, v) is simplified to link (V, t, 2, u, v) in the output due to the 
+<a href="#simplification">simplification</a>.]</p>
 
 <p>DOrder also outputs <em>shape-data</em> specifications. For example, for the <em>heapsort</em> function,
 the following specification is synthesized:</p>
@@ -306,7 +309,7 @@ command line interface. For example, assume you run DOrder with</p>
 ##time##
 
 Time to solve constraints:
-TOTAL                         40.653 s
+TOTAL                         29.109 s
     learn_from_samples             9.160 s
 
 ##Size of hypothesis domain: 81##
