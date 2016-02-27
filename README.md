@@ -144,6 +144,13 @@ DOrder to collect input-output behaviors of the function below it
 (e.g. _heapsort_). The function is then called with a randomly generated
 list whose length equals 15. 
 
+<color="red">DOrder uses a naive data structure serialization technique 
+in its sampling, possibly resulting in imprecise results when duplicated
+values are contained in one data structure. However, enforcing
+distinct values in sampled data structures does not affect soundness
+and completeness of DOrder in terms of shape specification synthesis.
+</color>
+
 <h3>Output explanation:</h3>
 
 If "-dump_specs" is used as a parameter to call DOrder, you can
