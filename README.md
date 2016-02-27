@@ -128,9 +128,10 @@ If used to synthesize specifications for some new data structure,
 make sure a new _harness_ file for the data structure is created.
 Many existing _harness_ test files in the repository are reusable. 
 
+<a name="DIS">
 For example, consider the _heapsort_ program under ./test/reachability.
 Its test inputs are described in <em>heapsort_harness</em>, 
-which contains the following code:
+which contains the following code:</a>
 
 	let list n = random _n_ integers
 
@@ -144,7 +145,7 @@ DOrder to collect input-output behaviors of the function below it
 (e.g. _heapsort_). The function is then called with a randomly generated
 list whose length equals 15. 
 
-<a>DOrder uses a naive data structure serialization technique 
+<a href="#DIS">DOrder uses a naive data structure serialization technique 
 in its sampling, possibly resulting in imprecise results when duplicated
 values are contained in one data structure. However, enforcing
 distinct values in sampled data structures does not affect soundness
