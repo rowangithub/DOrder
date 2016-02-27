@@ -26,7 +26,7 @@
     Link to the paper on Automatically Learning Shape Specifications.</a></p>
 
 <p><a href="https://www.dropbox.com/s/hrk7nyqbifa25on/PLDI.ova?dl=0">
-    Link to the virtual machine of DOrder (password: admin).</a>    </p>
+    Link to the virtual machine of DOrder.</a>  </p>
 
 <p>To play with the virtual machine, please read the section
 <a href="#AEC">"PLDI'16 AEC: Run the benchmarks of the paper"</a>.</p>
@@ -176,9 +176,10 @@ If used to synthesize specifications for some new data structure,
 make sure a new <em>harness</em> file for the data structure is created.
 Many existing <em>harness</em> test files in the repository are reusable. </p>
 
-<p>For example, consider the <em>heapsort</em> program under ./test/reachability.
+<p><a name="DIS">
+For example, consider the <em>heapsort</em> program under ./test/reachability.
 Its test inputs are described in <em>heapsort_harness</em>, 
-which contains the following code:</p>
+which contains the following code:</a></p>
 
 <pre><code>let list n = random _n_ integers
 
@@ -192,6 +193,13 @@ let _ = main ()
 DOrder to collect input-output behaviors of the function below it 
 (e.g. <em>heapsort</em>). The function is then called with a randomly generated
 list whose length equals 15. </p>
+
+<p><a href="#DIS">DOrder uses a naive data structure serialization technique 
+in its sampling, possibly resulting in imprecise results when duplicated
+values are contained in one data structure. However, enforcing
+distinct values in sampled data structures does not affect soundness
+and completeness of DOrder in terms of shape specification synthesis.
+</a></p>
 
 <h3>
 <a id="output-explanation" class="anchor" href="#output-explanation" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Output explanation:</h3>
