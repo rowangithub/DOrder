@@ -23,7 +23,7 @@ It only requires a <strong>small</strong> number of <strong>simple tests</strong
 to bootstrap synthesis. 
 
 Below, we provide a guide for fun things you can play with DOrder, with
-pointers to the <a href="https://www.cs.purdue.edu/homes/zhu103/pubs/draft.pdf">paper</a> 
+pointers to the <a href="https://www.cs.purdue.edu/homes/zhu103/pubs/pldipaper.pdf">paper</a> 
 for further information.
 
 You can also git-clone the source code of DOrder:
