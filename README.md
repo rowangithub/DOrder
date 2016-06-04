@@ -1,7 +1,7 @@
 DOrder
 ==================
 
-<a href="https://www.cs.purdue.edu/homes/zhu103/pubs/draft.pdf">
+<a href="https://www.cs.purdue.edu/homes/zhu103/pubs/pldipaper.pdf">
 	Link to the paper on Automatically Learning Shape Specifications.</a>
 	
 <a href="https://www.dropbox.com/s/hrk7nyqbifa25on/PLDI.ova?dl=0">
