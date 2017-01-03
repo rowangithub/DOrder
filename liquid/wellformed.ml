@@ -138,7 +138,7 @@ let pred_is_well_typed env p =
 				| Frame.Fconstr (d_type, ds,_,_,_) -> 
 					if (Hashtbl.mem (!measures) d_type) then (
 						let declaration = Hashtbl.find (!udt_table) d_type in
-						let cons = String.capitalize cons in 
+						let cons = String.capitalize_ascii cons in 
 						match declaration.type_kind with 
 							| Type_variant decs -> (List.mem_assoc cons decs)
 							| kind -> assert false
@@ -152,7 +152,7 @@ let pred_is_well_typed env p =
 							match d with
 								| Frame.Fconstr (d_type, _,_,_,_) when (Hashtbl.mem (!measures) d_type) -> 
 									(let declaration = Hashtbl.find (!udt_table) d_type in
-									let cons = String.capitalize cons in 
+									let cons = String.capitalize_ascii cons in 
 									match declaration.type_kind with 
 										| Type_variant decs -> (List.mem_assoc cons decs)
 										| kind -> assert false )

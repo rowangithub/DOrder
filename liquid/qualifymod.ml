@@ -168,9 +168,9 @@ let quickcheck_measures	se_env fpath =
 			
 (** Add higher order function (array) encoding to support local reasoning *)
 let encode_higher_order_function se_env env recflag bindings = 
-	let rec count_ho_args t = match repr t with
+	(*let rec count_ho_args t = match repr t with
 		| {desc = Tarrow (_,_,t,_)} -> 1 + count_ho_args t
-		| _ -> 0 in 
+		| _ -> 0 in *)
 	let encode p t fpath exps env = 
 		(*let n = count_ho_args t + 1 in
 		let hoargs = Array.to_list (Array.init n (fun i -> P.Var (F.get_ho_param i))) in
@@ -245,7 +245,6 @@ let encode_higher_order_function se_env env recflag bindings =
 		| _ -> env
 	) env bindings
 
-
 (** Invariant: effect is only useful when constrain a function expression *)	
 let rec constrain inherit_effect se_env e env guard =
   let desc_ty = (e.exp_desc, repr e.exp_type) in
@@ -319,7 +318,7 @@ and constrain_constructed se_env (env, guard, f) cstrdesc args e =
 								else 
 									let sublinks = Datatype.get_all_links udt_table p in
 									Predicate.big_and (List.map (fun (n, i) ->
-										let n = String.lowercase n in
+										let n = String.lowercase_ascii n in
 										Predicate.logic_equals (Predicate.Link (Constraint.qual_test_expr,n,i,forall_uexpr,forall_vexpr))
 										(Predicate.Not Predicate.True)
 										) sublinks) in
@@ -363,7 +362,7 @@ and constrain_constructed se_env (env, guard, f) cstrdesc args e =
 									)
 								else
 									Predicate.big_and (List.map (fun (n, i) -> 
-										let n = String.lowercase n in
+										let n = String.lowercase_ascii n in
 										Predicate.logic_equals (Predicate.Link (Constraint.qual_test_expr,n,i,forall_uexpr,forall_vexpr))
 										(Predicate.Or ( 
 											Predicate.Link (hd,n,i,forall_uexpr,forall_vexpr),
@@ -481,7 +480,7 @@ and constr_bind se_env env matche matchf e constructor_desc patterns =
 							(Predicate.Not Predicate.True) 
 						else 
 							Predicate.big_and (List.map (fun (n, i) -> 
-								let n = String.lowercase n in
+								let n = String.lowercase_ascii n in
 								Predicate.logic_equals (Predicate.Link (matche,n,i,forall_uexpr,forall_vexpr))
 								(Predicate.Not Predicate.True) 
 							) sublinks) in	
@@ -525,7 +524,7 @@ and constr_bind se_env env matche matchf e constructor_desc patterns =
 								)
 							else 
 								Predicate.big_and (List.map (fun (n, i) -> 
-									let n = String.lowercase n in
+									let n = String.lowercase_ascii n in
 									Predicate.logic_equals (Predicate.Link (matche,n,i,forall_uexpr,forall_vexpr))
 									(Predicate.Or ( 
 										Predicate.Link (hd,n,i,forall_uexpr,forall_vexpr),

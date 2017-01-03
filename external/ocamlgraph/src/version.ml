@@ -1,2 +1,2 @@
 let version = "0.99b"
-let date = "Tue Aug 4 16:49:41 BST 2015"
+let date = "Mon Nov 21 00:41:22 EST 2016"

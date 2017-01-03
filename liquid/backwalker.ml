@@ -120,9 +120,9 @@ let detect_arr_adj_pattern badf allbindings unsounds =
 			let pairs = List.filter (fun (_,_,inds') -> 
 				List.for_all2 (fun ind ind' -> 
 				match (ind, ind') with
-					| (Predicate.Var p, Predicate.Binop (_, Predicate.Minus, Predicate.Var q))
-					| (Predicate.Var p, Predicate.Binop (Predicate.Var q, Predicate.Minus, _))
-					| (Predicate.Var p, Predicate.Binop (Predicate.Var q, Predicate.Plus, _))
+					| (Predicate.Var p, Predicate.Binop (_, Predicate.Minus, Predicate.Var q)) when (Path.same p q)-> true
+					| (Predicate.Var p, Predicate.Binop (Predicate.Var q, Predicate.Minus, _)) when (Path.same p q)-> true
+					| (Predicate.Var p, Predicate.Binop (Predicate.Var q, Predicate.Plus, _)) when (Path.same p q)-> true
 					| (Predicate.Var p, Predicate.Binop (_, Predicate.Plus, Predicate.Var q)) when (Path.same p q)-> true
 					| _ -> false
 				) inds inds'
@@ -1162,19 +1162,24 @@ let gen_atomics () =
 				(Path.name fp) Predicate.pprint conditional in*)
 			let newcons = ref [] in
 			let _ = Predicate.map_pred (fun pred -> match pred with
-				| Predicate.Atom (_, Predicate.Eq, Predicate.PInt c)
+				| Predicate.Atom (_, Predicate.Eq, Predicate.PInt c) when c = 0 || c >= 4 ->
+					(newcons := (!newcons) @ [(Predicate.Ge, c)] @ [(Predicate.Le, c)]; pred)
 				| Predicate.Atom (Predicate.PInt c, Predicate.Eq, _) when c = 0 || c >= 4 ->
 					(newcons := (!newcons) @ [(Predicate.Ge, c)] @ [(Predicate.Le, c)]; pred)
-				| Predicate.Atom (_, Predicate.Ge, Predicate.PInt c) 
+				| Predicate.Atom (_, Predicate.Ge, Predicate.PInt c) when c = 0 || c >= 4 -> 
+					(newcons := (!newcons) @ [(Predicate.Ge, c)]; pred) 
 				| Predicate.Atom (Predicate.PInt c, Predicate.Le, _) when c = 0 || c >= 4 -> 
 					(newcons := (!newcons) @ [(Predicate.Ge, c)]; pred)
-				| Predicate.Atom (_, Predicate.Gt, Predicate.PInt c) 
+				| Predicate.Atom (_, Predicate.Gt, Predicate.PInt c) when c = 0 || c >= 4 -> 
+					(newcons := (!newcons) @ [(Predicate.Le, c)]; pred)
 				| Predicate.Atom (Predicate.PInt c, Predicate.Lt, _) when c = 0 || c >= 4 -> 
 					(newcons := (!newcons) @ [(Predicate.Le, c)]; pred)
-				| Predicate.Atom (_, Predicate.Le, Predicate.PInt c) 
+				| Predicate.Atom (_, Predicate.Le, Predicate.PInt c) when c = 0 || c >= 4 -> 
+					(newcons := (!newcons) @ [(Predicate.Le, c)]; pred)
 				| Predicate.Atom (Predicate.PInt c, Predicate.Ge, _) when c = 0 || c >= 4 -> 
 					(newcons := (!newcons) @ [(Predicate.Le, c)]; pred)
-				| Predicate.Atom (_, Predicate.Lt, Predicate.PInt c) 
+				| Predicate.Atom (_, Predicate.Lt, Predicate.PInt c) when c = 0 || c >= 4 ->
+					(newcons := (!newcons) @ [(Predicate.Ge, c)]; pred)
 				| Predicate.Atom (Predicate.PInt c, Predicate.Gt, _) when c = 0 || c >= 4 ->
 					(newcons := (!newcons) @ [(Predicate.Ge, c)]; pred)
 				| _ -> pred

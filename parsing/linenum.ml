@@ -131,7 +131,7 @@ let __ocaml_lex_tables = {
 }
 
 let rec skip_line lexbuf =
-  __ocaml_lex_skip_line_rec lexbuf 0
+    __ocaml_lex_skip_line_rec lexbuf 0
 and __ocaml_lex_skip_line_rec lexbuf __ocaml_lex_state =
   match Lexing.engine __ocaml_lex_tables __ocaml_lex_state lexbuf with
       | 0 ->
@@ -155,7 +155,8 @@ and __ocaml_lex_skip_line_rec lexbuf __ocaml_lex_state =
         raise End_of_file )
 # 157 "parsing/linenum.ml"
 
-  | __ocaml_lex_state -> lexbuf.Lexing.refill_buff lexbuf; __ocaml_lex_skip_line_rec lexbuf __ocaml_lex_state
+  | __ocaml_lex_state -> lexbuf.Lexing.refill_buff lexbuf; 
+      __ocaml_lex_skip_line_rec lexbuf __ocaml_lex_state
 
 ;;
 
@@ -176,4 +177,4 @@ let for_position file loc =
   (!filename, !linenum - 1, !linebeg)
 
 
-# 180 "parsing/linenum.ml"
+# 181 "parsing/linenum.ml"

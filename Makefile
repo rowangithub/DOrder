@@ -189,7 +189,7 @@ graphlib:
 minisatlib:
 	cd external/satsolvers/minisat/core; $(MAKE)$
 
-libs: graphlib minisatlib
+libs: graphlib
 
 world: liquid.byte liquid.opt
 

@@ -126,7 +126,7 @@ let get_all_links udt_table path =
 			
 
 let update_shape_predicates udt_table path cstrname args qual_test_expr = 
-	let cstrname' = String.lowercase cstrname in
+	let cstrname' = String.lowercase_ascii cstrname in
 	let declaration = Hashtbl.find udt_table path in
 	let (allparams, params) = match declaration.type_kind with 
 		| Type_variant decs -> (decs, List.assoc cstrname decs)
@@ -169,7 +169,7 @@ let update_shape_predicates udt_table path cstrname args qual_test_expr =
 			) ([], []) links))
 		) extra_tbl []) in
 	let extra_links = (List.map (fun (n, i) -> 
-		let n' = String.lowercase n in
+		let n' = String.lowercase_ascii n in
 		Predicate.logic_equals (Predicate.Link (qual_test_expr,n',i,forall_uexpr,forall_vexpr))
 			(Predicate.big_or (List.map (fun linkid -> Predicate.Link (List.nth args linkid, n',i,forall_uexpr,forall_vexpr)) links)) 
 		) extra_links) in 	

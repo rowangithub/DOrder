@@ -52,7 +52,7 @@ let initial_env () =
   try
     if !Clflags.nopervasives
     then Env.initial
-    else Env.open_pers_signature "Pervasives" Env.initial
+    else Env.open_pers_signature "Pervasives" Env.initial;
   with Not_found ->
     failwith "cannot open pervasives.cmi"
 
@@ -238,4 +238,4 @@ let main () =
 
 let _ = 
   Printf.printf "MSolve 1.0: © Copyright 2016 Purdue Univerisity, All rights reserved \n";
-  main (); exit 0
+	main (); exit 0

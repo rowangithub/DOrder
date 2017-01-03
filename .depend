@@ -277,9 +277,9 @@ typing/typemod.cmx: typing/types.cmx typing/typedtree.cmx typing/typedecl.cmx \
     typing/ident.cmx typing/env.cmx typing/ctype.cmx utils/config.cmx \
     utils/clflags.cmx typing/btype.cmx parsing/asttypes.cmi \
     typing/typemod.cmi 
-typing/types.cmo: typing/primitive.cmi typing/predicate.cmi typing/path.cmi \
+typing/types.cmo: typing/primitive.cmi typing/path.cmi \
     utils/misc.cmi typing/ident.cmi parsing/asttypes.cmi typing/types.cmi 
-typing/types.cmx: typing/primitive.cmx typing/predicate.cmx typing/path.cmx \
+typing/types.cmx: typing/primitive.cmx typing/path.cmx \
     utils/misc.cmx typing/ident.cmx parsing/asttypes.cmi typing/types.cmi 
 typing/typetexp.cmo: utils/warnings.cmi typing/types.cmi utils/tbl.cmi \
     typing/printtyp.cmi typing/path.cmi parsing/parsetree.cmi utils/misc.cmi \

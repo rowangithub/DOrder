@@ -728,6 +728,32 @@ external string_to_format :
 external format_to_string :
  ('a, 'b, 'c, 'd, 'e, 'f) format6 -> string = "%identity"
 
+external sformat_length : ('a, 'b, 'c, 'd, 'e, 'f) format6 -> int
+    = "%string_length"
+external sformat_get : ('a, 'b, 'c, 'd, 'e, 'f) format6 -> int -> char
+    = "%string_safe_get"
+
+let sub_format incomplete_format bad_conversion_format conv fmt i =
+  let len = sformat_length fmt in
+  let rec sub_fmt c i =
+    let close = if c = '(' then ')' else (* '{' *) '}' in
+    let rec sub j =
+       if j >= len then incomplete_format fmt else
+       match sformat_get fmt j with
+       | '%' -> sub_sub (succ j)
+       | _ -> sub (succ j)
+    and sub_sub j =
+       if j >= len then incomplete_format fmt else
+       match sformat_get fmt j with
+       | '(' | '{' as c ->
+         let j = sub_fmt c (succ j) in
+         sub (succ j)
+       | '}' | ')' as c ->
+         if c = close then succ j else bad_conversion_format fmt i c
+       | _ -> sub (succ j) in
+    sub i in
+  sub_fmt conv i
+
 let type_format loc fmt =
 
   let ty_arrow gty ty = newty (Tarrow ("", instance gty, ty, Cok)) in
@@ -871,8 +897,8 @@ let type_format loc fmt =
         | '{' | '(' as c ->
           let j = j + 1 in
           if j >= len then incomplete_format fmt else
-          let sj =
-            Printf.CamlinternalPr.Tformat.sub_format
+          let sj = 
+            sub_format
               (fun fmt -> incomplete_format (format_to_string fmt))
               (fun fmt -> bad_conversion (format_to_string fmt))
               c (string_to_format fmt) j in

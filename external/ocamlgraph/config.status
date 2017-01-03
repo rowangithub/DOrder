@@ -427,7 +427,7 @@ Copyright (C) 2012 Free Software Foundation, Inc.
 This config.status script is free software; the Free Software Foundation
 gives unlimited permission to copy, distribute and modify it."
 
-ac_pwd='/Users/HeZhu/Documents/workspace/DOrder/external/ocamlgraph'
+ac_pwd='/Users/hezhu/Documents/DOrder/external/ocamlgraph'
 srcdir='.'
 test -n "$AWK" || AWK=awk
 # The default lists apply if the user does not specify any file.
@@ -590,7 +590,7 @@ S["LIBEXT"]=".a"
 S["EXE"]=""
 S["OCAMLWIN32"]="no"
 S["OCAMLLIB"]="/usr/local/lib/ocaml"
-S["OCAMLVERSION"]="3.12.0"
+S["OCAMLVERSION"]="4.03.0"
 S["OCAMLBEST"]="opt"
 S["LABLGTK2"]="no"
 S["OCAMLFIND"]=""

@@ -85,7 +85,7 @@ let genPredicates fpath tbl templates =
 (* Synthesize a set of atomic predicates plus with those given by the users *)	
 (** Compare whether 2 predicates are equivalent *)
 let comparePred p1 p2 = match (p1, p2) with
-	| (Predicate.Atom (_,Predicate.Eq,_), Predicate.Atom (_,c,_))
+	| (Predicate.Atom (_,Predicate.Eq,_), Predicate.Atom (_,c,_)) when c <> Predicate.Eq -> false
 	| (Predicate.Atom (_,c,_), Predicate.Atom (_,Predicate.Eq,_)) when c <> Predicate.Eq -> false
 	| (p1, p2) ->
 		let p1vars = Predicate.vars p1 in
@@ -602,7 +602,9 @@ let symmetric_version pred =
 let suffixf return =
 	match return with
 		| Predicate.Reach (Predicate.Proj (i, e), u)
+			when (u = Datatype.forall_uexpr || u = Datatype.forall_vexpr) -> i
 		| Predicate.Atom (Predicate.Proj (i, e), Predicate.Eq, u) 
+			when (u = Datatype.forall_uexpr || u = Datatype.forall_vexpr) -> i
 		| Predicate.Atom (u, Predicate.Eq, Predicate.Proj (i, e)) 
 			when (u = Datatype.forall_uexpr || u = Datatype.forall_vexpr) -> i
 		| _ -> (-1)
@@ -939,7 +941,7 @@ let heap_cdnf_learn path heap_samples tbl enforces env fr udt_table =
 								) [] allparams in
 					if (isreturn p) then
 						(resparams, (List.map (fun (cstrname, index) -> 
-						Predicate.Link ((*Predicate.Var*) p, String.lowercase cstrname, index, 
+						Predicate.Link ((*Predicate.Var*) p, String.lowercase_ascii cstrname, index, 
 							Datatype.forall_uexpr, Datatype.forall_vexpr)
 						) alllinks) @ (
 							(** if p is of record type, then we generate the symmtric version *)
@@ -952,11 +954,11 @@ let heap_cdnf_learn path heap_samples tbl enforces env fr udt_table =
 							((List.map (fun s -> (Predicate.Reach (p, s))) resscalars) @ resreturns)), resobjs @ [p], resscalars)
 					else
 					(((List.map (fun (cstrname, index) -> 
-						Predicate.Link ((*Predicate.Var*) p, String.lowercase cstrname, index, 
+						Predicate.Link ((*Predicate.Var*) p, String.lowercase_ascii cstrname, index, 
 							Datatype.forall_uexpr, Datatype.forall_vexpr)
 						) alllinks) @
 					(List.map (fun (cstrname, index) -> 
-						Predicate.Link ((*Predicate.Var*) p, String.lowercase cstrname, index, 
+						Predicate.Link ((*Predicate.Var*) p, String.lowercase_ascii cstrname, index, 
 							Datatype.forall_vexpr, Datatype.forall_uexpr)
 						) alllinks) @
 					([Predicate.Reach ((*Predicate.Var*) p, Datatype.forall_uexpr);
@@ -1046,7 +1048,7 @@ let heap_cdnf_learn path heap_samples tbl enforces env fr udt_table =
 			(*let _ = Format.fprintf Format.std_formatter "check pred %a@." Predicate.pprint atomic in*)
 			match atomic with
 			| Predicate.Link (t, cons, index, u, v) ->
-				let cons = String.capitalize cons in
+				let cons = String.capitalize_ascii cons in
 				let t = (exp_var t) ^ "_heap" in
 				let u = List.assoc (Path.name (Predicate.exp_var u)) sample in
 				let v = List.assoc (Path.name (Predicate.exp_var v)) sample in

@@ -19,6 +19,8 @@
    - manual/cmds/native.etex in the doc sources
 *)
 
+open Format
+
 type t =
   | Comment_start                           (*  1 *)
   | Comment_not_end                         (*  2 *)
@@ -126,8 +128,8 @@ let letter = function
   | _ -> assert false
 ;;
 
-let active = Array.create (last_warning_number + 1) true;;
-let error = Array.create (last_warning_number + 1) false;;
+let active = Array.make (last_warning_number + 1) true;;
+let error = Array.make (last_warning_number + 1) false;;
 
 let is_active x = active.(number x);;
 let is_error x = error.(number x);;
@@ -156,7 +158,7 @@ let parse_opt flags s =
     if i >= String.length s then () else
     match s.[i] with
     | 'A' .. 'Z' ->
-       List.iter set (letter (Char.lowercase s.[i]));
+       List.iter set (letter (Char.lowercase_ascii s.[i]));
        loop (i+1)
     | 'a' .. 'z' ->
        List.iter clear (letter s.[i]);
@@ -173,7 +175,7 @@ let parse_opt flags s =
         for n = n1 to min n2 last_warning_number do myset n done;
         loop i
     | 'A' .. 'Z' ->
-       List.iter myset (letter (Char.lowercase s.[i]));
+       List.iter myset (letter (Char.lowercase_ascii s.[i]));
        loop (i+1)
     | 'a' .. 'z' ->
        List.iter myset (letter s.[i]);
@@ -272,13 +274,21 @@ let print ppf w =
     if msg.[i] = '\n' then incr newlines;
   done;
   let (out, flush, newline, space) =
-    Format.pp_get_all_formatter_output_functions ppf ()
+		let out_functions = Format.pp_get_formatter_out_functions ppf () in
+		(out_functions.out_string, out_functions.out_flush, 
+			out_functions.out_newline, out_functions.out_spaces)
   in
   let countnewline x = incr newlines; newline x in
-  Format.pp_set_all_formatter_output_functions ppf out flush countnewline space;
+	let orig_out_functions = {
+		out_string = out; out_flush = flush; 
+											out_newline = newline; out_spaces = space} in
+	let out_functions = {
+		out_string = out; out_flush = flush; 
+											out_newline = countnewline; out_spaces = space} in
+  Format.pp_set_formatter_out_functions ppf out_functions;
   Format.fprintf ppf "%d: %s" num msg;
   Format.pp_print_flush ppf ();
-  Format.pp_set_all_formatter_output_functions ppf out flush newline space;
+  Format.pp_set_formatter_out_functions ppf orig_out_functions;
   if error.(num) then incr nerrors;
   !newlines
 ;;

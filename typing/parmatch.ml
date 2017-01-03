@@ -52,8 +52,8 @@ let is_absent_pat p = match p.pat_desc with
 | _ -> false
 
 let sort_fields args =
-  Sort.list
-    (fun (lbl1,_) (lbl2,_) -> lbl1.lbl_pos <= lbl2.lbl_pos)
+ 	List.sort
+    (fun (lbl1,_) (lbl2,_) -> compare lbl1.lbl_pos lbl2.lbl_pos)
     args
 
 let records_args l1 l2 =
@@ -141,7 +141,7 @@ let find_label lbl lbls =
   try
     let name,_,_ = List.nth lbls lbl.lbl_pos in
     name
-  with Failure "nth" -> "*Unkown label*"
+  with Failure _ -> "*Unkown label*"
 
 let rec get_record_labels ty tenv =
   match get_type_descr ty tenv with
@@ -675,8 +675,8 @@ let should_extend ext env = match ext with
 
 (* complement constructor tags *)
 let complete_tags nconsts nconstrs tags =
-  let seen_const = Array.create nconsts false
-  and seen_constr = Array.create nconstrs false in
+  let seen_const = Array.make nconsts false
+  and seen_constr = Array.make nconstrs false in
   List.iter
     (function
       | Cstr_constant i -> seen_const.(i) <- true

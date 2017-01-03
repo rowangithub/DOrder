@@ -431,7 +431,7 @@ and tree_of_typobject sch fi nm =
                | _ -> l)
             fields [] in
         let sorted_fields =
-          Sort.list (fun (n, _) (n', _) -> n <= n') present_fields in
+          List.sort (fun (n, _) (n', _) -> String.compare n n') present_fields in
         tree_of_typfields sch rest sorted_fields in
       let (fields, rest) = pr_fields fi in
       Otyp_object (fields, rest)
@@ -933,7 +933,9 @@ let explanation unif t3 t4 ppf =
   | Tvar, Tunivar | Tunivar, Tvar ->
       fprintf ppf "@,The universal variable %a would escape its scope"
         type_expr (if t3.desc = Tunivar then t3 else t4)
-  | Tfield (lab, _, _, _), _
+  | Tfield (lab, _, _, _), _ when lab = dummy_method ->
+			fprintf ppf
+        "@,Self type cannot be unified with a closed object type"
   | _, Tfield (lab, _, _, _) when lab = dummy_method ->
       fprintf ppf
         "@,Self type cannot be unified with a closed object type"

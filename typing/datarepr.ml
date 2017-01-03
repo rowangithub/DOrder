@@ -64,7 +64,7 @@ let dummy_label =
     lbl_private = Public }
 
 let label_descrs ty_res lbls repres priv =
-  let all_labels = Array.create (List.length lbls) dummy_label in
+  let all_labels = Array.make (List.length lbls) dummy_label in
   let rec describe_labels num = function
       [] -> []
     | (name, mut_flag, ty_arg) :: rest ->

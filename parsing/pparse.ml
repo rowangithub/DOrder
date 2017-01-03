@@ -51,7 +51,7 @@ let file ppf inputfile parse_fun ast_magic =
   let ic = open_in_bin inputfile in
   let is_ast_file =
     try
-      let buffer = String.create (String.length ast_magic) in
+      let buffer = Bytes.create (String.length ast_magic) in
       really_input ic buffer 0 (String.length ast_magic);
       if buffer = ast_magic then true
       else if String.sub buffer 0 9 = String.sub ast_magic 0 9 then

@@ -27,14 +27,14 @@ let version = Sys.ocaml_version
 
 let standard_library_default = "/usr/local/lib/ocaml"
 
-let standard_library =
-  try
+let standard_library = "./ocamlib"
+  (*try
     Sys.getenv "OCAMLLIB"
   with Not_found ->
   try
     Sys.getenv "CAMLLIB"
   with Not_found ->
-    standard_library_default
+    standard_library_default*)
 
 let standard_runtime = "/usr/local/bin/ocamlrun"
 let ccomp_type = "cc"

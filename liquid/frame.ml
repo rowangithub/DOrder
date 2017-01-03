@@ -622,19 +622,6 @@ let rec get_refinements fr = match fr with
 		List.fold_left (fun res f -> res @ (get_refinements f)) [Some k] fs 
 	| _ -> [None]
 
-(** n_supplied > 0, ho_n = 0, curr_n = 0 *)
-let rec get_partial_app_subs fr n_supplied ho_n curr_n = match fr with
-	| Farrow (Some l, f1, f2, _) -> 
-		(Pattern.bind_pexpr l (Predicate.Var (get_ho_param curr_n)))
-			@ (get_partial_app_subs f2 n_supplied ho_n (curr_n+1))
-	| Farrow (None, f1, f2, _) -> 
-		if (curr_n = 0) then (* from n_supplied *) 
-			(get_ho_param n_supplied, Predicate.Var (get_ho_param curr_n))
-				:: (get_partial_app_subs f2 n_supplied (n_supplied+1) (curr_n+1))
-		else (* from curr_n *) 
-			(get_ho_param ho_n, Predicate.Var (get_ho_param curr_n))
-				:: (get_partial_app_subs f2 n_supplied (ho_n+1) (curr_n+1))
-	| _ -> []	
 
 let rec count_named_args fr = match fr with
 	| Farrow (Some l, f1, f2, _) -> 1 + count_named_args f2
@@ -946,3 +933,18 @@ let rec frame_to_subs frame i =
 		| Farrow (Some p, f1, f2, _) -> (C.expand bindpat [(p, Predicate.Var (get_ho_param i))] []
 			) @ (frame_to_subs f2 (i+1))
 		| _ -> []
+
+(** n_supplied > 0, ho_n = 0, curr_n = 0 *)
+let rec get_partial_app_subs fr n_supplied ho_n curr_n = 
+	match fr with
+	| Farrow (Some l, f1, f2, _) -> 
+		(Pattern.bind_pexpr l (Predicate.Var (get_ho_param curr_n)))
+			@ (get_partial_app_subs f2 n_supplied ho_n (curr_n+1))
+	| Farrow (None, f1, f2, _) -> 
+		if (curr_n = 0) then (* from n_supplied *) 
+			((get_ho_param n_supplied, Predicate.Var (get_ho_param curr_n)))
+				:: (get_partial_app_subs f2 n_supplied (n_supplied+1) (curr_n+1))
+		else (* from curr_n *) 
+			(get_ho_param ho_n, Predicate.Var (get_ho_param curr_n))
+				:: (get_partial_app_subs f2 n_supplied (ho_n+1) (curr_n+1))
+	| _ -> []	

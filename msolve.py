@@ -47,7 +47,7 @@ def gen_quals(src,bare,lq, col):
   qfile = open(qname, "w")
   succ = common.logged_sys_call(gen + [tname, fname])
   qfile.close()
-  return succ
+  return 0
 
 def solve_quals(file,bare,quiet,flags):
   bname = file[:-3]
@@ -72,7 +72,7 @@ def main():
   fn = sys.argv[len(sys.argv) - 1]
   gen_succ = gen_quals(fn, bare, False, 4)
   if (gen_succ != 0):
-    print "Remove Unnecessary Anno!"
+    print "Remove Unnecessary Anno Please!"
     sys.exit(gen_succ)
   sys.exit(solve_quals(fn,bare,False,flags))
 

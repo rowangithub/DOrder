@@ -1441,7 +1441,7 @@ let filter_dtyinv qs =
 	let measures = Hashtbl.fold (fun m _ res -> m::res) !(Wellformed.measures) [] in
 	List.filter (fun (name, _, _) -> 
 		let name = Path.name name in
-		let name = String.lowercase name in	
+		let name = String.lowercase_ascii name in	
 		List.exists (fun m -> Common.str_contains name (Path.name m)) measures	
 	) qs 
 	
@@ -1619,12 +1619,12 @@ let remove_nonalpha = Str.global_replace (Str.regexp "[^a-zA-Z]+") "";;
 let userqs atomics qs fs = 
 	(* Split the qs into { 1) + 3) } and { 2) } *)
 	let (spec, atomicpreds) = List.partition (fun (name, _, p) -> 
-		let name = String.lowercase (Path.name name) in
+		let name = String.lowercase_ascii (Path.name name) in
 		List.for_all (fun f -> not (Common.str_contains name (Path.name f))) fs
 		) qs in
 	let _ = (List.iter (fun ((name, _, p)) -> 
 		let name = Path.name name in
-		let name = String.lowercase name in	
+		let name = String.lowercase_ascii name in	
 		let name = remove_nonalpha name in
 		if (Hashtbl.mem atomics name) then
 			Hashtbl.replace atomics name (Hashtbl.find atomics name @ [p])
