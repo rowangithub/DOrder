@@ -4,12 +4,6 @@ DOrder
 <a href="https://www.cs.purdue.edu/homes/zhu103/pubs/pldipaper.pdf">
 	Link to the paper on Automatically Learning Shape Specifications.</a>
 	
-<a href="https://www.dropbox.com/s/hrk7nyqbifa25on/PLDI.ova?dl=0">
-	Link to the virtual machine of DOrder.</a>	
-
-To play with the virtual machine, please read the section
-<a href="#AEC">"PLDI'16 AEC: Run the benchmarks of the paper"</a>.
-	
 <h3>Overview</h3>
 	
 DOrder is copyrighted by Purdue University.
