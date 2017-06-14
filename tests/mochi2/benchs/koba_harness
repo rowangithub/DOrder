@@ -1,2 +1,0 @@
-let _ = fprintf outch "env:newtest\t\n"
-let _ = main 0
