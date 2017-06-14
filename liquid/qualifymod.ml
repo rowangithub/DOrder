@@ -1795,7 +1795,7 @@ let query_pos_samples env se_env unsounds str instrumented_fname prev_failed_inv
 				let newlines = List.fold_left (fun res solution -> 
 					res @ (
 						let env = ("\nlet _ = fprintf outch \"env:newtest\\t\\n\"") in
-						let buf = ("\nlet _ = " ^ (!Backwalker.main_function) ^ " " ^ solution) in
+						let buf = ("\nlet _ = " ^ !Backwalker.main_function ^ " " ^ solution) in
 						let newlines = [env; buf] in
 						newlines
 						)

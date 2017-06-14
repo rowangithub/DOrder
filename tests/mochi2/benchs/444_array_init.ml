@@ -1,0 +1,15 @@
+let mk_array n i = if 0<=i && i<n then 0 else -1
+let update (i:int) a (x:int) (j:int) = if j=i then x else a(j)
+let rec init i n (a:int->int) =
+  if i>=n then a
+  else init (i+1) n (update i a 1)
+
+let main n i =
+  let x = init 0 n (mk_array n) in
+   if 0<=i && i<n then
+    assert (x i >=1) (* check that the array has been initialized *)
+  else ()
+
+
+let _ = main 5 4
+

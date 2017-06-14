@@ -18,7 +18,7 @@ let array_dealing_flag = ref false
 let qual_test_var = Path.mk_ident "KAPA"
 let qual_test_expr = Predicate.Var qual_test_var
 
-let main_function = ref ""
+let main_function = ref "main"
 let main_function_path = ref (Path.Pident (Ident.create_persistent !main_function))
 let curr_function_path = ref (Path.Pident (Ident.create_persistent !main_function)) 
 
@@ -1102,13 +1102,22 @@ let get_coeffs fpath =
 			if (Random.bool ()) then Random.int 15
 			else (-1) * (Random.int 15)) in	
 		Array.fold_left (fun res a -> res ^ (Pervasives.string_of_int a) ^ ";") "" arr	
+		
+		
+	let myFind tbl compare = 
+	match (Hashtbl.fold (fun k v res -> match res with
+		| None -> if (compare k = 0) then Some (k, v) else None
+		| Some _ -> res) tbl None) with
+		Some r -> r
+		| None -> assert false	
 
 	(* Return indicates if new tests are derivable *)	
 	let drive_new_test env se_env preinvs str = 
 		(* hoflag is not set --> It is great to try randoming testing *)
 		if not (!hoflag) && not (!data_structure_dealing_flag) then 
-			let _ = assert (String.compare (Path.name !main_function_path) "main" = 0) in
-			let funframe = Hashtbl.find (se_env.funframebindings) !main_function_path in
+			(*let _ = assert (String.compare (Path.name !main_function_path) "main" = 0) in*)
+			let funframe = (*Hashtbl.find (se_env.funframebindings) !main_function_path in*)
+											snd (myFind se_env.funframebindings (fun k -> String.compare (Path.name k) !main_function)) in
 			let allbindings = Frame.get_fun_bindings env funframe in
 			let args = List.fold_left (fun res (p, fr) -> 
 				if (Path.same p Frame.returnpath) then res
@@ -1128,29 +1137,25 @@ let get_coeffs fpath =
 			(true, lines)	
 		(* Sample for higher-order programs *)	
 		else if (Hashtbl.length preinvs > 0) then
-			let _ = itercall := true in
-			let _ = Hashtbl.iter (fun a b -> Hashtbl.replace prefails a b) preinvs in
-			let _ = symb_exe_structure se_env str in
-			let _ = itercall := false in
-			let _ = Hashtbl.clear prefails in
-			let _ = Hashtbl.clear conditionals in
-			(* Find the invariant for the main function *)
-			let fcost = Hashtbl.find (se_env.badbindings) !main_function_path in
-			let _ = assert (String.compare (Path.name !main_function_path) "main" = 0) in
-			(* Ask the solver to provide a new test for main *)
-			let solution = TheoremProver.model fcost.pre 1 in
-			if (solution = []) then (false, [""])
-			else
-				let solution = List.hd solution in
-				let funframe = Hashtbl.find (se_env.funframebindings) !main_function_path in
-				let allbindings = Frame.get_fun_bindings env funframe in
-				try 
-					let line = List.fold_left (fun res (p, fr) -> 
-						if (Path.same p Frame.returnpath) then res
-						else res ^ " (" ^ (Pervasives.string_of_int (Hashtbl.find solution p)) ^ ")"
-					) "" allbindings 
-					in (true, [line])
-				with _ -> (Format.fprintf Format.std_formatter "Main function inputs are ill-typed@."; assert false)
+			let funframe = (*Hashtbl.find (se_env.funframebindings) !main_function_path in*)
+											snd (myFind se_env.funframebindings (fun k -> String.compare (Path.name k) !main_function)) in
+			let allbindings = Frame.get_fun_bindings env funframe in
+			let args = List.fold_left (fun res (p, fr) -> 
+				if (Path.same p Frame.returnpath) then res
+				else res @ [(p, fr)]) [] allbindings in
+			let values = random_tests args in
+			let lines = List.fold_left (fun res values -> 
+				res @ 
+					(if (values = []) then [" (" ^ ")"]
+					else [(List.fold_left2 (fun res value (_, fr) -> 
+						(match fr with
+							| Frame.Fconstr (p,_,_,_,_) when Path.same p Predef.path_array -> 
+								let arr = random_array value in
+								res ^ "  [|" ^ arr ^ "|]" 
+							| _ -> res ^ "  (" ^ (Pervasives.string_of_int value) ^ ")"	)
+					) "" values args)])
+				) [] values in	
+			(true, lines)	
 		else (false, [""])
 	
 (* Analyze the program text to find constants that atomic predicates should use *)	

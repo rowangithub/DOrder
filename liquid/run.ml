@@ -15,7 +15,13 @@ let execute () =
 				fprintf err_formatter "@[%s@]@." "error while execv execute\n"; raise RUNFAIL)
     | -1 -> 
 			(fprintf err_formatter "@[%s@]@." "error accured on execute fork\n"; raise RUNFAIL)
-    | _ -> (ignore (wait ()); printf "%s" "program excuted ...\n")
+    | _ -> (
+			let _, s = wait () in
+			let _ = match s with
+			| WEXITED n -> if (n!=0) then print_string "\027[31mThe program is buggy!\n\027[0m"
+			| WSIGNALED n -> ()
+			| WSTOPPED n -> () in
+			printf "%s" "program excuted ...\n")
 
 let compile filename = 
 	let code = fork () in
