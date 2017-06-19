@@ -74,7 +74,12 @@ def main():
   if (gen_succ != 0):
     print "Remove Unnecessary Anno Please!"
     sys.exit(gen_succ)
-  sys.exit(solve_quals(fn,bare,False,flags))
+  ret = solve_quals(fn,bare,False,flags)
+  if (ret == 0):
+    sys.exit(0)
+  else:
+    sys.exit(solve_quals(fn,bare,False,flags + ["-hoflag"]))
+      
 
 if __name__ == "__main__":
   main()
