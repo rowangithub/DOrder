@@ -23,6 +23,3 @@ let main n =
   if n > 0
   then (fact n exn; ())
   else ()
-
-let _ = main 3
-let _ = main (-2)

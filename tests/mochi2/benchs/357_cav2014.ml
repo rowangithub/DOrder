@@ -14,6 +14,3 @@ let main p n =
 		assert (res = k)
 		
 	else ()
-	
-
-let _ = main (-1) (-3)

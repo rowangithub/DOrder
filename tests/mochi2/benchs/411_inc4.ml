@@ -1,6 +1,7 @@
-let make_array n i = assert(0<=i && i<n); 0
-let update i n des x = des i; let a j = if i=j then x else des i in a
-let rec inc3 m a i =
+let make_array (n:int) (i:int) = assert(0<=i && i<n); 0
+let update (i:int) (n:int) (des:int->int) (x:int) = 
+	des i; let a j = if i=j then x else des i in a
+let rec inc3 (m:int) (a:int->int) (i:int) =
  if i>=m
  then ()
  else
@@ -8,5 +9,3 @@ let rec inc3 m a i =
      inc3 m a (i+1)
 let main n i =
   if i=0 && n>0 then inc3 n (make_array n) i else ()
-
-let _ = main 1 0

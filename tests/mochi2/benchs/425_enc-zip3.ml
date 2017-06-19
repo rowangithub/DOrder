@@ -12,6 +12,3 @@ let rec zip x y =
 
 let main n =
   assert (zip n n = n)
-
-let _ = main 3
-let _ = main (-2)

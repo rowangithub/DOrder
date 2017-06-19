@@ -7,6 +7,3 @@ let rec zip x y =
 let main n =
   let m = zip n n in
   assert (m >= n && m <= n)
-
-let _ = main 3
-let _ = main (-2)

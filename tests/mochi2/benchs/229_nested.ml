@@ -14,6 +14,3 @@ let main n =
 	if n <= 0 then ()
 	else 
 		loopa 0 n
-		
-let _ = main 1
-let _ = main (-1)

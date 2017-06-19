@@ -8,6 +8,3 @@ let rec mult n m =
   else
     n + mult n (m-1)
 let main n = assert (n <= mult n n)
-
-let _ = main 3
-let _ = main (-2)

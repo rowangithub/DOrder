@@ -37,5 +37,3 @@ let main n a m b =
   let array1 = make_array n a in
   let array2 = make_array m b in
   if n>0 && m>0 then (kmpMatch n array1 m array2; ()) else ()
-
-let _ = main 3 1 3 1

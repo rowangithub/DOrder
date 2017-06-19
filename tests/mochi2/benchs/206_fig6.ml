@@ -9,7 +9,3 @@ let rec loop y =
 
 let main y =
 	loop y
-
-
-let _ = main 1
-let _ = main (-1)

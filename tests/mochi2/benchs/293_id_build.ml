@@ -13,8 +13,3 @@ let rec loopa i nlen =
 
 let main nlen =
   loopa 0 nlen
-	
-
-		
-let _ = main 5
-let _ = main (-4)

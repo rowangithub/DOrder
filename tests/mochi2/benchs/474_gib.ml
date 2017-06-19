@@ -17,6 +17,3 @@ let main n a b =
 if a >= 0 && b >= 0 then
   assert (gib 0 1 n >= 0)
 else ()
-
-let _ = main 1 2 3
-let _ = main (-1) (-2) (-3)

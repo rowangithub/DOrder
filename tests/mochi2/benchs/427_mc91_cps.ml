@@ -8,7 +8,3 @@ let rec m x k =
 let main n =
   let k r = if n <= 101 then assert (r = 91) else () in
   m n k
-
-
-let _ = main 102
-let _ = main (-2)

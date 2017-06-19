@@ -22,7 +22,3 @@ let main n =
 		let j = 0 in
  		loopb j k n
 	else ()
-	
-let _ = main 10
-let _ = main 19
-let _ = main (-4)	

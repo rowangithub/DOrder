@@ -3,6 +3,3 @@ let rec map x =
 
 let main n =
   assert(map (map n) = n)
-
-let _ = main 2
-let _ = main (-1)

@@ -22,6 +22,3 @@ let rec f x y st : unit =
 let next st = if st=init then opened else ignore
 let g b3 x st = if b3 > 0 then f x true (next st) else f x false st
 let main b2 b3 = (if b2 > 0 then g b3 true opened else g b3 false init); ()
-
-let _ = main 2 3
-let _ = main 3 2

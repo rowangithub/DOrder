@@ -7,7 +7,3 @@ let rec loop i n sn =
 	
 let main n = 
 	loop 1 n 0	
-	
-let _ = main 10
-let _ = main 0
-let _ = main (-1)

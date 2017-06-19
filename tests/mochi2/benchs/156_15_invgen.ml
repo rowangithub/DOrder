@@ -12,8 +12,3 @@ let main k n =
 		let j = 0 in
 		loop j k n
 	else ()
-	
-let _ = main 4 2
-let _ = main 4 3
-let _ = main 2 1
-let _ = main (-2) (-1)

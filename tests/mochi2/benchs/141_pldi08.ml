@@ -6,6 +6,3 @@ let rec loop x y =
 let main y = 
 	let x = -50 in
   loop x y
-	
-
-let _ = main (-1)  

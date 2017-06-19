@@ -5,5 +5,3 @@ let f g x =
     1
 let decr x = x - 1
 let main n = assert(f decr 3 > 0)
-
-let _ = main 3

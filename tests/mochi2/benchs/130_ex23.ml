@@ -10,8 +10,3 @@ let main y =
 		let z = y * 36 in
 		loop y z c
 	else ()	
-	
-let _ = main (-1)		
-let _ = main 0	
-let _ = main 127
-let _ = main 128

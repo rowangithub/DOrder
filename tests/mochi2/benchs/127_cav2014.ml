@@ -11,7 +11,3 @@ let main p =
 		let res = loop i j p in
 		assert (res = 1)
 	else ()
-
-
-let _ = main (102)
-let _ = main (-1)

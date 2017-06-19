@@ -19,8 +19,4 @@ let main m n =
     	if (n < 0 || n > 23) then ()
      	else 
 				let result = ackermann m n in
-				assert (m < 0 || n < 0 || result >= 0)
-				
-let _ = main 2 3
-let _ = main 3 2
-let _ = main (-2) (-2)				
+				assert (m < 0 || n < 0 || result >= 0)			

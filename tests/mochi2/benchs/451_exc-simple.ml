@@ -10,6 +10,3 @@ let main n = try ff n with Failer 0 -> ()
 let f n k = if n >= 0 then () else k 0
 let g n = assert (n = 0)
 let main n = f n g
-
-let _ = main 3
-let _ = main (-2)

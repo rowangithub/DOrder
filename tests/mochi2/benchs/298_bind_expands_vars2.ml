@@ -12,7 +12,3 @@ let main n1 n2 cp1_off maxdata =
 		loop 0 n1 n2 cp1_off maxdata				
 	
 	else ()
-	
-
-let _ = main 1 2 3 4
-let _ = main (-1) (-3) (-5) (-7) 

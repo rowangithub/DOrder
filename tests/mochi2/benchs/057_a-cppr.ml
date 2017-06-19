@@ -29,6 +29,3 @@ let main n =
 	if (n > 0) then
   	f n array1 array2
 	else ()
-	
-
-let _ = main 2

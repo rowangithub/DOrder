@@ -10,6 +10,3 @@ let main b =
 	let x = 0 in
 	let y = 0 in
 	loop b x y
-	
-let _ = main 2
-let _ = main (-3)	

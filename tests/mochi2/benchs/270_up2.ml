@@ -17,8 +17,3 @@ let main n =
 	let k = loopa i k n in
   let j = 0 in
 	loopb j k n
-	
-  
-let _ = main 10
-let _ = main 9
-let _ = main (-5)

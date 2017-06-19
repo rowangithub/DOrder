@@ -7,6 +7,3 @@ let main n =
 	let y = 0 in
 	let res = loop n x y in
 	assert (res >= n)
-	
-let _ = main 3
-let _ = main (-3)

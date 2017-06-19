@@ -11,5 +11,3 @@ let rec zip x y =
   else (assert (y <> 0); 1 + zip (x - 1) (y - 1))
     
 let main n = unzip n zip
-
-let _ = main 0

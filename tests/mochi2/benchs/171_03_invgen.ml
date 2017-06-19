@@ -20,7 +20,3 @@ let rec loop k n l =
 let main l n = 
 	if (l > 0) then loop 1 n l	
 	else ()
-	
-let _ = main 2 5
-let _ = main (-1) 5
-let _ = main 3 (-1)

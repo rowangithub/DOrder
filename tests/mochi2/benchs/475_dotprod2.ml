@@ -14,6 +14,3 @@ let main i n =
   let v1 i = 0 in
   let v2 i = 0 in
   dotprod v1 v2 n 0 0; ()
-
-let _ = main (-1) (-1)
-let _ = main 2 2

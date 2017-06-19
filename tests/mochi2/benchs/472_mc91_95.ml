@@ -7,6 +7,3 @@ let main n =
   if n <= 95
   then assert (m n = 91)
   else ()
-
-let _ = main 100
-let _ = main (-2)

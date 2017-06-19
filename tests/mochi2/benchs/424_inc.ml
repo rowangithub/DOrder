@@ -7,6 +7,3 @@ let rec g e a j =
  else ()
 let main n =
  g n ar 0
-
-let _ = main 3
-let _ = main (-2)

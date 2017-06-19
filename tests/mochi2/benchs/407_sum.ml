@@ -9,5 +9,3 @@ let rec sum n =
 
 let main n =
   assert (n <= sum n)
-
-let _ = main 3

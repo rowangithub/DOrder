@@ -18,6 +18,3 @@ let rec zip x y =
 
 let main n =
  let x = unzip n zip in ()
-
-let _ = main 1
-let _ = main (-2)

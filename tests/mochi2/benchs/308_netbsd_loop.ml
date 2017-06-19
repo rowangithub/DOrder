@@ -14,7 +14,3 @@ let main maxpathlen =
   	let glob2_pathlim_off = bound_off in
 		loop glob2_pathbuf_off glob2_pathlim_off maxpathlen
 	else ()
-	
-let _ = main 10
-let _ = main 9
-let _ = main (-4)	

@@ -23,9 +23,3 @@ let main leaderlen bufsize ielen =
 			loop 0 p ielen bufsize bufsizecopy leaderlen
     else()
 	else ()
-			
-
-let _ = main (-3) (-50) (-7)
-let _ = main 3 50 7
-let _ = main 3 70 5
-let _ = main 5 70 3

@@ -6,6 +6,3 @@ let rec repeat f n =
 
 let main n =
   assert (repeat succ n = n)
-
-let _ = main 3
-let _ = main (-2)

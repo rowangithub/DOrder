@@ -5,5 +5,3 @@ let f =
     lamp
 
 let main i = f ()
-
-let _ = main ()

@@ -14,9 +14,3 @@ let main n m =
 	let k = loopa i k n in
 	let k = loopa i k m in
 	loopc i k m n
-
-let _ = main 2 3
-let _ = main 3 2
-let _ = main (-1) (-1)
-let _ = main (-2) 2
-let _ = main 2 (-2)

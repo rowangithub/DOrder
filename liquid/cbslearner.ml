@@ -2213,9 +2213,9 @@ let learn algnumber templates udt_table atomics pos_samples neg_samples invarian
 				(String.compare (Path.name path) (!Backwalker.main_function) = 0) && 
 					not (!(se_env.dty))) then
 			(** Find some useful interval-invariants defined in function main *)
-			if !(Backwalker.hoflag) then 
+			(*if !(Backwalker.hoflag) then 
 				(Format.fprintf Format.std_formatter "%s is always good!@." (Path.name path))
-			else
+			else*)
 				let atomics = Backwalker.find_atomics (!Backwalker.main_function_path) true in
 				let tbl = Hashtbl.create 7 in
 				let atomics = List.filter (fun atomic -> (*match atomic with 

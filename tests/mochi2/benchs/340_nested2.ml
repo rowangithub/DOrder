@@ -18,6 +18,3 @@ let rec loopa k l n =
 	
 let main l n = 
 	loopa 0 l n
-	
-let _ = main 2 3
-let _ = main (-2) (-3)

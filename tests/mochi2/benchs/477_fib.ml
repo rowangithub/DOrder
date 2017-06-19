@@ -4,6 +4,3 @@ let rec fib n =
 
 let main n =
   assert (n <= fib n)
-
-let _ = main (5)
-let _ = main (-5)

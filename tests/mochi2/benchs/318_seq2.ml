@@ -19,9 +19,3 @@ let main n m =
   let k = loopb i k m in 
 	loopc i k n
 
-let _ = main 2 3
-let _ = main 3 2
-let _ = main (-1) (-1)
-let _ = main (-2) 2
-let _ = main 2 (-2)
-

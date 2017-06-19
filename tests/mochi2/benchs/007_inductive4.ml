@@ -8,5 +8,3 @@ let rec f g x =
 let incr x = x + 1
 let main n =
   assert(f incr 3 >= -3)
-
-let _ = main 1

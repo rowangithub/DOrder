@@ -15,8 +15,3 @@ let main m =
 		
 		assert (res = m)
 	else ()
-	
-
-let _ = main 10
-let _ = main 2
-let _ = main (-1)

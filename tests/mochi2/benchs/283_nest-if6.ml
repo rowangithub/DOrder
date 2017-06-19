@@ -4,7 +4,3 @@ let main n lda =
 			(assert(0 <= n);assert(n < lda);)
 		else ()
 	else ()
-
-
-let _ = main 2 3
-let _ = main (-2) (-3)

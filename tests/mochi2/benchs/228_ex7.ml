@@ -11,8 +11,3 @@ let main x y =
 		let len = x in
   	let i = 0 in
   	loop i len y
-  		
-let _ = main (-1) (-1)
-let _ = main 4 4
-let _ = main 5 2
-let _ = main 2 5 

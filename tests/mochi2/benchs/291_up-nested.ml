@@ -32,7 +32,3 @@ let main j n =
     k--;
   }
   *)
-	
-let _ = main 3 6
-let _ = main 4 5
-let _ = main (-1) (-2)	

@@ -4,6 +4,3 @@ let rec sum n =
   else
     n + sum (n-1)
 let main n = assert (2*n-1 <= sum n)
-
-let _ = main 3
-let _ = main (-2)

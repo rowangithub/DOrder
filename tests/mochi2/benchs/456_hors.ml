@@ -17,6 +17,3 @@ let s n q = f n c q
 
 let main n = s n 0
 (* check whether S: q0 *)
-
-let _ = main 3
-let _ = main (-2)

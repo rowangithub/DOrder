@@ -15,5 +15,3 @@ let main n i =
     let m = array_max n i (make_array n) (-1) in
     assert (m >= n)
   else ()
-
-let _ = main 1 0

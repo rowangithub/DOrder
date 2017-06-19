@@ -10,6 +10,3 @@ let rec mc91 x =
     mc91 (mc91 (x + 11))
 let main n =
   if n <= 101 then assert (mc91 n = 91) else ()
-
-let _ = main 102
-let _ = main (-2)

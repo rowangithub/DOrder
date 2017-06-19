@@ -19,6 +19,3 @@ let rec loopa i n =
 	else ()	
 	
 let main n = loopa 0 n
-  
-let _ = main 5
-let _ = main (-5)

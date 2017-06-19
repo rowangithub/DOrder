@@ -7,5 +7,3 @@ let main y  =
 	let x = -50 in
 	let res = loop x y in
 	assert (res > 0)
-
-let _ = main (-5)

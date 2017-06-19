@@ -19,8 +19,3 @@ let main n =
   let j = 0 in
   loopb j k n
 	else ()
-	
-let _ = main 10
-let _ = main 15
-let _ = main 7
-let _ = main (-5)	

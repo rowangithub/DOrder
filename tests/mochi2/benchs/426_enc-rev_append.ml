@@ -12,6 +12,3 @@ let rec rev n =
 let main n m =
   assert (rev n = n);
   assert (append n m = n + m)
-
-let _ = main 2 3
-let _ = main (-1) (-1)

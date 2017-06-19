@@ -17,6 +17,3 @@ let rec bcopy_aux m src des i =
 let main n =
   let bcopy src des = bcopy_aux n src des 0 in
   bcopy array1 array2
-
-let _ = main 3
-let _ = main (-1)

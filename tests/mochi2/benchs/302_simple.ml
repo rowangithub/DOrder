@@ -10,6 +10,3 @@ let main n =
   if (n > 0 ) then
 		loop x n
 	else ()
-
-let _ = main 5
-let _ = main (-4)

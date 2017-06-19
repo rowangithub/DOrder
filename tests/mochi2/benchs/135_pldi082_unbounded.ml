@@ -18,7 +18,3 @@ let main n =
   if(n < 0) then ()
   else 
 		loop x y n
-		
-let _ = main 10
-let _ = main 9
-let _ = main (-2)

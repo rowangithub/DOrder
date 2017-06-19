@@ -11,6 +11,3 @@ let main n =
   let v1 = make_array n in
   let v2 = make_array n in
   dotprod n v1 v2 0 0; ()
-
-let _ = main 1
-let _ = main (-2)

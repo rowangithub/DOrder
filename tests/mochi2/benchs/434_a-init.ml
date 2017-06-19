@@ -12,5 +12,3 @@ let main k n i =
       if 0 <= i && i < n then
         assert (x i >= 1) else ()
   else ()
-
-let _ = main 5 3 2

@@ -20,15 +20,3 @@ let main n m =
 	if n <= m then 
 		loopa 0 n m
 	else ()
-		
-
-	
-let _ = main 2 2
-let _ = main 2 3
-let _ = main 3 2
-let _ = main 1 1
-let _ = main 1 0
-let _ = main 0 1
-let _ = main 0 2
-let _ = main 2 0 
-let _ = main (-2) (-2)

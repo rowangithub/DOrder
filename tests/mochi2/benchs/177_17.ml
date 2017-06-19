@@ -17,6 +17,3 @@ let main n =
 	let k = 1 in
 	let i = 1 in
 	loopa i k n
-	
-let _ = main 10
-let _ = main (-5)

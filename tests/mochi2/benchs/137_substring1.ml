@@ -9,10 +9,3 @@ let main k from =
 		let j = 0 in
 		loop k i j
 	else ()
-
-let _ = main 20 5
-let _ = main 9 0
-let _ = main 0 9
-let _ = main 5 20
-let _ = main 200 200
-let _ = main (-1) (-1)

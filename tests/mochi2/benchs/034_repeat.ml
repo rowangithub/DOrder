@@ -7,5 +7,3 @@ let rec repeat (f:int->int) n s =
     f (repeat f (n-1) s)
 		
 let main n = assert (repeat succ n 0 >= n)
-
-let _ = main 2

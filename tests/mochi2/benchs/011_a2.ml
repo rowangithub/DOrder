@@ -12,6 +12,3 @@ let main n =
 	let r = f succ n in
 	assert (r >= 0)
 
-let _ = main 1
-let _ = main (-1)
-

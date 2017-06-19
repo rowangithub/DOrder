@@ -5,6 +5,3 @@ let rec rev n m =
 
 let main n =
   assert (rev n 0 >= n)
-
-let _ = main 3
-let _ = main (-2)

@@ -14,7 +14,3 @@ let main n m =
   let array1 = make_array n in
   let array2 = make_array m in
   if n<=m && n>0 then bcopy_aux n array1 array2 0 else ()
-
-let _ = main 2 3
-let _ = main 3 2
-let _ = main (-1) (-1)

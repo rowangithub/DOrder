@@ -12,7 +12,3 @@ let main m n =
   if (m>=0 && n>=0)
   then assert (ack m n >= n)
   else ()
-
-let _ = main 0 0
-let _ = main 3 2
-let _ = main (-2) (-2)	

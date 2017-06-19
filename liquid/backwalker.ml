@@ -999,7 +999,9 @@ let symb_exe_structure se_env str =
 		| (Tstr_value (recflag, bindings)) -> 
 			(match (snd ((List.hd bindings))).exp_desc with
 				| Texp_function ([(pat, e')], _) ->
-					(true, get_pattern (fst (List.hd bindings)), (get_funbody (snd ((List.hd bindings)))))::items
+					let fp = get_pattern (fst (List.hd bindings)) in
+					let _ = if (String.compare (!main_function) (Path.name fp) = 0) then (main_function_path := fp) in
+					(true, fp, (get_funbody (snd ((List.hd bindings)))))::items
 				| _ -> (false, get_pattern (fst (List.hd bindings)), (get_funbody (snd ((List.hd bindings)))))::items
 			)
 		| (Tstr_eval e) -> (false, evalpath, e) :: items
@@ -1073,7 +1075,7 @@ let get_coeffs fpath =
 		let cs = get_constants (!main_function_path) in	
 		let maxc = List.fold_left (fun res c -> if (res < c) then c else res) 0 cs in
 		let maxc = 
-			if (maxc <= 10) then 10 
+			if (maxc <= 3) then 3 
 			else maxc in
 		let minc = (-3) in
 		let n = List.length args in
@@ -1136,7 +1138,7 @@ let get_coeffs fpath =
 				) [] values in	
 			(true, lines)	
 		(* Sample for higher-order programs *)	
-		else if (Hashtbl.length preinvs > 0) then
+		else (*if (Hashtbl.length preinvs > 0) then*)
 			let funframe = (*Hashtbl.find (se_env.funframebindings) !main_function_path in*)
 											snd (myFind se_env.funframebindings (fun k -> String.compare (Path.name k) !main_function)) in
 			let allbindings = Frame.get_fun_bindings env funframe in
@@ -1156,7 +1158,7 @@ let get_coeffs fpath =
 					) "" values args)])
 				) [] values in	
 			(true, lines)	
-		else (false, [""])
+		(*else (false, [""])*)
 	
 (* Analyze the program text to find constants that atomic predicates should use *)	
 (* Heuristic: add important program branching information to helping learning *)

@@ -9,7 +9,3 @@ let rec loop x n =
 let main n =
   let x = 0 in
 	loop x n
-	
-let _ = main 2
-let _ = main 0
-let _ = main (-1)

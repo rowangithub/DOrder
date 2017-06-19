@@ -12,8 +12,3 @@ let main i j =
 	let x = i in
 	let y = j in
 	loop x y i j
-	
-let _ = main 10 10
-let _ = main 9 9
-let _ = main 3 (-3)
-let _ = main 0 3

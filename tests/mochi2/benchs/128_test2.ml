@@ -7,7 +7,4 @@ let f x =
 let main x =
 	if (x > 10) then
 		f x
-	else ()
-	
-let _ = main 11
-let _ = main (-1)			  	
+	else ()		  	

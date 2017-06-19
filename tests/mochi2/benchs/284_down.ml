@@ -18,6 +18,3 @@ let main n =
  
   let j = n in
   loopb j k
-
-let _ = main 5
-let _ = main (-5)

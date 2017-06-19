@@ -9,5 +9,3 @@ let rec f x =
     x
 let main n =
   assert(f 3 >= 0)
-
-let _ = main 1

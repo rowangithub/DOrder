@@ -19,10 +19,3 @@ let rec loopa i n =
 
 let main n =
 	loopa 0 n
-  
-		
-
-let _ = main 2
-let _ = main 1
-let _ = main 0
-let _ = main (-2)

@@ -5,5 +5,3 @@ let rec sum n =
   else
     add n (sum (n-1))
 let main n = assert (n <= sum n)
-
-let _ = main 5

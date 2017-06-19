@@ -7,6 +7,3 @@ let main x y =
 	if (0 <= x && x <= 2 && 0 <= y && y <= 2) then
 		loop x y
 	else () 
-	
-
-let _ = main (-1) (-1)

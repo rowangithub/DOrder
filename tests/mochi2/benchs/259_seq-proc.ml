@@ -35,10 +35,3 @@ let main n0 n1 =
 	
   let j0 = 0 in
   loopd j0 k n0
-
-	
-let _ = main 2 3
-let _ = main 3 2
-let _ = main (-1) (-1)
-let _ = main (-2) 2
-let _ = main 2 (-2)

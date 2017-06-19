@@ -10,6 +10,3 @@ let rec inc3 m src i =
    end
 let main n =
  if n>0 then inc3 n (make_array n) 0 else ()
-
-let _ = main 3
-let _ = main (-2)

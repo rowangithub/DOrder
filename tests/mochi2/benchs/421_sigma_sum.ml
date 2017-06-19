@@ -11,6 +11,3 @@ let rec sigma f n =
 
 let main n =
   assert (sigma sum n >= n)
-
-let _ = main 3
-let _ = main (-2)

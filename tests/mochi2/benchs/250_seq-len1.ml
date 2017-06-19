@@ -22,7 +22,3 @@ let main n0 n1 n2 =
 	  let k = loopb i k n1 in 
 		loopc i k n0 
 	else ()
-
-let _ = main 2 3 4
-let _ = main 3 2 4
-let _ = main (-2) (-3) (-4)

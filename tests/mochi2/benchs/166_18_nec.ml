@@ -14,10 +14,3 @@ let main flag =
 	if (flag > 0) then
 		assert (res = 100)
 	else ()	
-			
-
-
-let _ = main 101
-let _ = main 1
-let _ = main (-1)
-let _ = main (-2)

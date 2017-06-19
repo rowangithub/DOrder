@@ -20,6 +20,3 @@ let main l n =
 	if l > 0 then
 		loopa 1 l n
 	else ()	
-	
-let _ = main 2 3	
-let _ = main (-2) (-3)

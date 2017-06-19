@@ -13,6 +13,3 @@ let main n =
   if (n >= 0) then
 		loop 0 n sum
 	else ()
-		
-let _ = main 5
-let _ = main (-5)

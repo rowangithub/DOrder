@@ -10,6 +10,3 @@ let rec loop x i =
 let main n =
   assert (loop 3 n >= 3);
   assert (loop 1 n >= 0)
-
-let _ = main 3
-let _ = main (-2)

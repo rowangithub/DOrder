@@ -50,6 +50,8 @@ type error =
 exception Error of Location.t * error
 exception Errors of (Location.t * error) list
 
+exception NoRun
+
 let expression_to_pexpr e =
   match e.exp_desc with
     | Texp_constant (Const_int n) -> P.PInt n
@@ -1500,7 +1502,7 @@ let ease_bad_condition path allbindings badc pos_samples =
 					res @ ((*List.map fst*) dumpings)
 				else res 
 			) pos_samples []) in*)
-			(assert (List.length localdumpss > 0);
+			(if (List.length localdumpss <= 0) then raise NoRun;
 			(*let _ = Format.fprintf Format.std_formatter "List.length localdumpss = %d@." (List.length localdumpss) in*)
 			let localdumpss = permutation localdumpss in
 			try List.find (fun localdumps -> 
@@ -1509,7 +1511,7 @@ let ease_bad_condition path allbindings badc pos_samples =
 		let localdumps = ref ([], []) in
 		let readlog sequences b = (* b indicates where to retrieve. In env or in def?? *)
 			(*let _ = List.iter (fun sequence -> Format.fprintf Format.std_formatter "seq=%s@." sequence) sequences in*)
-			let _ = if (!localdumps = ([], [])) then (localdumps := random_pos_sample ()) in
+			let _ = if (!localdumps = ([], [])) then try (localdumps := random_pos_sample ()) with NoRun -> raise NoRun in
 			let localdumps = !localdumps in
 			let localdumps = if (b) then fst localdumps else snd localdumps in
 			(*let _ = List.iter (fun local -> Format.fprintf Format.std_formatter "local=%s@." local) localdumps in*)
@@ -1551,10 +1553,10 @@ let ease_bad_condition path allbindings badc pos_samples =
 							let hd = List.hd es in match hd with
 								| Predicate.Var hd -> 
 									let es = Common.map_partial (get_value b) (List.tl es) in
-									readlog ((Path.name hd)::(es)) b 
+									(try readlog ((Path.name hd)::(es)) b with NoRun -> None)
 								| _ -> assert false
 						else assert false
-					| Predicate.Var p -> readlog [(Path.name p)] b
+					| Predicate.Var p -> (try readlog [(Path.name p)] b with NoRun -> None)
 					| _ -> assert false in
 				(*let _ = Format.fprintf Format.std_formatter "Value = %s@." 
 				(match value with Some value -> value | None -> "None") in*)
@@ -1568,7 +1570,7 @@ let ease_bad_condition path allbindings badc pos_samples =
 						| Some value -> let value = int_of_string value in Predicate.PInt value 
 						| None -> (
 							Format.fprintf Format.std_formatter "Did not record %a in logc!!!@." Predicate.pprint_pexpr e; 
-							assert false) (* Did not record it in the logc!!! *)
+							Predicate.PInt 0) (* Did not record it in the logc!!! *)
 				else e  
 			| _ -> e in
 		(** If a post-bad condition refers to variable out of scope, we may substitute it with a real value *)
@@ -1913,7 +1915,13 @@ let query_neg_samples env se_env unsounds prev_failed_invariants pos_samples =
 					(Hashtbl.replace neg_samples f {Modelsolver.spre=[]; 
 					Modelsolver.spost=[]})	
 			) se_env.funframebindings; neg_samples)
-		else neg_samples
+		else 
+			(Hashtbl.iter (fun f _ -> 
+				if (Path.same f !Backwalker.main_function_path) then
+					(Hashtbl.replace neg_samples f {Modelsolver.spre=[]; 
+					Modelsolver.spost=[]})	
+			) se_env.funframebindings; neg_samples)
+			(*neg_samples*)
 	else
 		if !(se_env.dty) then 
 			(* Inserting a fake sample in order to let invariant inference proceed *)

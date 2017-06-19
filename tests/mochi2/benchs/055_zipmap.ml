@@ -8,7 +8,3 @@ let rec map x =
 
 let main n =
   assert (map (zip n n) = n)
-	
-	
-let _ = main 5
-let _ = main 0

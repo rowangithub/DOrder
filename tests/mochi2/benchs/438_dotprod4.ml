@@ -8,6 +8,3 @@ let main n z =
   let v1 = make_array n in
   let v2 = make_array n in
   if z=0 then (dotprod n v1 v2 z z; ()) else ()
-
-let _ = main 3 0
-let _ = main (-1) (-1)

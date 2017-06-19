@@ -9,7 +9,3 @@ let main x =
 	let x = if (x > y) then y else x in
 	let res = loop x y in
 	assert (res = 11)
-	
-
-let _ = main 12
-let _ = main (-2)	

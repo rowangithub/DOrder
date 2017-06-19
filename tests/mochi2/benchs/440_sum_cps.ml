@@ -7,6 +7,3 @@ let rec cps_sum n k : unit =
 let main n =
   let f x = assert (x >= n) in
   cps_sum n f
-
-let _ = main 3
-let _ = main (-2)
